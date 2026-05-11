@@ -151,7 +151,7 @@ body nav[style*="margin-top: 4rem"][style*="border-top"][style*="justify-content
   body div[style*="padding:4rem 2rem"],
   body div[style*="padding: 4rem 1.5rem"],
   body div[style*="padding:4rem 1.5rem"] {
-    padding: 1.25rem 0.9rem !important;
+    padding: 4rem 0.9rem 1.25rem 0.9rem !important;
   }
   body div[style*="justify-content: space-between"][style*="margin-top: 4rem"] {
     flex-wrap: wrap !important;
