@@ -120,6 +120,14 @@ body nav[style*="margin-top: 4rem"][style*="border-top"][style*="justify-content
 }
 
 @media (max-width: 800px) {
+  /* Two-column product/constraint cards collapse to single column */
+  body div[style*="grid-template-columns: minmax(220px, 1fr) 2fr"],
+  body div[style*="grid-template-columns:minmax(220px,1fr) 2fr"],
+  body div[style*="grid-template-columns: minmax(220px, 1fr) 2.5fr"],
+  body div[style*="grid-template-columns:minmax(220px,1fr) 2.5fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
   body div[style*="padding: 4rem 2rem"],
   body div[style*="padding:4rem 2rem"],
   body div[style*="padding: 4rem 1.5rem"],
