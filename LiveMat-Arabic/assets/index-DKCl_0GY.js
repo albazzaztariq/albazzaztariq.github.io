@@ -120,11 +120,19 @@ body nav[style*="margin-top: 4rem"][style*="border-top"][style*="justify-content
 }
 
 @media (max-width: 800px) {
-  /* Two-column product/constraint cards collapse to single column */
+  /* Multi-column grids collapse to single column on mobile */
   body div[style*="grid-template-columns: minmax(220px, 1fr) 2fr"],
   body div[style*="grid-template-columns:minmax(220px,1fr) 2fr"],
   body div[style*="grid-template-columns: minmax(220px, 1fr) 2.5fr"],
-  body div[style*="grid-template-columns:minmax(220px,1fr) 2.5fr"] {
+  body div[style*="grid-template-columns:minmax(220px,1fr) 2.5fr"],
+  body div[style*="grid-template-columns: auto minmax(180px, 1fr) 2fr"],
+  body div[style*="grid-template-columns:auto minmax(180px,1fr) 2fr"],
+  body div[style*="grid-template-columns: 1fr auto 1fr auto 1fr"],
+  body div[style*="grid-template-columns:1fr auto 1fr auto 1fr"],
+  body div[style*="grid-template-columns: repeat(4, 1fr)"],
+  body div[style*="grid-template-columns:repeat(4,1fr)"],
+  body div[style*="grid-template-columns: repeat(3, 1fr)"],
+  body div[style*="grid-template-columns:repeat(3,1fr)"] {
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
   }
