@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>اختبار الحلول - هل يعمل هذا الحل فعلاً؟</title>
+
+    <!-- Google Fonts for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            direction: rtl;
+            text-align: right;
+            background: #0b0f1a;
+            color: #e2e8f0;
+        }
+
+        #root {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // ─── Icons ───
+        const ArrowLeft = () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5"/>
+            <path d="M12 19l-7-7 7-7"/>
+          </svg>
+        );
+        const ArrowRight = () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14"/>
+            <path d="M12 5l7 7-7 7"/>
+          </svg>
+        );
+        const CheckIcon = () => (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        );
+        const XIcon = () => (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        );
+        const WarnIcon = () => (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        );
+
+        // Inline LTR wrapper for numbers/symbols that break in RTL
+        const N = ({ children }) => (
+          <span style={{ direction: "ltr", unicodeBidi: "embed" }}>{children}</span>
+        );
+
+        // ─── Components ───
+        function CheckStep({ question, answer, verdict, detail }) {
+          const [revealed, setRevealed] = useState(false);
+          const colors = { pass: "#22c55e", fail: "#ef4444", warn: "#f59e0b" };
+          const icons = { pass: <CheckIcon />, fail: <XIcon />, warn: <WarnIcon /> };
+          const bg = { pass: "rgba(34,197,94,0.06)", fail: "rgba(239,68,68,0.06)", warn: "rgba(245,158,11,0.06)" };
+          const border = { pass: "rgba(34,197,94,0.2)", fail: "rgba(239,68,68,0.2)", warn: "rgba(245,158,11,0.2)" };
+          return (
+            <div style={{ marginBottom: 8 }}>
+              <button onClick={() => setRevealed(!revealed)} style={{ width: "100%", textAlign: "right", direction: "rtl", padding: "14px 16px", borderRadius: revealed ? "10px 10px 0 0" : 10, background: revealed ? bg[verdict] : "rgba(255,255,255,0.03)", border: `1px solid ${revealed ? border[verdict] : "rgba(255,255,255,0.08)"}`, color: "#e2e8f0", cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 6, background: revealed ? "transparent" : "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", border: revealed ? "none" : "1px solid rgba(255,255,255,0.1)" }}>
+                  {revealed ? icons[verdict] : <span style={{ color: "#64748b", fontSize: 12 }}>؟</span>}
+                </div>
+                <span style={{ fontWeight: 600, fontSize: 14, flexGrow: 1 }}>{question}</span>
+                <span style={{ fontSize: 11, color: "#64748b", whiteSpace: "nowrap" }}>{revealed ? "" : "اضغط للكشف"}</span>
+              </button>
+              {revealed && (
+                <div style={{ padding: "12px 16px", direction: "rtl", textAlign: "right", background: bg[verdict], border: `1px solid ${border[verdict]}`, borderTop: "none", borderRadius: "0 0 10px 10px" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: colors[verdict], marginBottom: 4 }}>{answer}</div>
+                  <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7 }}>{detail}</div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        function VerdictBox({ works, title, detail }) {
+          const [revealed, setRevealed] = useState(false);
+          return (
+            <div style={{ marginTop: 16 }}>
+              {!revealed ? (
+                <button onClick={() => setRevealed(true)} style={{ width: "100%", padding: "16px 18px", borderRadius: 10, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", color: "#818cf8", cursor: "pointer", fontSize: 15, fontWeight: 700, textAlign: "center", direction: "rtl" }}>
+                  بعد مراجعة كل خطوة... هل يعمل هذا الحل؟ اضغط هنا للإجابة
+                </button>
+              ) : (
+                <div style={{ padding: "18px 20px", borderRadius: 10, direction: "rtl", textAlign: "right", background: works ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)", border: `2px solid ${works ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: works ? "#22c55e" : "#ef4444", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+                    {works ? <CheckIcon /> : <XIcon />} {title}
+                  </div>
+                  <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7 }}>{detail}</div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // ─── Pages ───
+        function PageIntro() {
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, direction: "rtl", textAlign: "right" }}>
+              <p style={{ fontSize: 15, color: "#cbd5e1", lineHeight: 1.8, margin: 0 }}>قبل أن نختار أي تقنية، يجب أن <strong style={{ color: "#f1f5f9" }}>نختبرها</strong> مقابل الواقع. ليس بالنظريات — بل بأسئلة محددة.</p>
+              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.8, margin: 0 }}>في الصفحات التالية، سنأخذ كل حل مقترح ونمرّره عبر <strong style={{ color: "#cbd5e1" }}>قائمة فحص</strong>. كل سؤال له إجابة واقعية — اضغط عليه لكشف الإجابة. في النهاية، ستصل بنفسك إلى الاستنتاج: هل هذا الحل يعمل أم لا؟</p>
+              <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 10, padding: "16px 18px" }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: "#818cf8", marginBottom: 8 }}>الحلول التي سنختبرها:</div>
+                <div style={{ fontSize: 14, color: "#cbd5e1", lineHeight: 2 }}>
+                  1. <N>ESP32 + WiFi</N> — المستشعرات ترسل البيانات عبر WiFi<br/>
+                  2. <N>ESP32 + ANT+</N> — المستشعرات تبث باستخدام <N>ANT+</N><br/>
+                  3. BLE مباشر — 45 مستشعر يتصلون مباشرة بهاتف المدرب<br/>
+                  4. بوابة (Gateway) — جهاز وسيط يجمع كل بيانات المستشعرات
+                </div>
+              </div>
+              <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "16px 18px" }}>
+                <p style={{ fontSize: 14, color: "#fca5a5", fontWeight: 700, margin: "0 0 6px" }}>قاعدة مهمة</p>
+                <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7, margin: 0 }}>"ممكن تقنياً" ليس نفس "يعمل فعلاً في منتج حقيقي." كل سؤال أدناه يسأل عما يحدث <strong style={{ color: "#cbd5e1" }}>في الواقع</strong> — في غرفة المصارعة، مع 45 رياضياً، أثناء تمرين <N>2–3</N> ساعات.</p>
+              </div>
+            </div>
+          );
+        }
+
+        function PageWiFi() {
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, direction: "rtl", textAlign: "right" }}>
+              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, margin: "0 0 12px" }}>الاقتراح: نضع شريحة <N>ESP32</N> في كل مستشعر. المستشعر يتصل بشبكة WiFi في الصالة ويرسل البيانات إلى جهاز المدرب عبر WiFi.</p>
+              <CheckStep
+                question="هل يستطيع WiFi التعامل مع كمية البيانات من 45 مستشعر؟"
+                answer="نعم. بسهولة. ليست مشكلة على الإطلاق."
+                verdict="pass"
+                detail="لنحسبها. كل مستشعر يرسل كمية صغيرة جداً من البيانات — حوالي 20 بايت لكل قراءة (رقم نبض القلب، رقم التسارع، طابع زمني). حتى بأسرع معدل، جميع المستشعرات الـ 45 مجتمعة تُنتج بيانات أقل من شخص واحد يشاهد فيديو على YouTube. ثلاثة أشخاص يشاهدون YouTube يستخدمون حوالي 20 ضعف بياناتنا الـ 45 مستشعر كلها. WiFi يتعامل مع هذا بسهولة تامة."
+              />
+              <CheckStep
+                question="هل يستطيع راوتر WiFi في الصالة التعامل مع 45 مستشعر؟"
+                answer="نعم. شبكة WiFi المدرسة تتعامل مع مئات الهواتف واللابتوبات يومياً."
+                verdict="pass"
+                detail="شبكة WiFi المدرسة مبنية للتعامل مع مئات الأجهزة — هاتف كل طالب، لابتوب كل معلم، كل Chromebook في كل فصل. 45 مستشعر صغير يرسل حزم بيانات صغيرة لا يُقارن بذلك. بيانات جميع المستشعرات الـ 45 مجتمعة أقل من شخص واحد يشاهد YouTube. الراوتر يتعامل معها بسهولة."
+              />
+              <CheckStep
+                question="كم ستعمل بطارية المستشعر مع WiFi؟"
+                answer={<>حوالي 30 دقيقة إلى ساعة ونصف. التمرين <N>2–3</N> ساعات. المستشعر سيموت أثناء التمرين.</>}
+                verdict="fail"
+                detail={<>هذه هي المشكلة الكبرى. فكّر فيها هكذا: راديو WiFi مثل كشاف ضوء قوي — يستخدم طاقة كبيرة جداً لإرسال إشارة، حتى لو الرسالة صغيرة. بطارية صغيرة بحجم يناسب واقي رأس المصارع تحتوي على كمية قليلة من الطاقة. راديو WiFi يستنزف تلك البطارية بنفس الطريقة التي يستنزف بها سخان كهربائي بطارية سيارة — بسرعة. المستشعر سيموت تماماً في وقت بين 30 دقيقة وساعة ونصف من التمرين. المصارعون ما زالوا يتدربون. المستشعر أصبح قطعة بلا فائدة.<br/><br/>للمقارنة، راديو Bluetooth Low Energy (BLE) مثل مصباح LED صغير — يومض لجزء من الثانية، يرسل البيانات، ثم ينطفئ تماماً. نفس البطارية، نفس البيانات، لكن BLE يستمر <strong style={{ color: "#cbd5e1" }}>طوال اليوم</strong>. WiFi لا يستطيع فعل هذا لأنه يجب أن يبقى "مستيقظاً" ومتصلاً بالشبكة طوال الوقت.</>}
+              />
+              <CheckStep
+                question="هل يمكنك تغيير اسم شبكة WiFi وكلمة السر على المستشعر؟"
+                answer="ليس بدون بناء برنامج مخصص لفعل ذلك."
+                verdict="warn"
+                detail={<>عندما تشتري شريحة WiFi، هي لا تعرف أي شبكة WiFi تتصل بها. شخص ما يجب أن يخبرها اسم الشبكة وكلمة السر. الآن تخيّل: الفريق يسافر لبطولة في مدرسة أخرى. صالة مختلفة، شبكة WiFi مختلفة، كلمة سر مختلفة. شخص ما يجب أن يدخل جميع المستشعرات الـ 45 ويغيّر إعدادات الشبكة. لا تستطيع كتابتها — لا توجد شاشة أو لوحة مفاتيح على المستشعر. تحتاج بناء تطبيق خاص يتصل بكل مستشعر ويدفع الإعدادات الجديدة. هذا التطبيق يجب تصميمه وبرمجته. ليس مستحيلاً، لكنه <strong style={{ color: "#cbd5e1" }}>برمجيات مخصصة إضافية يجب بناؤها</strong>.</>}
+              />
+              <CheckStep
+                question="هل المستشعر سيسخن؟"
+                answer="نعم. دافئ بشكل ملحوظ على الجلد."
+                verdict="warn"
+                detail="لأن راديو WiFi يستخدم طاقة كبيرة، كثير من تلك الطاقة تتحول إلى حرارة. في جهاز صغير محصور داخل واقي الرأس، مضغوط على جبهة مصارع يتعرق، المستشعر سيكون دافئاً. لن يحرق أحداً، لكنه غير مريح — والحرارة تجعل البطارية تنفد أسرع."
+              />
+              <CheckStep
+                question="هل المنتج النهائي يحتاج شهادة لاسلكية حكومية (FCC)؟"
+                answer="نعم. هذا ينطبق على كل منتج لاسلكي يُباع في أمريكا، بغض النظر عن البروتوكول."
+                verdict="warn"
+                detail={<>أي جهاز يرسل إشارات لاسلكية ويُباع في الولايات المتحدة يجب اختباره والموافقة عليه من FCC (لجنة الاتصالات الفيدرالية). حتى لو شريحة WiFi بداخله معتمدة لوحدها، المنتج النهائي — لوحة المستشعر داخل واقي الرأس مع هوائيه المحدد — يجب اختباره كوحدة كاملة. التكلفة حوالي <N>$5,000–$15,000</N> ويأخذ عدة أسابيع. هذا صحيح لـ WiFi و Bluetooth و <N>ANT+</N> أو أي تقنية لاسلكية أخرى.</>}
+              />
+              <VerdictBox
+                works={false}
+                title="ESP32 + WiFi لا يعمل للمستشعر القابل للارتداء"
+                detail={<>WiFi لديه سرعة وعرض نطاق أكثر من كافٍ لبياناتنا — تلك لم تكن المشكلة أبداً. <strong style={{ color: "#cbd5e1" }}>المشكلة هي البطارية.</strong> راديو WiFi يستنزف بطارية المستشعر الصغيرة في 30 دقيقة إلى ساعة ونصف. التمرين <N>2–3</N> ساعات. المستشعر يموت أثناء التمرين. WiFi صُمم للأجهزة الموصولة بالكهرباء — لابتوبات، تلفزيونات ذكية، راوترات. لم يُصمم أبداً لمستشعرات صغيرة تعمل على بطاريات صغيرة.</>}
+              />
+            </div>
+          );
+        }
+
+        function PageANT() {
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, direction: "rtl", textAlign: "right" }}>
+              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, margin: "0 0 12px" }}>الاقتراح: نستخدم شريحة <N>ESP32</N> في كل مستشعر، لكن بدلاً من WiFi، نستخدم <N>ANT+</N> لإرسال البيانات. <N>ANT+</N> هو البروتوكول المستخدم في أجهزة Garmin الرياضية — مُصمم لهذا النوع من الاستخدام بالضبط.</p>
+              <CheckStep
+                question="هل ANT+ جيد لإرسال من مستشعرات كثيرة إلى جهاز استقبال واحد؟"
+                answer="نعم. هذا بالضبط ما صُمم من أجله."
+                verdict="pass"
+                detail={<><N>ANT+</N> صُنع للرياضة واللياقة. هذا ما تستخدمه Garmin عندما <N>100+</N> دراج في سباق كلهم يرتدون أحزمة نبض القلب ومقاييس القوة في نفس الوقت. كل مستشعر يبث بياناته، وأي جهاز استقبال في المدى يستطيع التقاطها كلها. لا حدود على عدد المستشعرات التي تبث. مثالي لـ 45 مصارع.</>}
+              />
+              <CheckStep
+                question="هل هاتف المدرب يحتوي على ANT+؟"
+                answer={<>لا. لكن يمكنك شراء دونجل USB صغير لـ <N>ANT+</N> بحوالي <N>$30</N> يُوصل بالتابلت.</>}
+                verdict="pass"
+                detail={<>لا يوجد هاتف حديث يحتوي على <N>ANT+</N> مدمج. لكن Garmin وغيرها تبيع أعواد USB دونجل صغيرة — بحجم ظفر الإبهام تقريباً — تُوصل بمنفذ <N>USB-C</N> في التابلت. الدونجل هو جهاز الاستقبال. هذه معتمدة مسبقاً من FCC. تشتري واحدة وتوصلها. مهم: هذا يعمل فقط مع تابلت Android أو Windows. أجهزة iPad من Apple لا تدعم <N>ANT+</N> على الإطلاق، حتى مع دونجل.</>}
+              />
+              <CheckStep
+                question="هل شريحة ESP32 تحتوي على ANT+ مدمج؟"
+                answer="لا. ESP32 لا يحتوي على ANT+. يجب إضافة شريحة ثانية."
+                verdict="warn"
+                detail={<>هنا يصبح الأمر معقداً. شريحة <N>ESP32</N> تحتوي على WiFi و Bluetooth مدمجين، لكن <strong style={{ color: "#cbd5e1" }}>ليس</strong> <N>ANT+</N>. <N>ANT+</N> يستخدم راديو مختلف تماماً — من شركة اسمها Nordic Semiconductor. لإضافة <N>ANT+</N> إلى <N>ESP32</N>، يجب شراء شريحة راديو صغيرة منفصلة اسمها <strong style={{ color: "#cbd5e1" }}>وحدة <N>nRF24AP2</N></strong> (تكلفتها حوالي <N>$3–5</N>، بحجم طابع بريد تقريباً) وتوصيلها فيزيائياً بالـ <N>ESP32</N>.</>}
+              />
+              <CheckStep
+                question="ماذا يعني 'توصيل شريحة ثانية بالـ ESP32' عملياً؟"
+                answer="يعني أن شخصاً ما يجلس ويلحم أسلاك دقيقة بين شريحتين يدوياً، تحت عدسة مكبرة."
+                verdict="warn"
+                detail={<>هكذا يبدو الأمر في الواقع: شخص يجلس على طاولة عمل ومعه <strong style={{ color: "#cbd5e1" }}>مكواة لحام</strong> (أداة برأس معدني حار جداً يُذيب المعدن)، و<strong style={{ color: "#cbd5e1" }}>ملقط دقيق</strong>، و<strong style={{ color: "#cbd5e1" }}>عدسة مكبرة أو مجهر</strong>. يأخذ لوحة <N>ESP32</N> ووحدة راديو <N>ANT+</N> ويوصلهما بـ <N>4–6</N> أسلاك رفيعة — كل سلك يُلحم (يُذاب) على نقطة معدنية أصغر من حبة أرز. الأسلاك تنقل الكهرباء والبيانات بين الشريحتين.<br/><br/>إذا كانت لحام واحد سيئاً — معدن كثير، معدن قليل، جسر صغير غير مرئي بين نقطتين — الشيء كله لا يعمل. ويجب معرفة أي لحام هو السيئ، وإصلاحه، واختباره مرة أخرى.<br/><br/>هذا يجب فعله <strong style={{ color: "#cbd5e1" }}>45 مرة</strong> — مرة لكل مستشعر تبنيه. أو تصمم لوحة دوائر مخصصة تحتوي الشريحتين مدمجتين، مما يلغي اللحام اليدوي لكن يكلف آلاف الدولارات للتصميم والتصنيع.</>}
+              />
+              <CheckStep
+                question="هل إضافة شريحة ANT+ تجعل المستشعر أكبر؟"
+                answer="نعم. لوحة المستشعر تصبح أكبر بحوالي 40–50%."
+                verdict="warn"
+                detail={<>الآن لديك شريحتين بدلاً من واحدة، بالإضافة للأسلاك التي توصلهما. لوحة المستشعر تتحول من حجم عملة ربع دولار تقريباً إلى حجم عملتين بجانب بعضهما. ما زالت تناسب واقي الرأس، لكن المساحة أضيق.</>}
+              />
+              <CheckStep
+                question="كم ستعمل بطارية مستشعر ESP32 + ANT+؟"
+                answer="أطول من WiFi، لكن أقصر من شريحة ANT+ مخصصة واحدة."
+                verdict="warn"
+                detail={<>راديو <N>ANT+</N> نفسه موفر جداً للطاقة — بالكاد يستهلك بطارية. لكن <N>ESP32</N> ما زال يعمل كالدماغ الرئيسي للمستشعر، ويستهلك طاقة أكثر من شريحة مخصصة أصغر. فكّر فيه كأن عندك محركين يعملان وأنت تحتاج واحداً فقط. أفضل تقدير: مزيج <N>ESP32 + ANT+</N> على بطارية صغيرة بحجم واقي الرأس يعمل حوالي <strong style={{ color: "#cbd5e1" }}>3–5 ساعات</strong> — كافٍ لإنهاء التمرين، لكن ليس بهامش كبير. شريحة Nordic <N>nRF52</N> واحدة تفعل نفس العمل وتستمر <strong style={{ color: "#cbd5e1" }}>10–20+ ساعة</strong> على نفس البطارية لأنها شريحة واحدة تفعل كل شيء، مُحسّنة لاستخدام أقل طاقة ممكنة.</>}
+              />
+              <CheckStep
+                question="ما البرمجيات التي تحتاجها لتشغيل هذا؟"
+                answer="تحتاج كتابة برنامج مخصص للمستشعر واستخدام مكتبات ANT+ موجودة."
+                verdict="warn"
+                detail={<>هناك مكتبات برمجية مجانية (<N>ant-arduino</N>، <N>antplus-arduino</N>) تتعامل مع التواصل بين <N>ESP32</N> ووحدة راديو <N>ANT+</N>. لكنك ما زلت تحتاج كتابة برنامج المستشعر الفعلي بنفسك — الكود الذي يقرأ مستشعر نبض القلب، ويُعبّئ البيانات، ويخبر راديو <N>ANT+</N> بالبث. على تابلت المدرب، تحتاج تطبيقاً يستقبل بيانات <N>ANT+</N> من دونجل USB ويعرضها. هذا التطبيق يجب بناؤه أيضاً.</>}
+              />
+              <CheckStep
+                question="هل المنتج النهائي يحتاج شهادة FCC؟"
+                answer="نعم. مثل كل منتج لاسلكي."
+                verdict="warn"
+                detail={<>وحدة <N>ANT+</N> لديها اعتمادها الخاص. وحدة <N>ESP32</N> لديها اعتمادها الخاص. لكن المستشعر النهائي — الشريحتين داخل غلاف واقي الرأس مع تصميم هوائي محدد — يجب اختباره كمنتج كامل. <N>$5,000–$15,000</N>، عدة أسابيع.</>}
+              />
+              <VerdictBox
+                works={true}
+                title="ESP32 + ANT+ يمكن أن يعمل — لكنه معقد"
+                detail={<><N>ANT+</N> بروتوكول ممتاز لحالة الاستخدام هذه، ودونجل USB يحل مشكلة الاستقبال. لكن استخدام <N>ESP32</N> مع <N>ANT+</N> يعني إضافة شريحة راديو ثانية لكل مستشعر — مما يعني لحام يدوي أو لوحات دوائر مخصصة، مستشعر أكبر حجماً، عمر بطارية أقصر من شريحة مخصصة، وبرمجيات مخصصة للمستشعر وتطبيق المدرب. يعمل، لكنه ليس بسيطاً، وليس رخيصاً. تابلت المدرب يجب أن يكون Android أو Windows — وليس iPad.</>}
+              />
+            </div>
+          );
+        }
+
+        function PageBLEDirect() {
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, direction: "rtl", textAlign: "right" }}>
+              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, margin: "0 0 12px" }}>الاقتراح: نضع شريحة Bluetooth (BLE) في كل مستشعر — <N>ESP32</N> يحتوي على واحدة مدمجة. كل مستشعر يتصل مباشرة بهاتف المدرب عبر Bluetooth. بدون أجهزة إضافية.</p>
+              <CheckStep
+                question="هل هاتف المدرب يحتوي على Bluetooth؟"
+                answer="نعم. كل هاتف صُنع في آخر 10 سنوات يحتوي على Bluetooth."
+                verdict="pass"
+                detail="هذه أكبر ميزة لـ Bluetooth — موجود في كل هاتف. لا حاجة لدونجل أو عتاد إضافي على جانب المدرب."
+              />
+              <CheckStep
+                question="هل يستطيع هاتف المدرب الاتصال بـ 45 مستشعر في نفس الوقت؟"
+                answer="لا. الهاتف يستطيع الاتصال بحوالي 7–10 أجهزة Bluetooth فقط في نفس الوقت. ليس 45."
+                verdict="fail"
+                detail={<>إليك السبب. الهاتف يحتوي على <strong style={{ color: "#cbd5e1" }}>راديو Bluetooth واحد</strong> بداخله — هوائي واحد، شريحة واحدة. عندما توصل أجهزة متعددة، هذا الراديو الواحد يجب أن يتناوب الحديث مع كل واحد. تخيّل أنك على الهاتف مع 7 أشخاص في نفس الوقت — تقول جملة واحدة للشخص 1، ثم تنتقل للشخص 2، ثم الشخص 3، وهكذا، تتنقل بين الجميع بسرعة كافية ليشعروا أنك منتبه لهم. مع <N>7–10</N> أشخاص، بالكاد تستطيع المواكبة. مع 45؟ مستحيل. شريحة Bluetooth في الهاتف ترفض حرفياً قبول الاتصال رقم 11 لأنها تعرف أنها لا تستطيع التنقل بسرعة كافية للمواكبة.<br/><br/>هذا قيد فيزيائي في شريحة Bluetooth داخل الهاتف. لا يوجد تطبيق يغيره. لا يوجد تحديث برمجي يصلحه. الشريحة ببساطة لا تستطيع.</>}
+              />
+              <CheckStep
+                question="حتى مع 7–10 اتصالات فقط، هل يعمل جيداً في صالة المصارعة؟"
+                answer="ليس بشكل موثوق. البيئة تسبب مشاكل حتى بأعداد قليلة."
+                verdict="fail"
+                detail={<>حتى لو وصلنا فقط <N>7–10</N> مستشعرات بالهاتف، صالة المصارعة تزيد الأمر سوءاً. شبكة WiFi في الصالة، هواتف الجميع الشخصية، سماعات Bluetooth، الساعات الذكية — كلها تستخدم نفس تردد الراديو (<N>2.4 GHz</N>). كأنك تحاول إجراء مكالمة هاتفية في بار مزدحم وصاخب. فوق ذلك، المدرب يتحرك (فالمسافة لكل مستشعر تتغير باستمرار)، الرياضيون يتحركون (الاتصالات تضعف عندما يكون جسم بين المستشعر والهاتف)، والمصارعون فوق بعضهم (يحجبون الإشارة تماماً). مع 7 اتصالات في غرفة هادئة فارغة — Bluetooth يعمل ممتاز. مع <N>7–10</N> اتصالات في تمرين مصارعة مزدحم وصاخب — سترى بيانات ضائعة وانقطاعات.</>}
+              />
+              <CheckStep
+                question="ماذا عن المستشعرات التي تبث بدون اتصال رسمي (وضع الإعلان)؟"
+                answer="هواتف Android تحد عدد مرات الاستماع للبث — بطيء جداً للبيانات الحية."
+                verdict="fail"
+                detail="مستشعرات Bluetooth تستطيع بث البيانات بدون 'اتصال' رسمي بالهاتف — الهاتف يستمع فقط. لكن Android يحد الاستماع إلى 5 مسحات كل 30 ثانية لتوفير البطارية. مع 45 مستشعر يبثون في نفس الوقت، الهاتف سيفوّت قراءات كثيرة. كأنك تحاول الاستماع لـ 45 محطة راديو لكن الراديو عندك يغيّر المحطة 5 مرات فقط في الدقيقة."
+              />
+              <CheckStep
+                question="هل يوجد إصدار أحدث من Bluetooth يتعامل مع أجهزة أكثر (PAwR)؟"
+                answer="نعم، لكن الهواتف لا تدعمه بعد، ولا تستطيع إضافته بدونجل USB."
+                verdict="fail"
+                detail={<>Bluetooth 5.4 قدّم شيئاً اسمه <N>PAwR</N> (Periodic Advertising with Responses) يستطيع التعامل مع آلاف الأجهزة. سيكون مثالياً. لكن مشكلتين: أولاً، معظم الهواتف في أيدي المدربين حالياً لا تحتوي على شريحة <N>Bluetooth 5.4</N> المطلوبة. ثانياً، قد تفكر "فقط وصّل دونجل USB Bluetooth يدعمه" — لكن هذا لا يعمل. أجهزة iPhone و iPad <strong style={{ color: "#cbd5e1" }}>تمنع تماماً</strong> دونجل Bluetooth الخارجي — لا يمكنك استخدام غير الشريحة المدمجة. Android يسمح نظرياً بمحولات USB Bluetooth، لكن جعل تطبيق يستخدم دونجل USB بدلاً من Bluetooth المدمج صعب جداً وغير موثوق — ليس شيئاً تضعه في منتج تبيعه للعملاء.</>}
+              />
+              <VerdictBox
+                works={false}
+                title="BLE مباشر من 45 مستشعر إلى هاتف واحد لا يعمل"
+                detail={<>هاتف المدرب يستطيع الاتصال بـ <N>7–10</N> أجهزة Bluetooth فقط في نفس الوقت. نحتاج 45. هذا قيد فيزيائي في شريحة Bluetooth داخل الهاتف — لا يوجد تطبيق أو برنامج يغيره. حتى مع <N>7–10</N> اتصالات، بيئة المصارعة الصاخبة تسبب بيانات ضائعة وانقطاعات. البث بدون اتصال يُخنق بواسطة Android. تقنية <N>PAwR</N> الأحدث في <N>Bluetooth 5.4</N> ستحل هذا، لكن الهواتف لا تدعمها بعد ولا تستطيع إضافتها بدونجل USB.</>}
+              />
+            </div>
+          );
+        }
+
+        function PageGateway() {
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, direction: "rtl", textAlign: "right" }}>
+              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, margin: "0 0 12px" }}>في الصفحات السابقة، رأينا نفس المشكلة مراراً: هاتف المدرب لا يستطيع استقبال 45 إشارة لاسلكية في نفس الوقت. <strong style={{ color: "#cbd5e1" }}>البوابة</strong> (Gateway) هي جهاز يحل هذه المشكلة. لنشرح ما هي ونختبر هل تعمل.</p>
+              <CheckStep
+                question="ما هي البوابة (Gateway)؟"
+                answer="جهاز صغير يجلس في الغرفة، يجمع كل إشارات المستشعرات الـ 45، ويرسل إشارة واحدة مُجمّعة إلى هاتف المدرب."
+                verdict="pass"
+                detail={<>فكّر فيها كغرفة بريد. 45 مصارعاً كل واحد يرسل رسالة (بيانات مستشعره). بدلاً من أن المدرب يفتح 45 رسالة واحدة واحدة، كل الرسائل تذهب لغرفة البريد أولاً. غرفة البريد تقرأ جميع الرسائل الـ 45، تضع المعلومات في طرد واحد منظم، وتوصل ذلك الطرد الواحد للمدرب. البوابة هي غرفة البريد.<br/><br/>شكلياً، هي صندوق صغير — ربما بحجم قرص هوكي أو مجموعة ورق لعب. تجلس على طاولة بجانب البساط، أو تُثبّت على الحائط. موصولة بالكهرباء عبر مأخذ حائط (فالبطارية ليست مشكلة للبوابة). تحتوي على راديو بداخلها يستمع لجميع المستشعرات الـ 45، وراديو آخر (WiFi أو Bluetooth) يتحدث مع هاتف المدرب.</>}
+              />
+              <CheckStep
+                question="هل تستطيع البوابة استقبال بيانات من 45 مستشعر في نفس الوقت؟"
+                answer="نعم — لأننا نبني البوابة بأنفسنا، نختار عتاداً يستطيع التعامل مع ذلك."
+                verdict="pass"
+                detail="على عكس الهاتف (حيث نحن عالقون بشريحة Bluetooth التي وضعها المصنّع)، نحن نصمم البوابة. نختار شريحة الراديو، الهوائي، البرمجيات — كل شيء تحت سيطرتنا. نستطيع اختيار شرائح وبروتوكولات مُصممة خصيصاً للتعامل مع 45+ جهاز متزامن. البوابة موصولة بالكهرباء، فلا قيود على البطارية أيضاً."
+              />
+              <CheckStep
+                question="هل تستطيع البوابة إرسال البيانات المُجمّعة إلى 1–5 هواتف أو تابلتات للمدربين؟"
+                answer="نعم. هذا عدد صغير — سهل لـ Bluetooth أو WiFi."
+                verdict="pass"
+                detail={<>تذكّر، Bluetooth يتعامل مع <N>7–10</N> اتصالات. نحتاج فقط <N>1–5</N> (واحد لكل مدرب). هذا ضمن الحد بسهولة. أو البوابة تستطيع إنشاء شبكة WiFi صغيرة خاصة بها وهواتف المدربين تتصل بها — البيانات صغيرة، فـ WiFi يتعامل معها بسهولة. في كلتا الحالتين، إرسال البيانات من بوابة واحدة إلى بضعة أجهزة مدربين سهل.</>}
+              />
+              <CheckStep
+                question="هل تستطيع البوابة أيضاً إرسال بيانات لجميع هواتف الرياضيين الـ 45 أثناء التمرين؟"
+                answer="لا — نفس حدود الاتصال تنطبق. لكن الرياضيين لا يحتاجون بيانات حية أثناء المصارعة."
+                verdict="warn"
+                detail={<>إرسال بيانات لـ 45 هاتف رياضي أثناء التمرين يصطدم بنفس جدار حدود الاتصال. لكن فكّر فيها: المصارع <strong style={{ color: "#cbd5e1" }}>لا يستطيع النظر إلى هاتفه أثناء المصارعة</strong>. البيانات الحية أثناء التمرين مفيدة فقط للمدرب الذي يراقب من الجانب. الرياضيون يراجعون بياناتهم <strong style={{ color: "#cbd5e1" }}>بعد</strong> التمرين — ولذلك، البوابة تستطيع حفظ جميع البيانات، رفعها للإنترنت بعد الجلسة، وكل رياضي يفتح تطبيقاً على هاتفه لاحقاً لرؤية إحصاءاته. لا حاجة لاتصال حي.</>}
+              />
+              <CheckStep
+                question="هل البوابة تحتاج تصميم وبناء؟"
+                answer="نعم. لا يوجد منتج تستطيع شراءه جاهزاً يفعل هذا."
+                verdict="warn"
+                detail={<>لا أحد يبيع منتجاً يقول "وصّل هذا، وسيجمع بيانات من 45 مستشعر حيوي للمصارعة ويرسلها إلى تابلت المدرب." هذا المنتج غير موجود. البوابة يجب أن <strong style={{ color: "#cbd5e1" }}>تُصمّم</strong> (أي شريحة، أي هوائي، أي بروتوكول، أي برمجيات)، <strong style={{ color: "#cbd5e1" }}>تُبنى</strong> (لوحة دوائر، غلاف، مزود طاقة)، <strong style={{ color: "#cbd5e1" }}>تُبرمج</strong> (برنامج ثابت يستقبل 45 إشارة ويجمعها ويرسلها لتطبيق المدرب)، و<strong style={{ color: "#cbd5e1" }}>تُعتمد من <N>FCC</N></strong> (مثل كل منتج لاسلكي). هذا عمل هندسة.</>}
+              />
+              <VerdictBox
+                works={true}
+                title="بنية البوابة تعمل"
+                detail={<>البوابة تحل المشكلة الأساسية: هاتف المدرب لا يستطيع التعامل مع 45 اتصال مباشر، لكن بوابة مخصصة تستطيع. تجمع جميع إشارات المستشعرات الـ 45، تدمجها في تيار بيانات واحد، وترسله لـ <N>1–5</N> أجهزة مدربين. الرياضيون يحصلون على بياناتهم بعد التمرين عبر تطبيق. <strong style={{ color: "#cbd5e1" }}>لكن البوابة غير موجودة بعد. يجب تصميمها وبناؤها وبرمجتها واعتمادها. برنامج المستشعر يجب كتابته. تطبيق المدرب يجب بناؤه. نظام السحابة للرياضيين يجب بناؤه. هذا هو العمل الهندسي الذي يجعل هذا المنتج حقيقياً.</strong></>}
+              />
+            </div>
+          );
+        }
+
+        const pages = [
+          { title: "المقدمة", subtitle: "كيف سنختبر كل حل مقترح", component: PageIntro },
+          { title: "اختبار: ESP32 + WiFi", subtitle: "مستشعر ESP32 يرسل البيانات عبر WiFi", component: PageWiFi },
+          { title: "اختبار: ESP32 + ANT+", subtitle: "مستشعر ESP32 يبث عبر ANT+", component: PageANT },
+          { title: "اختبار: BLE مباشر إلى الهاتف", subtitle: "45 مستشعر Bluetooth إلى هاتف المدرب", component: PageBLEDirect },
+          { title: "اختبار: البوابة (Gateway)", subtitle: "جهاز وسيط يجمع كل بيانات المستشعرات", component: PageGateway },
+        ];
+
+        function SolutionTesterArabic() {
+          const [page, setPage] = useState(0);
+          const CurrentPage = pages[page].component;
+          return (
+            <div style={{
+              height: "100vh",
+              width: "100vw",
+              display: "flex",
+              flexDirection: "column",
+              padding: "0",
+              fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans Arabic', sans-serif",
+              color: "#e2e8f0",
+              background: "#0b0f1a",
+              boxSizing: "border-box"
+            }}>
+              {/* Header - RTL text */}
+              <div style={{ marginBottom: 28, direction: "rtl", textAlign: "right", padding: "32px 20px 0" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#ef4444", textTransform: "uppercase", marginBottom: 8 }}>اختبار الحلول</div>
+                <h1 style={{ fontSize: 24, fontWeight: 800, color: "#f1f5f9", lineHeight: 1.4, margin: 0, marginBottom: 4 }}>هل يعمل هذا الحل فعلاً؟</h1>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, margin: 0 }}>اضغط على كل سؤال لكشف الإجابة. ثم قرر بنفسك.</p>
+              </div>
+
+              {/* Progress - LTR always */}
+              <div style={{ display: "flex", gap: 4, marginBottom: 24, direction: "ltr", padding: "0 20px" }}>
+                {pages.map((_, i) => (
+                  <div key={i} onClick={() => setPage(i)} style={{ flex: 1, height: 4, borderRadius: 2, background: i <= page ? "#6366f1" : "rgba(255,255,255,0.08)", cursor: "pointer", transition: "background 0.3s" }} />
+                ))}
+              </div>
+
+              {/* Page info - RTL text, LTR counter */}
+              <div style={{ marginBottom: 20, direction: "rtl", textAlign: "right", padding: "0 20px" }}>
+                <div style={{ fontSize: 12, color: "#64748b", fontFamily: "monospace", marginBottom: 4, direction: "ltr", display: "inline-block" }}>{page + 1} / {pages.length}</div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: "#f1f5f9", margin: "0 0 4px" }}>{pages[page].title}</h2>
+                <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>{pages[page].subtitle}</p>
+              </div>
+
+              {/* Content */}
+              <div style={{
+                flex: 1,
+                marginBottom: 28,
+                overflowY: "auto",
+                padding: "0 20px",
+                minHeight: 0
+              }}>
+                <CurrentPage />
+              </div>
+
+              {/* Nav - LTR always */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,0.06)", direction: "ltr" }}>
+                <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 8, background: page === 0 ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: page === 0 ? "#334155" : "#94a3b8", cursor: page === 0 ? "default" : "pointer", fontSize: 14, fontWeight: 600, transition: "all 0.2s" }}>
+                  <ArrowLeft /> السابق
+                </button>
+                <button onClick={() => setPage(Math.min(pages.length - 1, page + 1))} disabled={page === pages.length - 1} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 8, background: page === pages.length - 1 ? "rgba(255,255,255,0.02)" : "rgba(99,102,241,0.15)", border: `1px solid ${page === pages.length - 1 ? "rgba(255,255,255,0.08)" : "rgba(99,102,241,0.3)"}`, color: page === pages.length - 1 ? "#334155" : "#818cf8", cursor: page === pages.length - 1 ? "default" : "pointer", fontSize: 14, fontWeight: 600, transition: "all 0.2s" }}>
+                  التالي <ArrowRight />
+                </button>
+              </div>
+            </div>
+          );
+        }
+
+        // Render the app
+        ReactDOM.render(<SolutionTesterArabic />, document.getElementById('root'));
+    </script>
+</body>
+</html>

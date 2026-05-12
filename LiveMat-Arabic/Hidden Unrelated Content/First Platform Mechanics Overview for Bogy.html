@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إحاطة تقنية - منصة القياسات الحيوية للمصارعة</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif;">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // ─── Icons ───
+        const ArrowLeft = () => (
+          React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+            React.createElement("path", { d: "M19 12H5" }),
+            React.createElement("path", { d: "M12 19l-7-7 7-7" })
+          )
+        );
+
+        const ArrowRight = () => (
+          React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+            React.createElement("path", { d: "M5 12h14" }),
+            React.createElement("path", { d: "M12 5l7 7-7 7" })
+          )
+        );
+
+        // Inline LTR wrapper for numbers/symbols that break in RTL
+        const N = ({ children }) => (
+          React.createElement("span", { style: { direction: "ltr", unicodeBidi: "embed" } }, children)
+        );
+
+        // ─── Reusable Cards ───
+        const AnalogyCard = ({ icon, title, description }) => (
+          React.createElement("div", { style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "16px 18px", display: "flex", gap: 14, alignItems: "flex-start", direction: "rtl" } },
+            React.createElement("div", { style: { fontSize: 28, lineHeight: 1, flexShrink: 0, marginTop: 2 } }, icon),
+            React.createElement("div", null,
+              React.createElement("div", { style: { fontWeight: 700, fontSize: 14, color: "#e2e8f0", marginBottom: 4 } }, title),
+              React.createElement("div", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.7 } }, description)
+            )
+          )
+        );
+
+        const ProblemCard = ({ emoji, title, description, severity }) => {
+          const colors = { high: "#ef4444", medium: "#f59e0b", low: "#6366f1" };
+          return (
+            React.createElement("div", { style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRight: `3px solid ${colors[severity] || colors.medium}`, borderLeft: "none", borderRadius: "8px 0 0 8px", padding: "14px 16px", direction: "rtl" } },
+              React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
+                React.createElement("span", { style: { fontSize: 18 } }, emoji),
+                React.createElement("span", { style: { fontWeight: 700, fontSize: 14, color: "#e2e8f0" } }, title)
+              ),
+              React.createElement("div", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.7 } }, description)
+            )
+          );
+        };
+
+        const SolutionCard = ({ problem, solution }) => (
+          React.createElement("div", { style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8, direction: "rtl" } },
+            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+              React.createElement("span", { style: { color: "#ef4444", fontWeight: 800, fontSize: 13 } }, "المشكلة:"),
+              React.createElement("span", { style: { fontSize: 13, color: "#cbd5e1" } }, problem)
+            ),
+            React.createElement("div", { style: { borderRight: "2px solid rgba(34,197,94,0.3)", paddingRight: 12 } },
+              React.createElement("span", { style: { color: "#22c55e", fontWeight: 800, fontSize: 13 } }, "الحل: "),
+              React.createElement("span", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.7 } }, solution)
+            )
+          )
+        );
+
+        const PathwayStep = ({ step, title, description, isLast }) => (
+          React.createElement("div", { style: { display: "flex", gap: 16, position: "relative", direction: "ltr" } },
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 } },
+              React.createElement("div", { style: { width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", fontFamily: "monospace" } }, step),
+              !isLast && React.createElement("div", { style: { width: 2, flexGrow: 1, background: "linear-gradient(to bottom, #3b82f6, rgba(59,130,246,0.1))", minHeight: 40 } })
+            ),
+            React.createElement("div", { style: { paddingBottom: isLast ? 0 : 24, paddingTop: 4, direction: "rtl", textAlign: "right" } },
+              React.createElement("div", { style: { fontWeight: 700, fontSize: 15, color: "#e2e8f0", marginBottom: 4 } }, title),
+              React.createElement("div", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75 } }, description)
+            )
+          )
+        );
+
+        // ─── Pages ───
+        function Page1() {
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: 0 } },
+                "كل منتج أجهزة جاد يبدأ بـ",
+                React.createElement("strong", { style: { color: "#f1f5f9" } }, "تخطيط وتصميم مخصص لحالة الاستخدام"),
+                " — قبل شراء أي قطعة. هذا ليس اختيارياً. هذه هي الطريقة التي بُني بها كل منتج ناجح في التاريخ."
+              ),
+              React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
+                React.createElement(AnalogyCard, { icon: "🪖", title: "الجيش الأمريكي", description: "لا يشتري أجهزة الراديو من أمازون. كل نظام اتصالات مُصمم حسب المهمة المحددة: التضاريس، المسافة، عدد الوحدات، بيئة التهديد، متطلبات التشفير. راديو دورية في الغابة مختلف تماماً عن راديو الغواصة." }),
+                React.createElement(AnalogyCard, { icon: "🚗", title: "شركات السيارات (Tesla, Ford, Toyota)", description: "لا تشتري 'طقم مستشعرات سيارة عام.' كل نظام مستشعرات — ضغط الإطارات، كشف التصادم، مراقبة النقطة العمياء — مُصمم خصيصاً لشكل تلك السيارة ووزنها ونطاق سرعتها ومتطلبات سلامتها." }),
+                React.createElement(AnalogyCard, { icon: "🏥", title: "مراقبة المرضى في المستشفيات", description: "Philips و GE و Masimo لا يستخدمون ساعات Fitbit لمراقبة مرضى العناية المركزة. أنظمتهم مُصممة من الصفر لعدد الأسرّة المحدد ومواد الجدران ومصادر التشويش ومتطلبات دقة البيانات لكل جناح في المستشفى." }),
+                React.createElement(AnalogyCard, { icon: "🏟️", title: "الرياضة الاحترافية (Catapult, STATSports)", description: React.createElement(React.Fragment, null, "سترات GPS المستخدمة في NFL والدوري الإنجليزي الممتاز ليست أجهزة تتبع GPS جاهزة. كل مكون — موضع الهوائي، تردد الراديو، خط أنابيب البيانات — مُصمم خصيصاً لـ \"رياضيين بسرعة عالية في ملعب كبير.\"") })
+              ),
+              React.createElement("div", { style: { background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "14px 16px", marginTop: 4 } },
+                React.createElement("p", { style: { fontSize: 14, color: "#fca5a5", fontWeight: 700, margin: "0 0 6px" } }, "لماذا لا نستطيع شراء حل جاهز؟"),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  "يمكنك شراء كمبيوتر جاهز لأن الكمبيوتر منتج ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "للأغراض العامة"),
+                  " — مُصمم ليفعل كل شيء بشكل مقبول. نفس الشيء مع الطابعة أو التلفزيون أو راوتر الواي فاي. منتجنا هو العكس تماماً: يجب أن يفعل ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "شيئاً واحداً محدداً جداً"),
+                  " في ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "بيئة محددة جداً"),
+                  " مع ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "قيود محددة جداً"),
+                  ". لا يوجد منتج جاهز لـ \"",
+                  React.createElement(N, null, "45"),
+                  " مصارعاً يرسلون بيانات حيوية في آن واحد في غرفة صغيرة إلى جهاز محمول بيد المدرب.\" هذا المنتج يجب أن يُهندس."
+                )
+              )
+            )
+          );
+        }
+
+        function Page2() {
+          const specs = [
+            { label: "الرياضيون", value: "35–45", note: "جميعهم يرتدون مستشعرات في نفس الوقت" },
+            { label: "المدربون", value: "1–5", note: "يتحركون ويحملون أجهزة" },
+            { label: "مساحة الغرفة", value: "~280–460 م²", note: "غرفة مصارعة قياسية مع بساط" },
+            { label: "السقف", value: "~3.5–4.5 م", note: "خرسانة أو سطح معدني عادةً" },
+            { label: "الجدران", value: "خرسانة / بلوك", note: "الإشارات ترتد عنها" },
+            { label: "أجهزة لاسلكية أخرى", value: "WiFi، هواتف، BT", note: "جميعها تتنافس على نفس الترددات" },
+          ];
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: 0 } },
+                "قبل اختيار أي تقنية، يجب أن نحدد ",
+                React.createElement("strong", { style: { color: "#f1f5f9" } }, "بالضبط"),
+                " ما الذي يجب أن يعمل فيه النظام. هذا هو الواقع الذي يعيش فيه المنتج:"
+              ),
+              React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8 } },
+                specs.map((s, i) =>
+                  React.createElement("div", { key: i, style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "12px 14px" } },
+                    React.createElement("div", { style: { fontSize: 22, fontWeight: 800, color: "#818cf8", direction: "ltr", display: "inline-block" } }, s.value),
+                    React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: "#e2e8f0", marginTop: 2 } }, s.label),
+                    React.createElement("div", { style: { fontSize: 12, color: "#64748b", marginTop: 2 } }, s.note)
+                  )
+                )
+              ),
+              React.createElement("div", { style: { background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 8, padding: "14px 16px" } },
+                React.createElement("p", { style: { fontSize: 13, color: "#fbbf24", fontWeight: 700, margin: "0 0 6px" } }, "الظروف الجسدية الرئيسية:"),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.8, margin: 0 } },
+                  "الرياضيون في ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "احتكاك جسدي عنيف ومستمر"),
+                  " — يُرمون ويُضربون ويُعصرون. يتعرقون بشدة، ويولّدون حرارة جسدية، وكثيراً ما يكونون في أوضاع حيث ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "أجسامهم فوق بعضها البعض"),
+                  " — مما يحجب إشارات الراديو فعلياً. المدربون يتحركون في الغرفة، لذا جهاز الاستقبال ليس ثابتاً في مكان واحد. هذه من أصعب البيئات الممكنة للاتصال اللاسلكي."
+                )
+              )
+            )
+          );
+        }
+
+        function Page3() {
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: 0 } }, "على أعلى مستوى، النظام يتكون من ثلاث طبقات. كل جزء أدناه يجب تصميمه أو بناؤه أو اختياره:"),
+              React.createElement("div", { style: { background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 10, padding: "16px 18px" } },
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 14, color: "#60a5fa", marginBottom: 6 } },
+                  "الطبقة 1 — مستشعرات الرياضيين (",
+                  React.createElement(N, null, "35–45"),
+                  " جهاز)"
+                ),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  "كل مصارع يرتدي جهازاً صغيراً (في واقي الرأس، على الجسم، أو كليهما). هذا الجهاز يحتوي على ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "مستشعر"),
+                  " (نبض القلب، مقياس تسارع، حرارة، إلخ) و",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "جهاز إرسال راديو"),
+                  " يُرسل البيانات لاسلكياً. تُسمى أحياناً ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "أجهزة إرسال واستقبال"),
+                  " (transceivers) لأنها تستطيع الإرسال والاستقبال معاً."
+                )
+              ),
+              React.createElement("div", { style: { background: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.2)", borderRadius: 10, padding: "16px 18px" } },
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 14, color: "#a78bfa", marginBottom: 6 } },
+                  "الطبقة 2 — أجهزة استقبال المدربين (",
+                  React.createElement(N, null, "1–5"),
+                  " أجهزة)"
+                ),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  "المدرب يحمل جهازاً ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "يستقبل"),
+                  " جميع الإشارات الـ ",
+                  React.createElement(N, null, "35–45"),
+                  " في آن واحد ويعرض البيانات على الشاشة. يمكن أن يكون هاتفاً أو تابلت أو ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "جهازاً مخصصاً نبيعه للفريق"),
+                  ". الجهاز المخصص ميزة كبيرة — يعني أننا نتحكم في العتاد ونستطيع اختيار شريحة الراديو وبرمجياتها بالضبط كما نحتاج، بدلاً من التقيّد بما يدعمه iPhone أو Android."
+                )
+              ),
+              React.createElement("div", { style: { background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 10, padding: "16px 18px" } },
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 14, color: "#4ade80", marginBottom: 6 } }, "الطبقة 3 — التطبيق (البرمجيات)"),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "التطبيق"),
+                  " الذي يعمل على جهاز المدرب. يأخذ البيانات الخام من الراديو ويعالجها ويعرضها بطريقة يستطيع المدرب استخدامها أثناء التمرين — لوحات متابعة، تنبيهات، بطاقات اللاعبين، إلخ. هذا هو الجزء الذي يراه المدرب ويتفاعل معه."
+                )
+              ),
+              React.createElement("div", { style: { background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 10, padding: "16px 18px" } },
+                React.createElement("div", { style: { fontWeight: 800, fontSize: 14, color: "#fbbf24", marginBottom: 6 } }, "اختياري — جسور / بوابات / مُعيدات إرسال"),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  "إذا لم يستطع جهاز المدرب استقبال جميع الإشارات الـ 45 مباشرة (معظم الهواتف تتعامل فقط مع ",
+                  React.createElement(N, null, "7–10"),
+                  " اتصالات لاسلكية متزامنة)، قد نحتاج إلى ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "بوابة"),
+                  " (gateway) — جهاز صغير يوضع في الغرفة يعمل كوسيط. يقوم بـ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "جمع جميع الإشارات الـ 45"),
+                  "، ويجمعها معاً، ويُعيد إرسال البيانات المُجمّعة إلى جهاز المدرب عبر اتصال واحد. فكّر فيها كمكتب فرز بريد: 45 رسالة تصل منفصلة، تُنظّم في طرد واحد، ويُسلّم الطرد الواحد."
+                ),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: "8px 0 0" } },
+                  "البوابات أيضاً تستطيع ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "تقوية الإشارات الضعيفة"),
+                  " وتوسيع المدى إذا لم تستطع المستشعرات في الجانب البعيد من الغرفة الوصول إلى المدرب مباشرة. يمكن وضع عدة بوابات حول الغرفة لتغطية كاملة. يمكن أن تكون بحجم قرص صغير موصول بالحائط أو موضوعة على طاولة بجانب البساط."
+                )
+              )
+            )
+          );
+        }
+
+        function Page4() {
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: "0 0 6px" } }, "هذه هي التحديات الهندسية الحقيقية. كل واحدة يجب حلها قبل أن يعمل المنتج بشكل موثوق:"),
+              React.createElement(ProblemCard, { emoji: "🧍‍♂️", severity: "high", title: "أجسام البشر تحجب الإشارات", description: React.createElement(React.Fragment, null, "موجات الراديو على تردد ", React.createElement(N, null, "2.4 GHz"), " (التردد المستخدم في Bluetooth و WiFi ومعظم التقنيات اللاسلكية) يمتصها الماء. جسم الإنسان حوالي ", React.createElement(N, null, "60%"), " ماء. عندما يكون ", React.createElement(N, null, "35+"), " رياضياً محشورين في غرفة — وكثيراً ما يكونون فوق بعضهم أثناء المصارعة — أجسامهم تحجب وتُضعف إشارات الراديو القادمة من المستشعرات فعلياً.") }),
+              React.createElement(ProblemCard, { emoji: "💥", severity: "high", title: "قوة الارتطام تُحدث تشويشاً", description: "المصارعة تتضمن الرمي والضرب والعصر. هذه الصدمات العالية تُحدث اهتزازاً وصدمة يمكن أن تُنتج قراءات خاطئة على مقاييس التسارع وتُزعزع التوصيلات الإلكترونية لحظياً، مما يسبب خللاً في البيانات أو انقطاعاً في الإشارة في اللحظة التي تهم فيها البيانات أكثر." }),
+              React.createElement(ProblemCard, { emoji: "📡", severity: "high", title: "أجهزة كثيرة جداً على نفس التردد", description: React.createElement(React.Fragment, null, "45 مستشعراً، شبكة WiFi المدرسة، هواتف المدربين، ساعات الرياضيين الذكية — كلها تتنافس على البث على نفس نطاق ", React.createElement(N, null, "2.4 GHz"), ". كأن 50 شخصاً يحاولون التحدث في غرفة صغيرة في آن واحد. الإشارات تتصادم، البيانات تتلف، والنظام يتباطأ.") }),
+              React.createElement(ProblemCard, { emoji: "💦", severity: "medium", title: "العرق على المستشعرات", description: "التعرق الشديد يمكن أن يُشكّل طبقة موصلة على أسطح المستشعرات، مما يُضعف قراءات التلامس مع الجلد (نبض القلب خاصة) ويمكن أن يتداخل مع أداء الهوائي إذا دخلت الرطوبة إلى الغلاف." }),
+              React.createElement(ProblemCard, { emoji: "📍", severity: "medium", title: "تحرّك المستشعر في واقي الرأس", description: React.createElement(React.Fragment, null, "إذا كان المستشعر مُدمجاً في واقي الرأس، فإنه يتحرك أثناء المصارعة. مستشعر مُصمم ليجلس مسطحاً على الجبهة قد ينتهي به الأمر مدوّراً ", React.createElement(N, null, "90°"), " أو مضغوطاً في البساط — مما يغيّر اتجاه هوائيه واتجاه إشارته بشكل غير متوقع.") }),
+              React.createElement(ProblemCard, { emoji: "🔥", severity: "medium", title: "تراكم الحرارة", description: "الإلكترونيات تولّد حرارة. الرياضيون يولّدون حرارة. واقي الرأس يحبس الحرارة. الحرارة المفرطة يمكن أن تجعل المستشعرات تخفض أداءها، وتستنزف البطاريات أسرع، أو تُنتج قراءات غير دقيقة من المكونات الحساسة للحرارة." }),
+              React.createElement(ProblemCard, { emoji: "🧱", severity: "medium", title: "مواد بناء الغرفة (جدران، معدن، خرسانة)", description: "الجدران الخرسانية والهياكل المعدنية تجعل إشارات الراديو ترتد بشكل غير متوقع (يُسمى الانعكاس المتعدد). جهاز الاستقبال قد يحصل على نفس الإشارة مرتين — واحدة مباشرة وواحدة مرتدة — تصل في أوقات مختلفة قليلاً، مما يُربك البيانات." }),
+              React.createElement(ProblemCard, { emoji: "🔋", severity: "low", title: "عمر البطارية أثناء التمرين", description: React.createElement(React.Fragment, null, "المستشعرات يجب أن تعمل طوال تمرين كامل من ", React.createElement(N, null, "2–3"), " ساعات بشحنة واحدة. كلما أرسلت بيانات أكثر وبقوة إرسال أعلى، استنزفت البطارية أسرع. هناك مقايضة مباشرة بين قوة الإشارة وعمر البطارية.") })
+            )
+          );
+        }
+
+        function Page5() {
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: "0 0 6px" } }, "كل مشكلة أعلاه لها حلول هندسية معروفة. لا شيء منها سحري — كل حل يضيف تكلفة أو تعقيداً أو مقايضات. لكنها تعمل:"),
+              React.createElement(SolutionCard, { problem: "الأجسام تحجب الإشارات", solution: React.createElement(React.Fragment, null, "وضع عدة بوابات حول الغرفة (", React.createElement(N, null, "2–4"), " وحدات صغيرة مثبتة على الحائط) بحيث يكون لكل مستشعر خط رؤية مباشر مع بوابة واحدة على الأقل، حتى عندما يكون الرياضيون فوق بعضهم. البوابات تنقل البيانات إلى جهاز المدرب.") }),
+              React.createElement(SolutionCard, { problem: "قوة الارتطام تُحدث تشويشاً وقراءات خاطئة", solution: "تغليف لوحة المستشعر بمادة سيليكون ماصة للصدمات أو رغوة عازلة. هذا يُخمّد الاهتزاز قبل وصوله للإلكترونيات. من جانب البرمجيات، استخدام خوارزميات تصفية لاكتشاف وتجاهل قمم الصدمات وفصلها عن البيانات الحيوية الحقيقية." }),
+              React.createElement(SolutionCard, { problem: "أجهزة كثيرة على نفس التردد", solution: "استخدام بروتوكولات ذات فتحات زمنية حيث يحصل كل مستشعر على نافذة صغيرة خاصة للإرسال (مثل ترتيب الحديث). هذا يمنع التصادمات. بديلاً، استخدام بروتوكول يعمل على ترددات أقل ازدحاماً أو ينتقل بين قنوات كثيرة بسرعة." }),
+              React.createElement(SolutionCard, { problem: "العرق يُضعف المستشعرات والهوائيات", solution: "استخدام طلاء واقي (طبقة رقيقة مقاومة للماء) على جميع اللوحات الإلكترونية. اختيار تصميم غلاف بمعيار حماية IP. لمستشعرات التلامس مع الجلد، استخدام أقطاب كهربائية طبية مُصممة للظروف الرطبة (نفس النوع المستخدم في اختبارات الإجهاد السريرية)." }),
+              React.createElement(SolutionCard, { problem: "تحرّك المستشعر في واقي الرأس", solution: "تصميم حامل صلب يُثبّت المستشعر في موضع ثابت داخل واقي الرأس. استخدام تصميم هوائي يبث في اتجاهات متعددة (شامل الاتجاهات) بحيث تغييرات الوضعية تؤثر بأقل قدر ممكن على جودة الإشارة." }),
+              React.createElement(SolutionCard, { problem: "تراكم الحرارة", solution: "استخدام شرائح منخفضة الطاقة تولّد حرارة قليلة. تصميم قنوات تهوية في الغلاف. تطبيق خفض حراري في البرنامج الثابت — إذا ارتفعت الحرارة كثيراً، يُقلل تردد الإرسال مؤقتاً بدلاً من الإيقاف الكامل." }),
+              React.createElement(SolutionCard, { problem: "الانعكاس المتعدد من الجدران والمعدن", solution: "استخدام بروتوكولات قفز التردد التي توزّع الإشارات على قنوات كثيرة، مما يجعلها مقاومة للانعكاسات على أي تردد واحد. وضع البوابات بشكل مناسب أيضاً يساعد — أجهزة استقبال أقرب تعني إشارات مباشرة أقوى تتغلب على النسخ المرتدة." }),
+              React.createElement(SolutionCard, { problem: "عمر البطارية أثناء التمرين", solution: "الإرسال فقط عندما تكون هناك بيانات جديدة ذات معنى (ليس باستمرار). استخدام وضع الدفعات: النوم معظم الوقت، الاستيقاظ لبضعة ميلي ثوانٍ لإرسال حزمة بيانات، ثم النوم مرة أخرى. الشرائح الحديثة تفعل هذا آلاف المرات في الثانية مع استهلاك شبه معدوم للطاقة بين الدفعات." })
+            )
+          );
+        }
+
+        function Page6() {
+          const steps = [
+            { title: "المستشعر يقرأ الجسم", description: "شريحة صغيرة على جلد المصارع أو في واقي رأسه تقيس شيئاً جسدياً — نبض القلب (نبضات كهربائية من القلب)، التسارع (مدى سرعة حركته أو قوة الضربة)، الحرارة، إلخ. هذا القياس يتحول إلى رقم. مجرد رقم." },
+            { title: "المعالج يُجهّز البيانات", description: React.createElement(React.Fragment, null, "متحكم دقيق (كمبيوتر صغير أصغر من ظفر الإصبع) يأخذ ذلك الرقم، يُضيف له طابعاً زمنياً، يُرفق معرّف الجهاز (\"هذا من المصارع رقم 17\")، ويُعبّئه في حزمة بيانات رقمية صغيرة — مجموعة منظمة من الأصفار والآحاد، عادةً ", React.createElement(N, null, "20–50"), " بايت.") },
+            { title: "جهاز الإرسال يحوّل البيانات إلى إشارة", description: React.createElement(React.Fragment, null, "شريحة الراديو تأخذ تلك الحزمة الرقمية وتحوّلها إلى موجة راديو — موجة كهرومغناطيسية غير مرئية، نفس نوع الطاقة كالضوء المرئي لكن بتردد أقل بكثير (", React.createElement(N, null, "2.4"), " مليار دورة في الثانية). البيانات تُشفّر في الموجة عن طريق تغيير خصائصها بسرعة (التردد أو الطور أو السعة).") },
+            { title: "الهوائي يُطلق الإشارة في الهواء", description: "الهوائي هو قطعة معدنية صغيرة (غالباً مسار مطبوع على اللوحة الإلكترونية) مُشكّلة لبث الموجة الراديوية بكفاءة نحو الخارج. الإشارة تغادر الهوائي وتنتقل عبر الهواء بسرعة الضوء." },
+            { title: "الإشارة تنتقل عبر الغرفة", description: React.createElement(React.Fragment, null, "هنا تحدث كل المشاكل. الموجة تمر عبر الهواء، ترتد عن الجدران والأرضيات، يمتصها جزئياً كل جسم بشري تمر من خلاله، وتتنافس مع كل إشارة أخرى على تردد ", React.createElement(N, null, "2.4 GHz"), " في الغرفة (WiFi، مستشعرات أخرى، سماعات Bluetooth). بحلول وصولها لجهاز الاستقبال، تكون أضعف بكثير وأكثر تشويشاً مما كانت عليه عند انطلاقها.") },
+            { title: "هوائي الاستقبال يلتقط الإشارة", description: "على جهاز المدرب (أو البوابة)، هوائي آخر يلتقط الموجة الراديوية الضعيفة. الإشارة في هذه المرحلة ضعيفة للغاية — نتحدث عن استقبال طاقة تُقاس بتريليونات الوات." },
+            { title: "راديو الاستقبال يفك تشفير الإشارة ويعيدها لبيانات", description: "شريحة الراديو في جهاز الاستقبال تُضخّم الإشارة الضعيفة، تُصفّي التشويش والتداخل، وتعكس عملية التشفير — تحوّل الموجة الراديوية مرة أخرى إلى الحزمة الرقمية الأصلية من الأصفار والآحاد. إذا تلف أي بت أثناء الإرسال، خوارزميات تصحيح الأخطاء تحاول إصلاحه. إذا لم تستطع، تُحذف الحزمة." },
+            { title: "المعالج يفتح الحزمة", description: React.createElement(React.Fragment, null, "المتحكم الدقيق في جهاز الاستقبال يقرأ الحزمة، يتحقق من معرّف الجهاز (\"هذه من المصارع رقم 17\")، يستخرج رقم نبض القلب أو التسارع، ويتحقق من الطابع الزمني ليعرف متى تم القياس بالضبط.") },
+            { title: "التطبيق يعرضها للمدرب", description: React.createElement(React.Fragment, null, "برنامج التطبيق يأخذ البيانات المُعالجة ويعرضها على الشاشة — يُحدّث بطاقة نبض القلب للمصارع رقم 17، يُظهر تنبيه ارتطام، يُحدّث لوحة المتابعة الحية. المدرب يرى رقماً يتغير على شاشته. الرحلة الكاملة من مستشعر الجلد إلى الشاشة تستغرق تقريباً ", React.createElement(N, null, "10–50"), " ميلي ثانية.") },
+          ];
+          return (
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } },
+              React.createElement("p", { style: { fontSize: 14, color: "#cbd5e1", lineHeight: 1.8, margin: "0 0 12px" } },
+                "عندما يرى المدرب رقم نبض القلب يتغيّر على شاشته، هذا هو ",
+                React.createElement("strong", { style: { color: "#f1f5f9" } }, "كل ما حدث"),
+                " في الـ 30 ميلي ثانية تقريباً قبل ظهور ذلك الرقم:"
+              ),
+              React.createElement("div", { style: { paddingLeft: 4 } },
+                steps.map((s, i) => React.createElement(PathwayStep, { key: i, step: i + 1, title: s.title, description: s.description, isLast: i === steps.length - 1 }))
+              ),
+              React.createElement("div", { style: { background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 8, padding: "14px 16px", marginTop: 12 } },
+                React.createElement("p", { style: { fontSize: 14, color: "#818cf8", fontWeight: 700, margin: "0 0 6px" } }, "هذه 9 خطوات — لمستشعر واحد، قراءة واحدة."),
+                React.createElement("p", { style: { fontSize: 13, color: "#94a3b8", lineHeight: 1.75, margin: 0 } },
+                  "الآن اضرب ذلك في 45 مصارعاً، كل واحد يُرسل بيانات عدة مرات في الثانية. كل خطوة يجب أن تكون مُصممة للتعامل مع هذا الحجم في آن واحد بدون ضياع البيانات أو تشوّهها أو تأخّرها. ",
+                  React.createElement("strong", { style: { color: "#cbd5e1" } }, "لهذا"),
+                  " يتطلب الأمر هندسة ولا يمكن شراؤه جاهزاً من الرف."
+                )
+              )
+            )
+          );
+        }
+
+        // ─── Main ───
+        const pages = [
+          { title: "لماذا التصميم المخصص؟", subtitle: "لماذا كل منتج جاد يبدأ بالهندسة — وليس بالتسوق", component: Page1 },
+          { title: "بيئة العمل", subtitle: "الواقع المادي الذي يجب أن ينجو فيه المنتج", component: Page2 },
+          { title: "نظرة عامة على النظام", subtitle: "ما هي كل القطع وكيف تتصل ببعضها", component: Page3 },
+          { title: "المشاكل الحقيقية", subtitle: "كل تحدّ حقيقي تخلقه هذه البيئة", component: Page4 },
+          { title: "الحلول المتاحة", subtitle: "حلول هندسية معروفة لكل مشكلة أعلاه", component: Page5 },
+          { title: "رحلة الإشارة", subtitle: "ما يحدث فعلاً في الـ 30 ميلي ثانية بين الجلد والشاشة", component: Page6 },
+        ];
+
+        function BogyBriefingArabic() {
+          const [page, setPage] = useState(0);
+          const CurrentPage = pages[page].component;
+          return (
+            React.createElement("div", { style: {
+              height: "100vh",
+              width: "100vw",
+              padding: "0",
+              fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans Arabic', sans-serif",
+              color: "#e2e8f0",
+              background: "#0b0f1a",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "auto"
+            } },
+              /* Header - RTL text only */
+              React.createElement("div", { style: { marginBottom: 28, direction: "rtl", textAlign: "right", padding: "32px 20px 0" } },
+                React.createElement("div", { style: { fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#6366f1", textTransform: "uppercase", marginBottom: 8 } }, "إحاطة تقنية"),
+                React.createElement("h1", { style: { fontSize: 26, fontWeight: 800, color: "#f1f5f9", lineHeight: 1.4, margin: 0, marginBottom: 4 } }, "منصة القياسات الحيوية للمصارعة"),
+                React.createElement("p", { style: { fontSize: 13, color: "#64748b", lineHeight: 1.7, margin: 0 } }, "لماذا هذا المنتج يتطلب هندسة من الصفر — وماذا يعني ذلك فعلاً.")
+              ),
+
+              /* Progress bar - always LTR */
+              React.createElement("div", { style: { display: "flex", gap: 4, marginBottom: 24, direction: "ltr", padding: "0 20px" } },
+                pages.map((_, i) =>
+                  React.createElement("div", { key: i, onClick: () => setPage(i), style: { flex: 1, height: 4, borderRadius: 2, background: i <= page ? "#6366f1" : "rgba(255,255,255,0.08)", cursor: "pointer", transition: "background 0.3s" } })
+                )
+              ),
+
+              /* Page number + title */
+              React.createElement("div", { style: { marginBottom: 20, direction: "rtl", textAlign: "right", padding: "0 20px" } },
+                React.createElement("div", { style: { fontSize: 12, color: "#64748b", fontFamily: "monospace", marginBottom: 4, direction: "ltr", display: "inline-block" } }, page + 1, " / ", pages.length),
+                React.createElement("h2", { style: { fontSize: 20, fontWeight: 800, color: "#f1f5f9", margin: "0 0 4px" } }, pages[page].title),
+                React.createElement("p", { style: { fontSize: 13, color: "#64748b", margin: 0 } }, pages[page].subtitle)
+              ),
+
+              /* Content - RTL text */
+              React.createElement("div", { style: { flexGrow: 1, marginBottom: 28, direction: "rtl", textAlign: "right", padding: "0 20px" } }, React.createElement(CurrentPage)),
+
+              /* Navigation - always LTR layout */
+              React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.06)", direction: "ltr", padding: "16px 20px 0" } },
+                React.createElement("button", {
+                  onClick: () => setPage(Math.max(0, page - 1)),
+                  disabled: page === 0,
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 18px",
+                    borderRadius: 8,
+                    background: page === 0 ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: page === 0 ? "#334155" : "#94a3b8",
+                    cursor: page === 0 ? "default" : "pointer",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: "all 0.2s"
+                  }
+                }, React.createElement(ArrowLeft), "السابق"),
+                React.createElement("button", {
+                  onClick: () => setPage(Math.min(pages.length - 1, page + 1)),
+                  disabled: page === pages.length - 1,
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 18px",
+                    borderRadius: 8,
+                    background: page === pages.length - 1 ? "rgba(255,255,255,0.02)" : "rgba(99,102,241,0.15)",
+                    border: `1px solid ${page === pages.length - 1 ? "rgba(255,255,255,0.08)" : "rgba(99,102,241,0.3)"}`,
+                    color: page === pages.length - 1 ? "#334155" : "#818cf8",
+                    cursor: page === pages.length - 1 ? "default" : "pointer",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: "all 0.2s"
+                  }
+                }, "التالي ", React.createElement(ArrowRight))
+              ),
+
+              /* Footer on last page */
+              page === pages.length - 1 && React.createElement("div", { style: { marginTop: 24, padding: "16px 18px", background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: 10, fontSize: 13, color: "#94a3b8", lineHeight: 1.75, direction: "rtl", textAlign: "right", margin: "24px 20px 40px" } },
+                React.createElement("strong", { style: { color: "#818cf8" } }, "الخلاصة:"),
+                " هذا المنتج حقيقي، ويمكن بناؤه، وكل المشاكل لها حلول. لكن كل خطوة من الخطوات أعلاه تتطلب قرارات هندسية مدروسة — وليس مجرد شراء. هذا هو العمل المطلوب."
+              )
+            )
+          );
+        }
+
+        ReactDOM.render(React.createElement(BogyBriefingArabic), document.getElementById('root'));
+    </script>
+</body>
+</html>
