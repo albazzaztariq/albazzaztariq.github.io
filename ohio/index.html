@@ -417,7 +417,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/investments.js?v=11"></script>
+<script src="data/investments.js?v=12"></script>
 <script src="data/transport.js?v=1"></script>
 <script src="data/fiber.js?v=7"></script>
 <script>
@@ -941,14 +941,16 @@
         if (nm) endpoints[k].names.add(nm);
       });
     });
-    // Per-purpose presentation
+    // Per-purpose presentation — labels use industry-standard Title Case
+    // (Long-Haul Backbone, Metro Backhaul, etc.) so the popup reads as
+    // industry-grade signage rather than internal taxonomy.
     const PURPOSE_LABEL = {
-      'datacenter':         { short: 'Data Center', dot: '#a259e6', gapsApply: true  },
-      'mixed':              { short: 'Mixed (carrier + DC)', dot: '#a259e6', gapsApply: true  },
-      'metro-backhaul':     { short: 'Metro / wireless backhaul', dot: '#7f8c8d', gapsApply: false },
-      'research-academic':  { short: 'Research / academic', dot: '#3498db', gapsApply: false },
-      'rural-middle-mile':  { short: 'Rural middle-mile', dot: '#27ae60', gapsApply: false },
-      'broadband-last-mile':{ short: 'Last-mile broadband', dot: '#16a085', gapsApply: false },
+      'datacenter':         { short: 'Long-Haul DC Backbone',      dot: '#a259e6', gapsApply: true  },
+      'mixed':              { short: 'Long-Haul Carrier Backbone', dot: '#a259e6', gapsApply: true  },
+      'metro-backhaul':     { short: 'Metro / Wireless Backhaul',  dot: '#7f8c8d', gapsApply: false },
+      'research-academic':  { short: 'Research / Academic Backbone', dot: '#3498db', gapsApply: false },
+      'rural-middle-mile':  { short: 'Middle-Mile Distribution',   dot: '#27ae60', gapsApply: false },
+      'broadband-last-mile':{ short: 'Last-Mile Broadband',        dot: '#16a085', gapsApply: false },
     };
     function purposeMeta(seg) {
       return PURPOSE_LABEL[seg.purpose] || { short: seg.purpose || 'Unspecified', dot: '#999', gapsApply: false };
@@ -974,6 +976,21 @@
     Object.values(endpoints).forEach(ep => {
       const names = Array.from(ep.names).slice(0, 3).join(' / ');
       const here = dcPresenceAt(ep.coord);
+      // If this endpoint is itself an out-of-state DC market (Ashburn, Chicago,
+      // Pittsburgh, Indianapolis, Detroit, Raleigh, etc.), fold the published
+      // market figure into the local presence so the popup reflects reality
+      // and the gap flag doesn't fire on a known DC hub just because we don't
+      // catalogue its individual sites in DATA_CENTERS.
+      for (const nm of ep.names) {
+        const m = dcMarketByName(nm);
+        if (m) {
+          here.mw += m.mw;
+          here.count += 1;
+          here.str = `${here.mw.toLocaleString()} MW market — ${m.sites} sites (${m.source})`
+            + (here.count > 1 ? ` plus any locally catalogued sites` : '');
+          break;
+        }
+      }
 
       // Only DC-relevant routes (purpose: datacenter | mixed) count toward gap
       // analysis. Other routes (research, last-mile, metro backhaul, rural
@@ -988,9 +1005,13 @@
         oppTotalMW += s.realPresence.mw + (s.marketKnown ? s.marketKnown.mw : 0);
       });
 
-      // per-route detail with purpose badge
+      // per-route detail with purpose badge + explicit opposing-endpoint location
       const routeRows = ep.segs.slice(0, 8).map(s => {
         const pm = purposeMeta(s.seg);
+        // Make sure intrastate opposing names get an ", OH" suffix so the
+        // location is unambiguous; out-of-state names already carry a state.
+        const oppLoc = (s.oppName && !/,\s*[A-Z]{2}$/.test(s.oppName) && s.seg.type === 'intrastate')
+          ? `${s.oppName}, OH` : s.oppName;
         const oppStr = s.marketKnown
           ? `${s.marketKnown.mw.toLocaleString()} MW market — ${s.marketKnown.sites} sites (${s.marketKnown.source})`
           : (s.realPresence.count > 0
@@ -1000,7 +1021,7 @@
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pm.dot};margin-right:4px;vertical-align:middle;"></span>
           ${s.seg.name}
           <span style="color:#888;font-size:10.5px;"> [${pm.short}]</span><br>
-          <span style="color:#888;font-size:11px;">↳ Opposing Endpoint (${s.oppName}): ${oppStr}</span>
+          <span style="color:#555;font-size:11px;">↳ <b>Opposite Endpoint:</b> ${oppLoc} — ${oppStr}</span>
         </div>`;
       }).join('');
 
@@ -1102,11 +1123,24 @@
             No DC-oriented routes terminate (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
           </div>`;
 
+      // Route-type summary — count by purpose so the user can see at a glance
+      // what kinds of lines terminate at this dot ("3 Long-Haul DC Backbones,
+      // 2 Metro Backhauls, 1 Research Backbone").
+      const typeCounts = {};
+      ep.segs.forEach(s => {
+        const lbl = purposeMeta(s.seg).short;
+        typeCounts[lbl] = (typeCounts[lbl] || 0) + 1;
+      });
+      const typeSummary = Object.entries(typeCounts)
+        .map(([lbl, n]) => `${n} ${lbl}${n>1?'s':''}`)
+        .join(' · ');
+
       const mainPane = `<div class="fep-main">
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
         <div class="pop-row"><b>Data Center Presence:</b> ${here.str}</div>
-        <div class="pop-row" style="color:#888;font-size:11px;margin-top:4px;">
-          ${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating:
+        <div class="pop-row" style="margin-top:4px;"><b>Routes Terminating:</b> ${typeSummary}</div>
+        <div class="pop-row" style="color:#888;font-size:11px;margin-top:6px;">
+          ${ep.routes.length} route${ep.routes.length>1?'s':''} in detail:
         </div>
         ${routeRows}
         ${ep.segs.length > 8 ? `<div class="pop-row" style="color:#888;font-size:11px;">…and ${ep.segs.length - 8} more.</div>` : ''}
