@@ -19,15 +19,22 @@
     padding-top: 16px; }
   .subtitle { margin: 0 24px 16px; color: var(--muted); font-size: 13px; }
   .row { display: flex; gap: 16px; padding: 0 24px 16px; }
+  /* Single-card layout (controls on top, map below) — same on desktop + mobile.
+     Map B is hidden globally; only the single ranked Map A renders. */
+  #cardB { display: none !important; }
   .map-card { flex: 1; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 8px; overflow: hidden; display: flex; }
-  .controls { width: 140px; padding: 12px 8px; border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 6px; background: #12151c; }
+    border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column; }
+  .controls {
+    width: 100%;
+    padding: 10px 14px;
+    border-right: none; border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px;
+    background: #12151c; align-items: center;
+  }
+  .controls .btn { flex: 1 1 auto; min-width: 0; text-align: center; }
   .controls .label { font-size: 11px; color: var(--muted); text-transform: uppercase;
     letter-spacing: 0.5px; margin-bottom: 4px; }
-  /* Desktop default: show the "Map A / Map B" labels, hide the mobile-only label */
-  .controls .label .label-mobile { display: none; }
-  .controls .label .label-desktop { display: inline; }
   .btn { background: #1d2230; color: var(--text); border: 1px solid var(--border);
     padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; text-align: left; }
   .btn:hover { background: #252b3b; }
@@ -127,11 +134,7 @@
 
     .map { flex: 0 0 380px !important; height: 380px !important; width: 100%; }
 
-    /* On mobile: hide Map B entirely, and swap Map A's label to "Map by Rank" */
-    #cardB { display: none !important; }
-    .controls .label .label-desktop { display: none; }
-    .controls .label .label-mobile { display: inline; }
-    .top-controls .hint { display: none; }   /* the "(applies to Map A and Map B)" hint is no longer accurate on mobile */
+    .top-controls .hint { display: none; }
 
     .big-card { margin: 0 14px 12px; }
     .big-map { height: 460px; }
@@ -247,27 +250,27 @@
 
 <div class="top-controls">
   <button id="toggleTransportTop" class="btn">Transportation overlay (heat maps): OFF — Click or Tap to Turn On</button>
-  <span class="hint">(applies to Map A and Map B)</span>
+  <span class="hint">(applies to the ranked heat map)</span>
 </div>
 
 <div class="row">
   <div class="map-card" id="cardA">
     <div class="controls">
-      <div class="label"><span class="label-desktop">Map A — Rank by</span><span class="label-mobile">Map by Rank</span></div>
-      <button class="btn rank-a active" data-metric="zhvi">Value</button>
+      <div class="label">Rank by Value</div>
+      <button class="btn rank-a active" data-metric="zhvi">Current</button>
       <button class="btn rank-a"        data-metric="pct_1y">1-Year Growth</button>
       <button class="btn rank-a"        data-metric="pct_5y">5-Year Growth</button>
       <button class="btn rank-a"        data-metric="pct_10y">10-Year Growth</button>
     </div>
     <div id="mapA" class="map">
-      <div class="map-label" id="labelA">Value</div>
+      <div class="map-label" id="labelA">Current</div>
       <div class="transport-legend" id="legendA"></div>
     </div>
   </div>
 
   <div class="map-card" id="cardB">
     <div class="controls">
-      <div class="label"><span class="label-desktop">Map B — Rank by</span><span class="label-mobile">Map by Rank</span></div>
+      <div class="label"><span class="label-desktop">Map B — Rank by</span><span class="label-mobile">Rank by Value</span></div>
       <button class="btn rank-b"        data-metric="zhvi">Value</button>
       <button class="btn rank-b"        data-metric="pct_1y">1-Year Growth</button>
       <button class="btn rank-b active" data-metric="pct_5y">5-Year Growth</button>
@@ -312,14 +315,14 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/investments.js?v=10"></script>
+<script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
 
   const METRIC_LABEL = {
-    zhvi: 'Value', pct_1y: '1-Year Growth',
+    zhvi: 'Current', pct_1y: '1-Year Growth',
     pct_5y: '5-Year Growth', pct_10y: '10-Year Growth',
   };
   const RAMP = ['#f7fbff', '#c6dbef', '#6baed6', '#2171b5', '#08306b'];
