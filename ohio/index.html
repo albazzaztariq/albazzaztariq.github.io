@@ -303,7 +303,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/investments.js?v=5"></script>
+<script src="data/investments.js?v=7"></script>
 <script src="data/transport.js?v=1"></script>
 <script>
 (async function() {
@@ -505,7 +505,7 @@
       <div class="pop-row">Dollar value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : '—'}</span>
         <span class="src">(${p.dollar_value_source})</span></div>
       <div class="pop-row">Direct Employment:
-        <span class="emp-red pop-stat">${p.direct_employment.toLocaleString()}${empEst}</span></div>
+        <span class="emp-red pop-stat">${p.direct_employment != null ? p.direct_employment.toLocaleString() : 'Not published'}${empEst}</span></div>
       ${ptLine}
       ${empSrcLine}
       ${ptSrcLine}
@@ -548,12 +548,16 @@
   }
 
   invList.forEach(p => {
-    const color = p.category === 'manufacturing' ? '#d62828' : '#2a6fdb';
-    const m = L.circleMarker([p.lat, p.lng], {
-      radius: dotRadius(p), color: '#fff', weight: 1.2,
-      fillColor: color, fillOpacity: 0.82,
-    }).addTo(mapI);
-    attachHoverPopup(m, investmentPopup(p));
+    try {
+      const color = p.category === 'manufacturing' ? '#d62828' : '#2a6fdb';
+      const m = L.circleMarker([p.lat, p.lng], {
+        radius: dotRadius(p), color: '#fff', weight: 1.2,
+        fillColor: color, fillOpacity: 0.82,
+      }).addTo(mapI);
+      attachHoverPopup(m, investmentPopup(p));
+    } catch (e) {
+      console.error('Skipping investment dot due to error:', p.company, '|', p.project, '→', e.message);
+    }
   });
 
   // --- Data center dots (green), sized vs each other on MW basis ---
