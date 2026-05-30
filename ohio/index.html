@@ -200,9 +200,9 @@
   }
   .leaflet-popup.dot-pop .leaflet-popup-content {
     margin: 10px 14px;
-    width: 380px !important;       /* fixed width — no 1-word columns */
+    width: 580px !important;       /* wider — uses more of the map's horizontal real estate so the popup is shorter vertically and autoPan rarely triggers */
     font-size: 12.5px;
-    line-height: 1.55;
+    line-height: 1.5;
     white-space: normal;
     word-wrap: break-word;
   }
@@ -303,7 +303,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/investments.js?v=3"></script>
+<script src="data/investments.js?v=4"></script>
 <script src="data/transport.js?v=1"></script>
 <script>
 (async function() {
@@ -526,12 +526,11 @@
   // Helper: open a 380px-wide popup that Leaflet will auto-pan into view.
   function attachHoverPopup(marker, html) {
     const popup = L.popup({
-      autoPan: true,
-      autoPanPadding: [40, 40],
-      maxWidth: 420,
-      minWidth: 380,
+      autoPan: false,           // user prefers the map not shift on hover
+      maxWidth: 620,
+      minWidth: 580,
       closeButton: false,
-      keepInView: true,
+      keepInView: false,
       offset: [0, -4],
       className: 'dot-pop',
     }).setContent(html);
