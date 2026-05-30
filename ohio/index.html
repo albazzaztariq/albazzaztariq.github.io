@@ -303,8 +303,8 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/investments.js"></script>
-<script src="data/transport.js"></script>
+<script src="data/investments.js?v=2"></script>
+<script src="data/transport.js?v=1"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -493,11 +493,16 @@
       ? ` <span class="src">(${p.indirect_employment_types.join(', ')})</span>` : '';
     const indSrc = p.indirect_employment_source
       ? ` <span class="src">— ${p.indirect_employment_source}</span>` : '';
+    const inSvc = p.in_service
+      ? `<div class="pop-row">In-service / online: <span class="pop-stat">${p.in_service}</span>
+           <span class="src">(${p.in_service_source || '—'})</span></div>`
+      : `<div class="pop-row" style="color:#888;font-style:italic;">In-service / online: not published</div>`;
     return `
       <div class="pop-name">${p.company}</div>
       <div class="pop-row">Project: ${p.project}</div>
       ${cat}
-      <div class="pop-row">Dollar value: <span class="pop-stat">${fmtBillions(p.dollar_value_usd)}</span>
+      ${inSvc}
+      <div class="pop-row">Dollar value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : '—'}</span>
         <span class="src">(${p.dollar_value_source})</span></div>
       <div class="pop-row">Direct Employment:
         <span class="emp-red pop-stat">${p.direct_employment.toLocaleString()}${empEst}</span></div>
@@ -554,9 +559,14 @@
 
   // --- Data center dots (green), sized vs each other on MW basis ---
   function dcPopup(d) {
+    const inSvc = d.in_service
+      ? `<div class="pop-row">In-service / online: <span class="pop-stat">${d.in_service}</span>
+           <span class="src">(${d.in_service_source || '—'})</span></div>`
+      : `<div class="pop-row" style="color:#888;font-style:italic;">In-service / online: not published</div>`;
     return `
       <div class="pop-name">${d.project}</div>
       <div class="pop-row">Operator: ${d.operator}</div>
+      ${inSvc}
       <div class="pop-row">Power consumption: <span class="pop-stat">${d.power_mw} MW</span>
         <span class="src">(${d.power_mw_source})</span></div>
     `;

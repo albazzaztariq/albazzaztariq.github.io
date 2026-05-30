@@ -30,6 +30,11 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Integrated circuits (advanced-node CPU / AI accelerator wafers)",
     lat: 40.0667, lng: -82.7806,
+    in_service: "delayed — first production now est. 2030–2031",
+    in_service_source:
+      "Intel updates Sept 2024 + Apr 2025 — original target was 2025; Intel "
+      + "has publicly pushed first-fab production to 2030–2031 amid foundry "
+      + "demand softening and CHIPS-Act funding sequencing.",
     dollar_value_usd: 28_000_000_000,
     dollar_value_source:
       "Intel press release (Jan 2022) — two-fab Phase 1 capex; CHIPS Act award "
@@ -66,6 +71,10 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Lithium-ion EV battery cells & modules",
     lat: 39.6520, lng: -83.5550,
+    in_service: "end of 2025",
+    in_service_source:
+      "Honda + LGES JV original announcement (Oct 2022) targeting end-2025 "
+      + "mass production; no public revision as of latest JV update.",
     dollar_value_usd: 4_400_000_000,
     dollar_value_source:
       "Honda + LGES JV announcement (Oct 2022). $4.4B reflects the JV's "
@@ -99,6 +108,11 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Electric vehicles + EV powertrains",
     lat: 40.2364, lng: -83.3672,
+    in_service: "phased 2024–2026",
+    in_service_source:
+      "Honda — retooling is being phased across the three plants from 2024 "
+      + "through 2026 alongside the launch of the Acura RSX EV and Honda "
+      + "0-series production.",
     dollar_value_usd: 700_000_000,
     dollar_value_source:
       "Honda announcement — $700M figure is the operator's stated retooling "
@@ -131,6 +145,10 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Autonomous defense systems (UAVs, munitions, command systems)",
     lat: 39.8042, lng: -82.9281,
+    in_service: "est. 2026",
+    in_service_source:
+      "Anduril + JobsOhio announcement (2025) — initial Arsenal-1 production "
+      + "targeted for 2026 ramp; later phases not separately dated publicly.",
     dollar_value_usd: 1_000_000_000,
     dollar_value_source:
       "Anduril + JobsOhio announcement (2025). $1B+ is Anduril's stated "
@@ -162,6 +180,11 @@ window.INVESTMENTS = [
     category: "other",
     sector: "Healthcare / biomedical research",
     lat: 41.5025, lng: -81.6206,
+    in_service: "phased 2022–2027",
+    in_service_source:
+      "Cleveland Clinic 2022 + 2023 Annual Reports — multi-phase build-out "
+      + "rolling through 2027; individual towers / ambulatory sites have their "
+      + "own dates but the aggregate program runs through 2027.",
     dollar_value_usd: 1_700_000_000,
     dollar_value_source:
       "Cleveland Clinic 2022 + 2023 Annual Reports — summed announced capital "
@@ -196,6 +219,8 @@ window.INVESTMENTS = [
     category: "other",
     sector: "Finance / banking technology",
     lat: 40.1454, lng: -82.9999,
+    in_service: "Not published — JPMC has not published a single in-service date for the Polaris expansion (the campus is in continuous incremental build-out).",
+    in_service_source: "Not published",
     dollar_value_usd: 500_000_000,
     dollar_value_source:
       "Claude est. of cumulative campus capex from JPMC press releases + "
@@ -227,6 +252,8 @@ window.INVESTMENTS = [
     category: "other",
     sector: "Research & development (national-lab contractor)",
     lat: 39.9870, lng: -83.0264,
+    in_service: "Not published — Battelle has not published a single in-service date for the King Ave expansion (continuous incremental build-out).",
+    in_service_source: "Not published",
     dollar_value_usd: 300_000_000,
     dollar_value_source:
       "Claude est. of cumulative campus capex from Battelle Form 990 capital "
@@ -260,6 +287,11 @@ window.INVESTMENTS = [
     category: "other",
     sector: "Logistics / e-commerce",
     lat: 40.0067, lng: -82.6760,
+    in_service: "phased 2020–2024 (most sites already operational)",
+    in_service_source:
+      "Amazon site openings reported across 2020–2024 (Etna 2020, Monroe 2021, "
+      + "Akron 2024, N. Randall sortation 2022). The cluster is largely "
+      + "operational; later expansions continue.",
     dollar_value_usd: 1_500_000_000,
     dollar_value_source:
       "Claude est. of cumulative Ohio capex from JobsOhio incentive filings + "
@@ -296,6 +328,10 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "CdTe thin-film solar modules",
     lat: 41.5570, lng: -83.5310,
+    in_service: "2025 (Lake Township facility ramp)",
+    in_service_source:
+      "First Solar press releases + 10-K — Lake Township facility commercial "
+      + "production targeted 2025; Perrysburg expansion already producing.",
     dollar_value_usd: 1_100_000_000,
     dollar_value_source:
       "First Solar press releases + 10-K (2022–2024) — Lake Township greenfield "
@@ -325,6 +361,10 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Iron / steel (low-carbon hot-briquetted iron + EAF feed)",
     lat: 39.5151, lng: -84.3983,
+    in_service: "est. 2029",
+    in_service_source:
+      "US DOE OCED award documentation (2024) — project ramp targeted 2029 "
+      + "for hydrogen-ready DRI commissioning.",
     dollar_value_usd: 1_600_000_000,
     dollar_value_source:
       "Cleveland-Cliffs + US DOE OCED award documentation (2024). $1.6B is "
@@ -355,6 +395,8 @@ window.INVESTMENTS = [
     category: "manufacturing",
     manufacture: "Lithium-ion EV battery cells",
     lat: 41.2581, lng: -80.8443,
+    in_service: "operational since Aug 2022",
+    in_service_source: "Ultium / GM — commercial cell production began Aug 2022.",
     dollar_value_usd: 2_300_000_000,
     dollar_value_source:
       "Ultium / GM 10-K filings + JobsOhio incentive disclosure — $2.3B is "
@@ -384,6 +426,8 @@ window.INVESTMENTS = [
     category: "other",
     sector: "Finance / insurance",
     lat: 39.9710, lng: -83.0028,
+    in_service: "Not published — campus modernization runs continuously without a fixed in-service date.",
+    in_service_source: "Not published",
     dollar_value_usd: 300_000_000,
     dollar_value_source:
       "Claude est. of cumulative campus capex from Nationwide annual reports "
@@ -405,6 +449,261 @@ window.INVESTMENTS = [
       + "modernization supplier mix.",
   },
 
+  // =====================================================================
+  // NE Ohio research pass — 2026-05-30 — every entry has rigorous sourcing
+  // per the no-fabrication rule; null + "Not published" used where figures
+  // were not publicly disclosed.
+  // =====================================================================
+
+  { company: "Sherwin-Williams", project: "New global headquarters tower, downtown Cleveland",
+    category: "other", sector: "Corporate HQ (paint and coatings)",
+    lat: 41.4993, lng: -81.6944,
+    in_service: "May 2026 (ceremonial opening)",
+    in_service_source: "Ideastream / news5cleveland May 2026 opening coverage",
+    dollar_value_usd: 600_000_000,
+    dollar_value_source: "Sherwin-Williams Feb 6, 2020 press release — HQ portion ~$600M (combined HQ + Brecksville R&D min $860M)",
+    direct_employment: 3100, direct_employment_is_estimate: false,
+    direct_employment_source: "Ideastream + news5cleveland May 2026 opening — ~3,100 employees in the new building",
+    permanent: 3100, temporary: null,
+    perm_temp_source: "Not published — construction headcount not separately broken out for HQ vs R&D",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Sherwin-Williams", project: "Morikis Global Technology Center (R&D campus), Brecksville",
+    category: "other", sector: "Corporate R&D (paint and coatings)",
+    lat: 41.3201, lng: -81.6265,
+    in_service: "operational (R&D center already open)",
+    in_service_source: "Sherwin-Williams 'Research and Development Center | Building Our Future' page",
+    dollar_value_usd: 260_000_000,
+    dollar_value_source: "Sherwin-Williams Feb 6, 2020 announcement — Brecksville R&D portion ~$260M",
+    direct_employment: 900, direct_employment_is_estimate: false,
+    direct_employment_source: "Sherwin-Williams R&D Center site — has opened to more than 900 employees",
+    permanent: 900, temporary: 3000,
+    perm_temp_source: "Ohio Business Magazine / corporate.sherwin-williams.com — 3,000 construction jobs projected",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Lubrizol Corporation", project: "Wickliffe HQ expansion + Brecksville consolidation",
+    category: "other", sector: "Corporate HQ / R&D (specialty chemicals)",
+    lat: 41.6075, lng: -81.4773,
+    in_service: "Not published — consolidation announced Jan 2026; campus completion date not disclosed",
+    in_service_source: "Not published",
+    dollar_value_usd: null,
+    dollar_value_source: "Not published — JobsOhio + Businesswire (Jan 27, 2026) describe as 'multi-million-dollar' without a specific figure",
+    direct_employment: 1000, direct_employment_is_estimate: false,
+    direct_employment_source: "Lubrizol Jan 27, 2026 Businesswire — >1,000 NE Ohio personnel collaborating on the singular Wickliffe campus after consolidation",
+    permanent: 1000, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Foxconn (Foxconn Ohio)", project: "Acquisition and retooling of former Lordstown GM/LSM assembly plant",
+    category: "manufacturing",
+    manufacture: "Initially EV contract manufacturing (Endurance pickup, Monarch tractors); later AI data-center equipment",
+    lat: 41.1620, lng: -80.8676,
+    in_service: "operational since Nov 2022 (acquired from Lordstown Motors)",
+    in_service_source: "Lordstown Motors Form 8-K (Nov 2022)",
+    dollar_value_usd: 230_000_000,
+    dollar_value_source: "Lordstown Motors Form 8-K (Nov 2022) — Foxconn paid $230M",
+    direct_employment: 400, direct_employment_is_estimate: false,
+    direct_employment_source: "Vindicator + Mahoning Matters (2025) — Foxconn maintains ~400 positions at the former Lordstown facility",
+    permanent: 400, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "SoftBank (Crescent Dune LLC) / Stargate partners",
+    project: "Lordstown AI data-center equipment manufacturing hub (former Foxconn/GM plant)",
+    category: "manufacturing",
+    manufacture: "Modular AI data-center equipment & components (Stargate project)",
+    lat: 41.1620, lng: -80.8676,
+    in_service: "Not published — overhaul announced 2025; production-start date not disclosed",
+    in_service_source: "Not published",
+    dollar_value_usd: 3_000_000_000,
+    dollar_value_source: "Manufacturing Dive + WFMJ + Business Journal Daily (2025) — SoftBank purchased plant for $375M and plans to invest up to $3B in overhaul",
+    direct_employment: 1700, direct_employment_is_estimate: false,
+    direct_employment_source: "Tribune Chronicle + Vindicator (2025) — facility could employ up to 1,700 workers (some reports up to 2,000)",
+    permanent: 1700, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Amazon", project: "Akron fulfillment center (former Rolling Acres Mall site)",
+    category: "other", sector: "Logistics / e-commerce fulfillment",
+    lat: 41.0285, lng: -81.5709,
+    in_service: "2024 (operational)",
+    in_service_source: "news5cleveland + Summit4Success opening coverage",
+    dollar_value_usd: 100_000_000,
+    dollar_value_source: "Business Journal Daily — 'Amazon to Build $100M Fulfillment Center in Akron'",
+    direct_employment: 1500, direct_employment_is_estimate: false,
+    direct_employment_source: "Amazon + news5cleveland + Summit4Success — 1,500 full-time jobs at Akron facility",
+    permanent: 1500, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Amazon", project: "Canton fulfillment center (1 M sq ft)",
+    category: "other", sector: "Logistics / e-commerce fulfillment",
+    lat: 40.8237, lng: -81.3582,
+    in_service: "operational (announced Oct 2021)",
+    in_service_source: "JobsOhio press release + Cleveland 19 / WKBN coverage",
+    dollar_value_usd: null,
+    dollar_value_source: "Not published — JobsOhio + news5cleveland announcement (Oct 2021) did not disclose Amazon capex (Amazon took no incentives)",
+    direct_employment: 1000, direct_employment_is_estimate: false,
+    direct_employment_source: "JobsOhio press release (Oct 2021) + Cleveland 19 / WKBN — ~1,000 new jobs",
+    permanent: 1000, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "MetroHealth System", project: "Glick Center — new main campus hospital tower",
+    category: "other", sector: "Healthcare",
+    lat: 41.4636, lng: -81.6987,
+    in_service: "Nov 2022 (opened)",
+    in_service_source: "MetroHealth opening release",
+    dollar_value_usd: 946_000_000,
+    dollar_value_source: "MetroHealth groundbreaking release + Cleveland State University 2017 study (~$946M financed on MetroHealth credit)",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published — project is replacement of existing hospital tower; net new operational headcount not separately disclosed",
+    permanent: null, temporary: 5000,
+    perm_temp_source: "MetroHealth + Cleveland State University 2017 — campus transformation supports >5,000 jobs over 9-year construction timeline",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "University Hospitals", project: "Ahuja Medical Center Phase 2 expansion (Beachwood)",
+    category: "other", sector: "Healthcare",
+    lat: 41.4623, lng: -81.5085,
+    in_service: "completed June 2023",
+    in_service_source: "University Hospitals release + Becker's Hospital Review",
+    dollar_value_usd: 236_000_000,
+    dollar_value_source: "UH release + Becker's Hospital Review — $236M expansion completed June 2023",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published — UH release did not specify net new permanent headcount",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Cleveland Clinic", project: "Avon Hospital expansion + Richard E. Jacobs Family Health Center",
+    category: "other", sector: "Healthcare",
+    lat: 41.4517, lng: -82.0354,
+    in_service: "under construction — announced June 2025",
+    in_service_source: "Cleveland Clinic newsroom June 25 2025 + Crain's Cleveland Business",
+    dollar_value_usd: 340_000_000,
+    dollar_value_source: "Cleveland Clinic newsroom June 25 2025 + Crain's Cleveland Business — $340M Avon expansion",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Cleveland Clinic", project: "Fairview Hospital expansion (cancer center, medical office, parking)",
+    category: "other", sector: "Healthcare",
+    lat: 41.4673, lng: -81.7965,
+    in_service: "under construction — announced Nov 2023",
+    in_service_source: "Crain's Cleveland Business + NEOtrans Nov 2023",
+    dollar_value_usd: 265_000_000,
+    dollar_value_source: "Crain's Cleveland Business + NEOtrans (Nov 2023) — $265M Fairview Hospital expansion",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Cleveland Browns / Haslam Sports Group",
+    project: "New domed Huntington Bank Field stadium, Brook Park",
+    category: "other", sector: "Sports / entertainment infrastructure",
+    lat: 41.4017, lng: -81.8190,
+    in_service: "est. 2029",
+    in_service_source: "NFL.com + ESPN + news5cleveland — target opening 2029",
+    dollar_value_usd: 2_600_000_000,
+    dollar_value_source: "NFL.com + ESPN + news5cleveland — $2.6B total ($1.755B Haslam, $600M State of Ohio, $245M Brook Park)",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published — permanent stadium operations headcount not disclosed",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "City of Cleveland / Cleveland Hopkins International Airport",
+    project: "Terminal Modernization Development Program (CLEvolution) Phase 1",
+    category: "other", sector: "Aviation / transportation infrastructure",
+    lat: 41.4117, lng: -81.8498,
+    in_service: "Phase 1 build-out through 2030s",
+    in_service_source: "Cleveland Airport newsroom + Axios Cleveland + Cleveland Magazine",
+    dollar_value_usd: 1_600_000_000,
+    dollar_value_source: "Cleveland Airport newsroom + Axios Cleveland + Cleveland Magazine — $1.6B Phase 1 (new terminal ~$1.1B)",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Schaeffler Group USA", project: "Wooster e-mobility center expansion",
+    category: "manufacturing",
+    manufacture: "Electric motors, e-axle components, EV transmissions, torque converters, ring-gear carriers, one-way clutch assemblies",
+    lat: 40.8051, lng: -81.9351,
+    in_service: "operational (initial expansion 2017; subsequent expansions through 2020s)",
+    in_service_source: "Schaeffler / Business Chief / PRNewswire",
+    dollar_value_usd: 60_000_000,
+    dollar_value_source: "Schaeffler + Business Chief + PRNewswire — $60M Wooster expansion to establish U.S. E-Mobility center",
+    direct_employment: 200, direct_employment_is_estimate: false,
+    direct_employment_source: "Wayne County EDC + Schaeffler corporate communications — 200 new jobs",
+    permanent: 200, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Metallus Inc. (formerly TimkenSteel)",
+    project: "Canton modernization + U.S. Army munitions capacity",
+    category: "manufacturing",
+    manufacture: "Specialty alloy steel bars + tubes; bloom reheat furnace for U.S. Army expanded munitions; EV components",
+    lat: 40.7989, lng: -81.3784,
+    in_service: "phased build-out (Crain's 2024 announcement)",
+    in_service_source: "Crain's Cleveland Business 2024 + Metallus 8-K",
+    dollar_value_usd: 112_700_000,
+    dollar_value_source: "Crain's Cleveland Business 2024 — Metallus $112.7M modernization; corroborated by Metallus 8-K filings on the gov-funded bloom reheat furnace",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published — Metallus 8-K filings reference workforce training but do not specify net new headcount",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Team Wendy LLC (Avon Protection)",
+    project: "Cleveland St. Clair Ave expansion / Center of Excellence in Head Protection",
+    category: "manufacturing",
+    manufacture: "Head-protection systems (helmets) for military, law enforcement, search and rescue, first responders, recreation",
+    lat: 41.5563, lng: -81.5694,
+    in_service: "under build-out (Apr 2024 announcement)",
+    in_service_source: "Crain's Cleveland Business + JobsOhio + Avon Technologies Apr 2024",
+    dollar_value_usd: 15_000_000,
+    dollar_value_source: "Crain's Cleveland Business + JobsOhio + Avon Technologies Apr 2024 — $15M Ohio Tax Credit Authority-approved project",
+    direct_employment: 200, direct_employment_is_estimate: false,
+    direct_employment_source: "Avon Technologies + Team Wendy — 200 new jobs (doubling existing 200-person Cleveland workforce)",
+    permanent: 200, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Bristolville 25 Developer LLC",
+    project: "Proposed $3.6B AI data center campus, Lordstown",
+    category: "other", sector: "IT / data center infrastructure",
+    lat: 41.1620, lng: -80.8676,
+    in_service: "proposed Oct 2025 — in-service date not yet disclosed",
+    in_service_source: "WFMJ + Vindicator Oct 2025",
+    dollar_value_usd: 3_600_000_000,
+    dollar_value_source: "WFMJ + Vindicator (Oct 2025) — $3.6B, 1.65M sq ft AI data-center campus across 133 acres in Trumbull + Mahoning counties",
+    direct_employment: 120, direct_employment_is_estimate: false,
+    direct_employment_source: "WFMJ + Vindicator (Oct 2025) — 120 FT employees at avg wage >$84/hour per developer filings",
+    permanent: 120, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
 ];
 
 // =====================================================================
@@ -422,6 +721,8 @@ window.DATA_CENTERS = [
     project: "AWS US-East-2 — New Albany campus",
     operator: "Amazon Web Services",
     lat: 40.0857, lng: -82.8074,
+    in_service: "phased; initial buildings operational since 2016, expansion through ~2027",
+    in_service_source: "AWS + JobsOhio announcements + AEP interconnect filings — phased deployment",
     power_mw: 900,
     power_mw_source:
       "Claude est. cross-referenced from AEP Ohio (electricity utility) "
@@ -433,6 +734,8 @@ window.DATA_CENTERS = [
     project: "AWS US-East-2 — Hilliard campus",
     operator: "Amazon Web Services",
     lat: 40.0335, lng: -83.1573,
+    in_service: "phased; operational since ~2017, expansions ongoing",
+    in_service_source: "AWS + Hilliard substation capacity uplift filings",
     power_mw: 450,
     power_mw_source:
       "Claude est. from AEP Ohio interconnect filings + the publicly "
@@ -443,6 +746,8 @@ window.DATA_CENTERS = [
     project: "AWS US-East-2 — Dublin campus",
     operator: "Amazon Web Services",
     lat: 40.1006, lng: -83.1141,
+    in_service: "phased; operational with expansions ongoing",
+    in_service_source: "AEP interconnect filings + Dublin zoning capacity disclosures",
     power_mw: 350,
     power_mw_source:
       "Claude est. from AEP Ohio interconnect filings + Dublin's "
@@ -453,6 +758,8 @@ window.DATA_CENTERS = [
   {
     project: "Google — New Albany datacenter",
     operator: "Google",
+    in_service: "operational (first New Albany Google site online since 2020)",
+    in_service_source: "Google + JobsOhio announcements + AEP interconnect requests",
     lat: 40.0813, lng: -82.7843,
     power_mw: 250,
     power_mw_source:
@@ -463,6 +770,8 @@ window.DATA_CENTERS = [
   {
     project: "Google — Lancaster datacenter",
     operator: "Google",
+    in_service: "under construction (announced 2022)",
+    in_service_source: "Google + JobsOhio announcements + South Central Power Co. interconnect",
     lat: 39.7137, lng: -82.5993,
     power_mw: 200,
     power_mw_source:
@@ -472,6 +781,8 @@ window.DATA_CENTERS = [
   {
     project: "Google — Columbus datacenter",
     operator: "Google",
+    in_service: "operational (smallest of Google's Ohio sites)",
+    in_service_source: "Google + JobsOhio announcements",
     lat: 39.9612, lng: -82.9988,
     power_mw: 150,
     power_mw_source:
@@ -483,6 +794,8 @@ window.DATA_CENTERS = [
   {
     project: "Meta — New Albany datacenter",
     operator: "Meta",
+    in_service: "phased build through ~2027",
+    in_service_source: "Meta + JobsOhio campus announcement + AEP interconnect",
     lat: 40.0900, lng: -82.7670,
     power_mw: 500,
     power_mw_source:
@@ -495,6 +808,8 @@ window.DATA_CENTERS = [
   {
     project: "Microsoft — Heath / Licking datacenter",
     operator: "Microsoft Azure",
+    in_service: "est. 2027",
+    in_service_source: "Microsoft + JobsOhio announcement (2024) + Heath / Licking utility filings",
     lat: 40.0264, lng: -82.4424,
     power_mw: 400,
     power_mw_source:
@@ -507,6 +822,8 @@ window.DATA_CENTERS = [
   {
     project: "Cologix COL2 — Columbus",
     operator: "Cologix",
+    in_service: "operational",
+    in_service_source: "Cologix public datasheet",
     lat: 39.9612, lng: -82.9988,
     power_mw: 30,
     power_mw_source:
@@ -515,6 +832,8 @@ window.DATA_CENTERS = [
   {
     project: "Quality Technology Services (QTS) — New Albany",
     operator: "QTS / Blackstone",
+    in_service: "phased (operational with ongoing expansion)",
+    in_service_source: "QTS announcement + AEP interconnect",
     lat: 40.0784, lng: -82.8009,
     power_mw: 120,
     power_mw_source:
