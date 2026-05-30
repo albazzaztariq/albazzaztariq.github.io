@@ -337,7 +337,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
-<script src="data/fiber.js?v=5"></script>
+<script src="data/fiber.js?v=6"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -650,7 +650,7 @@
           <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
     return `
       <div class="pop-name">${seg.name}</div>
-      <div class="pop-row">Type: road</div>
+      <div class="pop-row">Type: Road</div>
       <div class="pop-row">Average Annual Daily Traffic: ${seg.traffic_str}
         <span class="src">(${seg.traffic_src || '—'})</span></div>
       ${goods}${com}`;
@@ -664,7 +664,7 @@
           <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
     return `
       <div class="pop-name">${seg.name}</div>
-      <div class="pop-row">Type: rail</div>
+      <div class="pop-row">Type: Rail</div>
       <div class="pop-row">Rail traffic: ${seg.traffic_str}
         <span class="src">(${seg.traffic_src || '—'})</span></div>
       ${goods}${com}`;
@@ -754,7 +754,7 @@
     return `
       <div class="pop-name">${seg.name}</div>
       <div class="pop-row">Operator: ${seg.operator || '—'}</div>
-      <div class="pop-row">Type: ${seg.type === 'intrastate' ? 'intrastate (both endpoints in Ohio)' : 'interstate (one endpoint in Ohio)'}</div>
+      <div class="pop-row">Type: ${seg.type === 'intrastate' ? 'Intrastate (both endpoints in Ohio)' : 'Interstate (one endpoint in Ohio)'}</div>
       <div class="pop-row">Endpoints: ${endpoints}${other}</div>
       <div class="pop-row">Initial in-service: ${seg.in_service || '—'}
         <span class="src">(${seg.in_service_source || '—'})</span></div>
@@ -763,6 +763,58 @@
       ${cap}${econ}
     `;
   }
+  // === Endpoint analysis helpers — DC presence + fulfillment gap ===
+
+  // Hand-curated out-of-state major DC markets referenced by fiber endpoints.
+  // Source figures: JLL Data Center Update 2024, Cushman & Wakefield Global
+  // Data Center Market Comparison 2024, datacentermap.com.
+  const DC_MARKET_KNOWN = {
+    "Ashburn, VA":        { mw: 3300, sites: "250+", source: "JLL/Cushman 2024 — Northern VA largest US DC market" },
+    "Chicago, IL":        { mw: 700,  sites: "~80",  source: "Cushman 2024 — Chicago top-5 US market" },
+    "Pittsburgh, PA":     { mw: 110,  sites: "~25",  source: "Industry est. (datacentermap.com)" },
+    "Detroit, MI":        { mw: 170,  sites: "~30",  source: "Industry est. (datacentermap.com)" },
+    "Indianapolis, IN":   { mw: 100,  sites: "~15",  source: "Industry est. (datacentermap.com)" },
+    "Raleigh, NC":        { mw: 280,  sites: "~40",  source: "Cushman 2024 — RDU emerging market" },
+  };
+
+  function haversineKm(a, b) {
+    const R = 6371, toRad = d => d * Math.PI / 180;
+    const dLat = toRad(b[0]-a[0]), dLng = toRad(b[1]-a[1]);
+    const h = Math.sin(dLat/2)**2 + Math.cos(toRad(a[0]))*Math.cos(toRad(b[0]))*Math.sin(dLng/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function sizeClass(mw) {
+    if (mw == null) return "size n/a";
+    if (mw >= 500) return "hyperscale";
+    if (mw >= 200) return "large";
+    if (mw >= 80)  return "mid";
+    return "small";
+  }
+  // Real DC presence near an Ohio coord (≤ 50 km radius).
+  function dcPresenceAt(coord) {
+    const nearby = (window.DATA_CENTERS || []).filter(d => haversineKm(coord, [d.lat, d.lng]) <= 50);
+    const totalMW = nearby.reduce((s, d) => s + (d.power_mw || 0), 0);
+    const sizes = {};
+    nearby.forEach(d => { const k = sizeClass(d.power_mw); sizes[k] = (sizes[k]||0)+1; });
+    return {
+      mw: totalMW,
+      count: nearby.length,
+      str: nearby.length === 0
+        ? "None publicly disclosed within ~50 km in this dataset"
+        : `${totalMW.toLocaleString()} MW (${nearby.length} site${nearby.length>1?'s':''}: ${
+            Object.entries(sizes).map(([k,n]) => `${n} ${k}`).join(', ')})`,
+    };
+  }
+  // Out-of-state market lookup by name (uses DC_MARKET_KNOWN).
+  function dcMarketByName(name) {
+    if (!name) return null;
+    for (const k of Object.keys(DC_MARKET_KNOWN)) {
+      if (name.toLowerCase().includes(k.toLowerCase().split(',')[0].toLowerCase()))
+        return { name: k, ...DC_MARKET_KNOWN[k] };
+    }
+    return null;
+  }
+
   function buildFiber() {
     const group = L.layerGroup();
     const segs = (window.FIBER_LINES || []);
@@ -807,14 +859,70 @@
         if (nm) endpoints[k].names.add(nm);
       });
     });
+    // Pre-compute each endpoint's segments + opposing-end summary
+    Object.values(endpoints).forEach(ep => {
+      ep.segs = []; // each: {seg, opposingCoord, opposingName, opposingPresence}
+      segs.forEach(seg => {
+        if (!seg.path || seg.path.length < 2) return;
+        const start = seg.path[0], end = seg.path[seg.path.length - 1];
+        const thisKm = Math.min(haversineKm(ep.coord, start), haversineKm(ep.coord, end));
+        if (thisKm > 8) return; // not this endpoint
+        const oppCoord = (haversineKm(ep.coord, start) < haversineKm(ep.coord, end)) ? end : start;
+        // opposing label: prefer endpoint_other_state when this side is the Ohio side,
+        // otherwise use one of the Ohio names
+        const ohioNames = seg.endpoints_ohio || [];
+        const oppName = seg.endpoint_other_state || ohioNames[ohioNames.length - 1] || 'Unknown';
+        const realPresence = dcPresenceAt(oppCoord);
+        const marketKnown  = dcMarketByName(oppName);
+        ep.segs.push({ seg, oppCoord, oppName, realPresence, marketKnown });
+      });
+    });
+
     Object.values(endpoints).forEach(ep => {
       const names = Array.from(ep.names).slice(0, 3).join(' / ');
-      const routeList = ep.routes
-        .map(n => `<div class="pop-row">• ${n}</div>`).join('');
+      const here = dcPresenceAt(ep.coord);
+
+      // aggregate opposing presence — real DCs within 50km + known-market lookups
+      let oppTotalMW = 0, oppSeen = new Set();
+      ep.segs.forEach(s => {
+        const k = `${s.oppCoord[0].toFixed(2)},${s.oppCoord[1].toFixed(2)}`;
+        if (oppSeen.has(k)) return;
+        oppSeen.add(k);
+        oppTotalMW += s.realPresence.mw + (s.marketKnown ? s.marketKnown.mw : 0);
+      });
+
+      // per-route detail (up to 6 longest by name length, capped to keep popup readable)
+      const routeRows = ep.segs.slice(0, 8).map(s => {
+        const oppStr = s.marketKnown
+          ? `${s.marketKnown.mw.toLocaleString()} MW market — ${s.marketKnown.sites} sites (${s.marketKnown.source})`
+          : (s.realPresence.count > 0
+              ? s.realPresence.str
+              : 'None publicly disclosed in this dataset');
+        return `<div class="pop-row" style="margin-top:4px;">
+          • ${s.seg.name}<br>
+          <span style="color:#888;font-size:11px;">↳ Opposing endpoint (${s.oppName}): ${oppStr}</span>
+        </div>`;
+      }).join('');
+
+      // simple fulfillment-gap flag
+      const gap = oppTotalMW > 0 && here.mw < oppTotalMW * 0.25;
+      const gapLine = gap
+        ? `<div class="pop-row" style="color:#e67e22; margin-top:6px; font-style:italic; font-size:11.5px;">
+            Capacity-gap flag: opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity; this endpoint has only ${here.mw.toLocaleString()} MW disclosed — endpoint clusters may signal announced or unannounced data-center buildout here.
+          </div>`
+        : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
+            Opposing endpoints aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (no major gap).
+          </div>`;
+
       const html = `
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
-        <div class="pop-row" style="color:#666;font-size:11px;">${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:</div>
-        ${routeList}
+        <div class="pop-row"><b>Data Center Presence here:</b> ${here.str}</div>
+        <div class="pop-row" style="color:#888;font-size:11px;margin-top:4px;">
+          ${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:
+        </div>
+        ${routeRows}
+        ${ep.segs.length > 8 ? `<div class="pop-row" style="color:#888;font-size:11px;">…and ${ep.segs.length - 8} more.</div>` : ''}
+        ${gapLine}
       `;
       L.marker(ep.coord, {
         icon: L.divIcon({
