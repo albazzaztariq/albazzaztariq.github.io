@@ -813,9 +813,6 @@
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
         <div class="pop-row" style="color:#666;font-size:11px;">${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:</div>
         ${routeList}
-        <div class="pop-row" style="color:#a259e6;font-style:italic;font-size:11px;margin-top:6px;">
-          Endpoint clusters may indicate announced or unannounced data center cluster establishment.
-        </div>
       `;
       L.marker(ep.coord, {
         icon: L.divIcon({
@@ -853,7 +850,12 @@
     <div class="tl-row"><span class="sw-circle"></span>STIP project (sized by scale)</div>
   `;
   const fiberLegendHTML = `
-    <div class="tl-row"><span class="sw-fiber"></span>Long-haul fiber (thickness ∝ capacity)</div>
+    <div class="tl-row" style="align-items:flex-start;">
+      <span class="sw-fiber" style="flex:none; margin-top:6px;"></span>
+      <span style="line-height:1.4;">Data Transmission Network Lines
+        <span style="opacity:0.75;">(thickness indicates amount of traffic or economic impact)</span>
+      </span>
+    </div>
     <div class="tl-row" style="align-items:flex-start;">
       <span class="sw-fiber-dot" style="flex:none;"></span>
       <span style="line-height:1.4;">Pulsating endpoint
