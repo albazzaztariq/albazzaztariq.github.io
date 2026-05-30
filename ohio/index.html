@@ -337,7 +337,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
-<script src="data/fiber.js?v=4"></script>
+<script src="data/fiber.js?v=5"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -756,8 +756,10 @@
       <div class="pop-row">Operator: ${seg.operator || '—'}</div>
       <div class="pop-row">Type: ${seg.type === 'intrastate' ? 'intrastate (both endpoints in Ohio)' : 'interstate (one endpoint in Ohio)'}</div>
       <div class="pop-row">Endpoints: ${endpoints}${other}</div>
-      <div class="pop-row">In-service: ${seg.in_service || '—'}
+      <div class="pop-row">Initial in-service: ${seg.in_service || '—'}
         <span class="src">(${seg.in_service_source || '—'})</span></div>
+      ${seg.in_service_full ? `<div class="pop-row">Fully operational: ${seg.in_service_full}
+        <span class="src">(${seg.in_service_full_source || '—'})</span></div>` : ''}
       ${cap}${econ}
     `;
   }
