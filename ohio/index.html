@@ -39,7 +39,7 @@
     padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; text-align: left; }
   .btn:hover { background: #252b3b; }
   .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .map { flex: 1; height: 480px; background: #0a0c11; position: relative; }
+  .map { flex: 0 0 480px; height: 480px; width: 100%; background: #0a0c11; position: relative; }
   .map-label { position: absolute; top: 8px; right: 12px; background: rgba(0,0,0,0.6);
     color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; z-index: 1000; }
 
@@ -267,8 +267,8 @@
 <p class="subtitle">County heat maps (Zillow ZHVI) · investment dots (company announcements, JobsOhio, US DOE OCED) · transportation overlay (OpenStreetMap, ODOT, FHWA Freight Analysis Framework, AAR / STB, Ohio Turnpike Commission)</p>
 
 <div class="top-controls">
-  <button id="toggleTransportTop" class="btn">Transportation overlay (heat maps): OFF — Click or Tap to Turn On</button>
-  <button id="toggleFiberTop" class="btn">Fiber / long-haul data lines (heat maps): OFF — Click or Tap to Turn On</button>
+  <button id="toggleTransportTop" class="btn">Click / Tap for Transportation Network</button>
+  <button id="toggleFiberTop" class="btn">Click / Tap for Data Transmission Network</button>
   <span class="hint">(applies to the ranked heat map)</span>
 </div>
 
@@ -314,8 +314,8 @@
 
 <div class="big-card">
   <div class="big-toggle-wrap">
-    <button id="toggleTransportBig" class="btn">Transportation overlay (this map): OFF — Click or Tap to Turn On</button>
-    <button id="toggleFiberBig" class="btn">Fiber / long-haul data lines (this map): OFF — Click or Tap to Turn On</button>
+    <button id="toggleTransportBig" class="btn">Click / Tap for Transportation Network</button>
+    <button id="toggleFiberBig" class="btn">Click / Tap for Data Transmission Network</button>
   </div>
   <div id="mapInvest" class="big-map">
     <div class="transport-legend" id="legendBig"></div>
@@ -882,8 +882,8 @@
   function setHeatOverlay(on) {
     heatOn = on;
     document.getElementById('toggleTransportTop').textContent =
-      'Transportation overlay (heat maps): ' + (on ? 'ON' : 'OFF')
-      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+      on ? 'Click / Tap to Hide Transportation Network'
+         : 'Click / Tap for Transportation Network';
     document.getElementById('toggleTransportTop').classList.toggle('active', on);
     setLegendForMap('legendA', heatOn, fiberHeatOn);
     setLegendForMap('legendB', heatOn, fiberHeatOn);
@@ -895,8 +895,8 @@
   function setBigOverlay(on) {
     bigOn = on;
     document.getElementById('toggleTransportBig').textContent =
-      'Transportation overlay (this map): ' + (on ? 'ON' : 'OFF')
-      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+      on ? 'Click / Tap to Hide Transportation Network'
+         : 'Click / Tap for Transportation Network';
     document.getElementById('toggleTransportBig').classList.toggle('active', on);
     setLegendForMap('legendBig', bigOn, fiberBigOn);
     if (on) { overlayBig.addTo(mapI); overlayBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
@@ -905,8 +905,8 @@
   function setFiberHeat(on) {
     fiberHeatOn = on;
     document.getElementById('toggleFiberTop').textContent =
-      'Fiber / long-haul data lines (heat maps): ' + (on ? 'ON' : 'OFF')
-      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+      on ? 'Click / Tap to Hide Data Transmission Network'
+         : 'Click / Tap for Data Transmission Network';
     document.getElementById('toggleFiberTop').classList.toggle('active', on);
     setLegendForMap('legendA', heatOn, fiberHeatOn);
     setLegendForMap('legendB', heatOn, fiberHeatOn);
@@ -918,8 +918,8 @@
   function setFiberBig(on) {
     fiberBigOn = on;
     document.getElementById('toggleFiberBig').textContent =
-      'Fiber / long-haul data lines (this map): ' + (on ? 'ON' : 'OFF')
-      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+      on ? 'Click / Tap to Hide Data Transmission Network'
+         : 'Click / Tap for Data Transmission Network';
     document.getElementById('toggleFiberBig').classList.toggle('active', on);
     setLegendForMap('legendBig', bigOn, fiberBigOn);
     if (on) { fiberBig.addTo(mapI); fiberBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
