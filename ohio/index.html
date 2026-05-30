@@ -71,6 +71,10 @@
     border: 2px solid #f1c40f; background: transparent;
     display: inline-block;
   }
+  .transport-legend .sw-fiber {
+    display: inline-block; width: 18px; height: 3px;
+    background: #a259e6;
+  }
   .big-card { margin: 0 24px 16px; background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; overflow: hidden; position: relative; }
   .big-map { height: 620px; background: #0a0c11; position: relative; }
@@ -250,6 +254,7 @@
 
 <div class="top-controls">
   <button id="toggleTransportTop" class="btn">Transportation overlay (heat maps): OFF — Click or Tap to Turn On</button>
+  <button id="toggleFiberTop" class="btn">Fiber / long-haul data lines (heat maps): OFF — Click or Tap to Turn On</button>
   <span class="hint">(applies to the ranked heat map)</span>
 </div>
 
@@ -296,6 +301,7 @@
 <div class="big-card">
   <div class="big-toggle-wrap">
     <button id="toggleTransportBig" class="btn">Transportation overlay (this map): OFF — Click or Tap to Turn On</button>
+    <button id="toggleFiberBig" class="btn">Fiber / long-haul data lines (this map): OFF — Click or Tap to Turn On</button>
   </div>
   <div id="mapInvest" class="big-map">
     <div class="transport-legend" id="legendBig"></div>
@@ -317,6 +323,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
+<script src="data/fiber.js?v=1"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -720,6 +727,45 @@
   const overlayHeatB = buildTransport();
   const overlayBig   = buildTransport();
 
+  // --- Fiber / long-haul data lines overlay (separate toggle) ---
+  function fiberPopup(seg) {
+    const cap = seg.capacity_str
+      ? `<div class="pop-row">Capacity: ${seg.capacity_str}
+          <span class="src">(${seg.capacity_source || '—'})</span></div>` : '';
+    const econ = seg.economic_impact_usd
+      ? `<div class="pop-row">Economic impact: $${(seg.economic_impact_usd/1e6).toFixed(0)}M
+          <span class="src">(${seg.economic_impact_source || '—'})</span></div>` : '';
+    const endpoints = (seg.endpoints_ohio || []).join(', ');
+    const other = seg.endpoint_other_state ? ` ↔ ${seg.endpoint_other_state}` : '';
+    return `
+      <div class="pop-name">${seg.name}</div>
+      <div class="pop-row">Operator: ${seg.operator || '—'}</div>
+      <div class="pop-row">Type: ${seg.type === 'intrastate' ? 'intrastate (both endpoints in Ohio)' : 'interstate (one endpoint in Ohio)'}</div>
+      <div class="pop-row">Endpoints: ${endpoints}${other}</div>
+      <div class="pop-row">In-service: ${seg.in_service || '—'}
+        <span class="src">(${seg.in_service_source || '—'})</span></div>
+      ${cap}${econ}
+    `;
+  }
+  function buildFiber() {
+    const group = L.layerGroup();
+    const segs = (window.FIBER_LINES || []);
+    if (!segs.length) return group;
+    const maxProxy = Math.max(1, ...segs.map(s => s.thickness_proxy_value || 0));
+    segs.forEach(seg => {
+      const t = (seg.thickness_proxy_value || 0) / maxProxy;
+      const weight = 2 + 6 * t;       // 2px (thin) ... 8px (thick)
+      const opacity = 0.55 + 0.4 * t; // thicker lines = more opaque
+      L.polyline(seg.path, {color: '#a259e6', weight, opacity})
+        .bindTooltip(fiberPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
+        .addTo(group);
+    });
+    return group;
+  }
+  const fiberHeatA = buildFiber();
+  const fiberHeatB = buildFiber();
+  const fiberBig   = buildFiber();
+
   // Z-order fix: every time a heat map re-renders, if the overlay is on,
   // remove + re-add it so it stays on top of the choropleth.
   function reassertOverlay(mapInstance, layer, isOn) {
@@ -739,20 +785,33 @@
     <div class="tl-row"><span class="sw-dot" style="background:#444;border:1px solid #aaa"></span>Intermodal terminal</div>
     <div class="tl-row"><span class="sw-circle"></span>STIP project (sized by scale)</div>
   `;
+  const fiberLegendHTML = `
+    <div class="tl-row"><span class="sw-fiber"></span>Long-haul fiber (thickness ∝ capacity)</div>
+  `;
+  // Initial legend = transport only. Fiber legend gets appended/removed via the fiber toggles.
   ['legendA','legendB','legendBig'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = transportLegendHTML;
   });
+  function setLegendForMap(legendId, transportOn, fiberOn) {
+    const el = document.getElementById(legendId);
+    if (!el) return;
+    el.innerHTML =
+      (transportOn ? transportLegendHTML : '')
+      + (fiberOn ? fiberLegendHTML : '');
+    el.classList.toggle('on', transportOn || fiberOn);
+  }
 
   let heatOn = false, bigOn = false;
+  let fiberHeatOn = false, fiberBigOn = false;
   function setHeatOverlay(on) {
     heatOn = on;
     document.getElementById('toggleTransportTop').textContent =
       'Transportation overlay (heat maps): ' + (on ? 'ON' : 'OFF')
       + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
     document.getElementById('toggleTransportTop').classList.toggle('active', on);
-    document.getElementById('legendA').classList.toggle('on', on);
-    document.getElementById('legendB').classList.toggle('on', on);
+    setLegendForMap('legendA', heatOn, fiberHeatOn);
+    setLegendForMap('legendB', heatOn, fiberHeatOn);
     [[mapA.map, overlayHeatA], [mapB.map, overlayHeatB]].forEach(([m,l]) => {
       if (on) { l.addTo(m); l.eachLayer(x=>x.bringToFront && x.bringToFront()); }
       else    { m.removeLayer(l); }
@@ -764,15 +823,42 @@
       'Transportation overlay (this map): ' + (on ? 'ON' : 'OFF')
       + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
     document.getElementById('toggleTransportBig').classList.toggle('active', on);
-    document.getElementById('legendBig').classList.toggle('on', on);
+    setLegendForMap('legendBig', bigOn, fiberBigOn);
     if (on) { overlayBig.addTo(mapI); overlayBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
     else    { mapI.removeLayer(overlayBig); }
+  }
+  function setFiberHeat(on) {
+    fiberHeatOn = on;
+    document.getElementById('toggleFiberTop').textContent =
+      'Fiber / long-haul data lines (heat maps): ' + (on ? 'ON' : 'OFF')
+      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+    document.getElementById('toggleFiberTop').classList.toggle('active', on);
+    setLegendForMap('legendA', heatOn, fiberHeatOn);
+    setLegendForMap('legendB', heatOn, fiberHeatOn);
+    [[mapA.map, fiberHeatA], [mapB.map, fiberHeatB]].forEach(([m,l]) => {
+      if (on) { l.addTo(m); l.eachLayer(x=>x.bringToFront && x.bringToFront()); }
+      else    { m.removeLayer(l); }
+    });
+  }
+  function setFiberBig(on) {
+    fiberBigOn = on;
+    document.getElementById('toggleFiberBig').textContent =
+      'Fiber / long-haul data lines (this map): ' + (on ? 'ON' : 'OFF')
+      + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
+    document.getElementById('toggleFiberBig').classList.toggle('active', on);
+    setLegendForMap('legendBig', bigOn, fiberBigOn);
+    if (on) { fiberBig.addTo(mapI); fiberBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
+    else    { mapI.removeLayer(fiberBig); }
   }
 
   document.getElementById('toggleTransportTop').addEventListener('click',
     () => setHeatOverlay(!heatOn));
   document.getElementById('toggleTransportBig').addEventListener('click',
     () => setBigOverlay(!bigOn));
+  document.getElementById('toggleFiberTop').addEventListener('click',
+    () => setFiberHeat(!fiberHeatOn));
+  document.getElementById('toggleFiberBig').addEventListener('click',
+    () => setFiberBig(!fiberBigOn));
 
   // Ranking buttons — re-render then reassert overlay z-order
   document.querySelectorAll('.rank-a').forEach(b => b.addEventListener('click', () => {
@@ -782,6 +868,7 @@
     mapA.render(m);
     document.getElementById('labelA').textContent = METRIC_LABEL[m];
     reassertOverlay(mapA.map, overlayHeatA, heatOn);
+    reassertOverlay(mapA.map, fiberHeatA, fiberHeatOn);
   }));
   document.querySelectorAll('.rank-b').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('.rank-b').forEach(x => x.classList.remove('active'));
@@ -790,6 +877,7 @@
     mapB.render(m);
     document.getElementById('labelB').textContent = METRIC_LABEL[m];
     reassertOverlay(mapB.map, overlayHeatB, heatOn);
+    reassertOverlay(mapB.map, fiberHeatB, fiberHeatOn);
   }));
 
 })();
