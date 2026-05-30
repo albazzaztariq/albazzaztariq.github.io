@@ -73,7 +73,8 @@
   }
   .transport-legend .sw-fiber {
     display: inline-block; width: 18px; height: 3px;
-    background: #a259e6;
+    background: linear-gradient(to right,
+      #e6194B, #ffe119, #3cb44b, #42d4f4, #4363d8, #911eb4, #f032e6);
   }
   /* Pulsating fiber endpoint marker — the DOT itself grows and shrinks
      so it's visually distinct from the static project dots. */
@@ -897,12 +898,27 @@
     return null;
   }
 
+  // Curated 30-color palette — each route gets its own visually-distinct hue
+  // so the polyline on the map matches the dot next to the route name in the
+  // popup. Selected for high contrast on the dark Carto basemap and for
+  // perceptual separation across the set.
+  const LINE_COLORS = [
+    '#e6194B','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#42d4f4',
+    '#f032e6','#bfef45','#fabed4','#469990','#dcbeff','#9A6324','#fffac8',
+    '#aaffc3','#ff8c00','#00ff80','#ff5500','#dd00ff','#00ffbe','#b1cc71',
+    '#f1085c','#dc5e93','#02ad24','#9a4d42','#1f9698','#a52a2a','#ff7f50',
+    '#7fffd4','#8b008b'
+  ];
+
   function buildFiber() {
     const group = L.layerGroup();
     const segs = (window.FIBER_LINES || []);
     if (!segs.length) return group;
-    // Normalize per proxy-unit so $M routes don't visually flatten route-mile or
-    // Gbps routes (which would otherwise look hairline next to a $6,000M entry).
+    // Assign a unique color to each route up front so polylines and popup
+    // dots share the same hue.
+    segs.forEach((seg, i) => { seg._color = LINE_COLORS[i % LINE_COLORS.length]; });
+    // Normalize per proxy-unit so $M routes don't visually flatten route-mile
+    // or Gbps routes.
     const unitMaxes = {};
     segs.forEach(s => {
       const u = (s.thickness_proxy_units || '').split(' ')[0] || 'unknown';
@@ -913,9 +929,9 @@
       const u = (seg.thickness_proxy_units || '').split(' ')[0] || 'unknown';
       const max = unitMaxes[u] || 1;
       const t = Math.min(1, (seg.thickness_proxy_value || 0) / max);
-      const weight = 2 + 7 * Math.pow(t, 0.6);   // mild concave taper, 2px..9px
-      const opacity = 0.55 + 0.4 * t;
-      L.polyline(seg.path, {color: '#a259e6', weight, opacity})
+      const weight = 2 + 7 * Math.pow(t, 0.6);
+      const opacity = 0.7 + 0.25 * t;
+      L.polyline(seg.path, {color: seg._color, weight, opacity})
         .bindTooltip(fiberPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
         .addTo(group);
     });
@@ -1017,8 +1033,9 @@
           : (s.realPresence.count > 0
               ? s.realPresence.str
               : 'None publicly disclosed in this dataset');
+        const lineColor = s.seg._color || pm.dot;
         return `<div class="pop-row" style="margin-top:4px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pm.dot};margin-right:4px;vertical-align:middle;"></span>
+          <span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${lineColor};border:1px solid #222;margin-right:5px;vertical-align:middle;"></span>
           ${s.seg.name}
           <span style="color:#888;font-size:10.5px;"> [${pm.short}]</span><br>
           <span style="color:#555;font-size:11px;">↳ <b>Opposite Endpoint:</b> ${oppLoc} — ${oppStr}</span>
@@ -1210,7 +1227,7 @@
     <div class="tl-row" style="align-items:flex-start;">
       <span class="sw-fiber" style="flex:none; margin-top:6px;"></span>
       <span style="line-height:1.4;">Data Transmission Network Lines
-        <span style="opacity:0.75;">(thickness indicates amount of traffic or economic impact)</span>
+        <span style="opacity:0.75;">(each route is its own color — match the colored dot next to a route name in any endpoint popup to find that route on the map; thickness indicates amount of traffic or economic impact)</span>
       </span>
     </div>
     <div class="tl-row" style="align-items:flex-start;">
