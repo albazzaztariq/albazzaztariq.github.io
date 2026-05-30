@@ -417,7 +417,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
-<script src="data/fiber.js?v=6"></script>
+<script src="data/fiber.js?v=7"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -615,15 +615,15 @@
       <div class="pop-row">Project: ${p.project}</div>
       ${cat}
       ${inSvc}
-      <div class="pop-row">Dollar Value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : '—'}</span>
-        <span class="src">(${p.dollar_value_source})</span></div>
+      <div class="pop-row">Dollar Value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : 'Not published'}</span>
+        <span class="src">(${p.dollar_value_source || 'Not published'})</span></div>
       <div class="pop-row">Direct Employment:
         <span class="emp-red pop-stat">${p.direct_employment != null ? p.direct_employment.toLocaleString() : 'Not published'}${empEst}</span></div>
       ${ptLine}
       ${empSrcLine}
       ${ptSrcLine}
       <div class="pop-row">Indirect Employment:
-        <span class="pop-stat">${p.indirect_employment != null ? p.indirect_employment.toLocaleString() : '—'}</span>${indTypes}${indSrc}</div>
+        <span class="pop-stat">${p.indirect_employment != null ? p.indirect_employment.toLocaleString() : 'Not published'}</span>${indTypes}${indSrc}</div>
     `;
   }
 
@@ -683,8 +683,8 @@
       <div class="pop-name">${d.project}</div>
       <div class="pop-row">Operator: ${d.operator}</div>
       ${inSvc}
-      <div class="pop-row">Power Consumption: <span class="pop-stat">${d.power_mw} MW</span>
-        <span class="src">(${d.power_mw_source})</span></div>
+      <div class="pop-row">Power Consumption: <span class="pop-stat">${d.power_mw != null ? d.power_mw + ' MW' : 'Not published'}</span>
+        <span class="src">(${d.power_mw_source || 'Not published'})</span></div>
     `;
   }
   const dcList = window.DATA_CENTERS || [];
@@ -939,6 +939,19 @@
         if (nm) endpoints[k].names.add(nm);
       });
     });
+    // Per-purpose presentation
+    const PURPOSE_LABEL = {
+      'datacenter':         { short: 'Data Center', dot: '#a259e6', gapsApply: true  },
+      'mixed':              { short: 'Mixed (carrier + DC)', dot: '#a259e6', gapsApply: true  },
+      'metro-backhaul':     { short: 'Metro / wireless backhaul', dot: '#7f8c8d', gapsApply: false },
+      'research-academic':  { short: 'Research / academic', dot: '#3498db', gapsApply: false },
+      'rural-middle-mile':  { short: 'Rural middle-mile', dot: '#27ae60', gapsApply: false },
+      'broadband-last-mile':{ short: 'Last-mile broadband', dot: '#16a085', gapsApply: false },
+    };
+    function purposeMeta(seg) {
+      return PURPOSE_LABEL[seg.purpose] || { short: seg.purpose || 'Unspecified', dot: '#999', gapsApply: false };
+    }
+
     // Pre-compute each endpoint's segments + opposing-end summary
     Object.values(endpoints).forEach(ep => {
       ep.segs = []; // each: {seg, opposingCoord, opposingName, opposingPresence}
@@ -948,8 +961,6 @@
         const thisKm = Math.min(haversineKm(ep.coord, start), haversineKm(ep.coord, end));
         if (thisKm > 8) return; // not this endpoint
         const oppCoord = (haversineKm(ep.coord, start) < haversineKm(ep.coord, end)) ? end : start;
-        // opposing label: prefer endpoint_other_state when this side is the Ohio side,
-        // otherwise use one of the Ohio names
         const ohioNames = seg.endpoints_ohio || [];
         const oppName = seg.endpoint_other_state || ohioNames[ohioNames.length - 1] || 'Unknown';
         const realPresence = dcPresenceAt(oppCoord);
@@ -962,55 +973,68 @@
       const names = Array.from(ep.names).slice(0, 3).join(' / ');
       const here = dcPresenceAt(ep.coord);
 
-      // aggregate opposing presence — real DCs within 50km + known-market lookups
+      // Only DC-relevant routes (purpose: datacenter | mixed) count toward gap
+      // analysis. Other routes (research, last-mile, metro backhaul, rural
+      // middle-mile) serve other purposes — flagging them as "DC gaps" would
+      // be noise.
+      const dcSegs = ep.segs.filter(s => purposeMeta(s.seg).gapsApply);
       let oppTotalMW = 0, oppSeen = new Set();
-      ep.segs.forEach(s => {
+      dcSegs.forEach(s => {
         const k = `${s.oppCoord[0].toFixed(2)},${s.oppCoord[1].toFixed(2)}`;
         if (oppSeen.has(k)) return;
         oppSeen.add(k);
         oppTotalMW += s.realPresence.mw + (s.marketKnown ? s.marketKnown.mw : 0);
       });
 
-      // per-route detail (up to 6 longest by name length, capped to keep popup readable)
+      // per-route detail with purpose badge
       const routeRows = ep.segs.slice(0, 8).map(s => {
+        const pm = purposeMeta(s.seg);
         const oppStr = s.marketKnown
           ? `${s.marketKnown.mw.toLocaleString()} MW market — ${s.marketKnown.sites} sites (${s.marketKnown.source})`
           : (s.realPresence.count > 0
               ? s.realPresence.str
               : 'None publicly disclosed in this dataset');
         return `<div class="pop-row" style="margin-top:4px;">
-          • ${s.seg.name}<br>
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pm.dot};margin-right:4px;vertical-align:middle;"></span>
+          ${s.seg.name}
+          <span style="color:#888;font-size:10.5px;"> [${pm.short}]</span><br>
           <span style="color:#888;font-size:11px;">↳ Opposing Endpoint (${s.oppName}): ${oppStr}</span>
         </div>`;
       }).join('');
 
-      // Gap flag in a SEPARATE pane, in red. Both-zero is the strongest signal.
+      // Gap flag in a SEPARATE pane, in red. ONLY fires when DC-relevant
+      // routes (purpose: datacenter | mixed) terminate here.
       let gapPane = null;
       const here0 = here.mw === 0, opp0 = oppTotalMW === 0;
-      if (here0 && opp0) {
+      const hasDCRoutes = dcSegs.length > 0;
+      if (hasDCRoutes && here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
-          Zero disclosed DC capacity at this endpoint OR at any opposing endpoint, despite ${ep.routes.length} long-haul fiber route${ep.routes.length>1?'s':''} terminating here. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
+          Zero disclosed DC capacity at this endpoint OR at any DC-relevant opposing endpoint, despite ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminating here. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
         </div>`;
-      } else if (here0 && !opp0) {
+      } else if (hasDCRoutes && here0 && !opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity; this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout here.
+          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity (from ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}); this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout here.
         </div>`;
-      } else if (!here0 && opp0) {
+      } else if (hasDCRoutes && !here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
-          This endpoint has ${here.mw.toLocaleString()} MW disclosed; Opposing Endpoints Aggregate zero. The opposing endpoints may signal announced or unannounced data-center buildout.
+          This endpoint has ${here.mw.toLocaleString()} MW disclosed; Opposing Endpoints Aggregate zero across ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}. The opposing endpoints may signal announced or unannounced data-center buildout.
         </div>`;
-      } else if (here.mw < oppTotalMW * 0.25) {
+      } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
           Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW; this endpoint only ${here.mw.toLocaleString()} MW (under 25%). Endpoint cluster may signal additional data-center buildout here.
         </div>`;
       }
-      const matchedLine = gapPane ? '' : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
-        Opposing Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (capacity broadly matched).
-      </div>`;
+      const matchedLine = hasDCRoutes
+        ? (gapPane ? '' : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
+            Opposing DC Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (capacity broadly matched).
+          </div>`)
+        : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
+            No DC-oriented routes terminate here (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
+          </div>`;
 
       const mainPane = `<div class="fep-main">
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
@@ -1025,12 +1049,17 @@
 
       const html = `<div class="fep-wrap">${mainPane}${gapPane || ''}</div>`;
 
-      // Pick dot style + flash speed by gap magnitude in MW.
+      // Pick dot style + flash speed. Only fires for endpoints with at least
+      // one DC-relevant route AND a capacity mismatch — non-DC endpoints
+      // (research, last-mile broadband, metro backhaul, rural middle-mile)
+      // get the static purple pulsating dot instead.
       let gapMW = 0;
-      if (here0 && opp0) gapMW = 5000;                       // greenfield = max
-      else if (here0)     gapMW = oppTotalMW;                 // this side is the gap
-      else if (opp0)      gapMW = here.mw;                    // inverted gap
-      else if (here.mw < oppTotalMW * 0.25) gapMW = oppTotalMW - here.mw;
+      if (hasDCRoutes) {
+        if (here0 && opp0) gapMW = 5000;
+        else if (here0)     gapMW = oppTotalMW;
+        else if (opp0)      gapMW = here.mw;
+        else if (here.mw < oppTotalMW * 0.25) gapMW = oppTotalMW - here.mw;
+      }
       const hasGap = gapMW > 0;
       let durationS;
       if (gapMW >= 5000)      durationS = 0.45;

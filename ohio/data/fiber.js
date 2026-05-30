@@ -12,7 +12,7 @@ window.FIBER_LINES = [
 
   // === Zayo Group ===
   { name: "Zayo Columbus–Ashburn long-haul dark fiber",
-    operator: "Zayo Group", type: "interstate-endpoint",
+    operator: "Zayo Group", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["Columbus"], endpoint_other_state: "Ashburn, VA",
     path: [[39.9612,-82.9988],[39.9150,-80.7400],[39.6295,-79.9559],[39.0438,-77.4874]],
     in_service: "2021",
@@ -23,7 +23,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Zayo Cleveland–Columbus high-capacity link",
-    operator: "Zayo Group", type: "intrastate",
+    operator: "Zayo Group", type: "intrastate", purpose: "mixed",
     endpoints_ohio: ["Cleveland","Columbus"], endpoint_other_state: null,
     path: [[41.4993,-81.6944],[40.7989,-81.3784],[40.4173,-82.9071],[39.9612,-82.9988]],
     in_service: "2021",
@@ -34,7 +34,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Zayo Columbus–Pittsburgh long-haul (via Zanesville/Wheeling)",
-    operator: "Zayo Group", type: "interstate-endpoint",
+    operator: "Zayo Group", type: "interstate-endpoint", purpose: "mixed",
     endpoints_ohio: ["Columbus","Zanesville"], endpoint_other_state: "Pittsburgh, PA",
     path: [[39.9612,-82.9988],[39.9403,-82.0132],[40.0640,-80.7209],[40.1740,-80.2462],[40.4406,-79.9959]],
     in_service: "2022",
@@ -45,7 +45,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Zayo Columbus–Indianapolis long-haul (AI-driven build)",
-    operator: "Zayo Group", type: "interstate-endpoint",
+    operator: "Zayo Group", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["Columbus"], endpoint_other_state: "Indianapolis, IN",
     path: [[39.9612,-82.9988],[39.9281,-83.8088],[39.9056,-84.7080],[39.7684,-86.1581]],
     in_service: "under construction (announced 2025)",
@@ -58,7 +58,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Zayo Youngstown–Akron metro / long-haul expansion",
-    operator: "Zayo Group", type: "intrastate",
+    operator: "Zayo Group", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Youngstown","Akron"], endpoint_other_state: null,
     path: [[41.0998,-80.6495],[41.2376,-81.2090],[41.0814,-81.5190]],
     in_service: "2020",
@@ -70,7 +70,7 @@ window.FIBER_LINES = [
 
   // === OARnet (Ohio Academic Resources Network) ===
   { name: "OARnet 100G Columbus–Akron–Youngstown–Cleveland ring",
-    operator: "OARnet", type: "intrastate",
+    operator: "OARnet", type: "intrastate", purpose: "research-academic",
     endpoints_ohio: ["Columbus","Akron","Youngstown","Cleveland"], endpoint_other_state: null,
     path: [[39.9612,-82.9988],[40.4173,-82.9071],[41.0814,-81.5190],[41.0998,-80.6495],[41.4993,-81.6944]],
     in_service: "2013",
@@ -82,7 +82,7 @@ window.FIBER_LINES = [
     economic_impact_source: "OARnet — '$13M in equipment' (statewide shared across rings)" },
 
   { name: "OARnet 100G Columbus–Dayton–Cincinnati ring",
-    operator: "OARnet", type: "intrastate",
+    operator: "OARnet", type: "intrastate", purpose: "research-academic",
     endpoints_ohio: ["Columbus","Dayton","Cincinnati"], endpoint_other_state: null,
     path: [[39.9612,-82.9988],[39.7589,-84.1916],[39.1031,-84.5120]],
     in_service: "2013",
@@ -93,7 +93,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Statewide $13M shared across rings" },
 
   { name: "OARnet 100G Columbus–Lima–Toledo ring",
-    operator: "OARnet", type: "intrastate",
+    operator: "OARnet", type: "intrastate", purpose: "research-academic",
     endpoints_ohio: ["Columbus","Lima","Toledo"], endpoint_other_state: null,
     path: [[39.9612,-82.9988],[40.7425,-84.1052],[41.6528,-83.5379]],
     in_service: "2013",
@@ -104,7 +104,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "OARnet southeast ring (Columbus–Athens–Portsmouth)",
-    operator: "OARnet", type: "intrastate",
+    operator: "OARnet", type: "intrastate", purpose: "research-academic",
     endpoints_ohio: ["Columbus","Athens","Portsmouth"], endpoint_other_state: null,
     path: [[39.9612,-82.9988],[39.3292,-82.1013],[38.7317,-82.9977]],
     in_service: "2013",
@@ -115,7 +115,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "OARnet–Internet2 Cleveland international peering link",
-    operator: "OARnet / Internet2", type: "interstate-endpoint",
+    operator: "OARnet / Internet2", type: "interstate-endpoint", purpose: "research-academic",
     endpoints_ohio: ["Cleveland"], endpoint_other_state: "Internet2 backbone (Chicago via OmniPoP)",
     path: [[41.4993,-81.6944],[41.8781,-87.6298]],
     in_service: "2013",
@@ -127,7 +127,7 @@ window.FIBER_LINES = [
 
   // === Everstream ===
   { name: "Everstream NE Ohio regional (Toledo–Cleveland–Conneaut–Canton–Mansfield)",
-    operator: "Everstream", type: "intrastate",
+    operator: "Everstream", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Toledo","Cleveland","Conneaut","Canton","Mansfield"], endpoint_other_state: null,
     path: [[41.6528,-83.5379],[41.0814,-82.2188],[41.4993,-81.6944],[41.9478,-80.5645],[40.7989,-81.3784],[40.7584,-82.5154]],
     in_service: "2019",
@@ -139,7 +139,7 @@ window.FIBER_LINES = [
     economic_impact_source: "Crain's — '$300M to build a dense business-only fiber network throughout the Midwest'" },
 
   { name: "Everstream Columbus metro fiber ring",
-    operator: "Everstream", type: "intrastate",
+    operator: "Everstream", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Columbus","Delaware","Marysville","Newark","Grove City"], endpoint_other_state: null,
     path: [[39.9612,-82.9988],[40.2986,-83.0680],[40.2364,-83.3674],[40.0581,-82.4013],[39.8814,-83.0930]],
     in_service: "August 2019 (initial 80-mile lit)",
@@ -153,7 +153,7 @@ window.FIBER_LINES = [
     economic_impact_source: "Everstream — '$88M in the market'" },
 
   { name: "Everstream Cincinnati metro build",
-    operator: "Everstream", type: "intrastate",
+    operator: "Everstream", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Cincinnati"], endpoint_other_state: null,
     path: [[39.1031,-84.5120],[39.1612,-84.4569],[39.1900,-84.3300]],
     in_service: "2021",
@@ -164,7 +164,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Everstream Dayton metro build",
-    operator: "Everstream", type: "intrastate",
+    operator: "Everstream", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Dayton"], endpoint_other_state: null,
     path: [[39.7589,-84.1916],[39.7400,-84.1100],[39.8000,-84.2500]],
     in_service: "2021",
@@ -175,7 +175,7 @@ window.FIBER_LINES = [
     economic_impact_usd: null, economic_impact_source: "Not published" },
 
   { name: "Everstream Toledo metro build",
-    operator: "Everstream", type: "intrastate",
+    operator: "Everstream", type: "intrastate", purpose: "metro-backhaul",
     endpoints_ohio: ["Toledo"], endpoint_other_state: null,
     path: [[41.6528,-83.5379],[41.6800,-83.4900]],
     in_service: "2021",
@@ -187,7 +187,7 @@ window.FIBER_LINES = [
 
   // === Lumen Technologies ===
   { name: "Lumen intercity network upgrade — Ohio segments (Cleveland / Columbus / Cincinnati)",
-    operator: "Lumen Technologies", type: "interstate-endpoint",
+    operator: "Lumen Technologies", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["Cleveland","Columbus","Cincinnati"], endpoint_other_state: "Chicago, IL / Pittsburgh, PA backbone touches",
     path: [[41.8781,-87.6298],[41.4993,-81.6944],[39.9612,-82.9988],[39.1031,-84.5120],[40.4406,-79.9959]],
     in_service: "phased lit since 2022 (announced 2022)",
@@ -201,7 +201,7 @@ window.FIBER_LINES = [
 
   // === Meta Platforms ===
   { name: "Meta Ohio–Virginia–North Carolina long-haul backbone",
-    operator: "Meta Platforms", type: "interstate-endpoint",
+    operator: "Meta Platforms", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["New Albany"], endpoint_other_state: "Ashburn, VA → NC data centers",
     path: [[40.0807,-82.8088],[39.9150,-80.7400],[39.0438,-77.4874],[35.7796,-78.6382]],
     in_service: "under construction (announced 2026)",
@@ -216,7 +216,7 @@ window.FIBER_LINES = [
 
   // === Horizon Telcom / Shentel / Glo Fiber ===
   { name: "Horizon Appalachian Ohio middle-mile backbone (Chillicothe–Athens–Portsmouth–Zanesville–Cambridge)",
-    operator: "Horizon Telcom (now Shentel / Glo Fiber)", type: "intrastate",
+    operator: "Horizon Telcom (now Shentel / Glo Fiber)", type: "intrastate", purpose: "rural-middle-mile",
     endpoints_ohio: ["Chillicothe","Athens","Portsmouth","Zanesville","Cambridge"], endpoint_other_state: null,
     path: [[39.3331,-82.9824],[39.3292,-82.1013],[38.7317,-82.9977],[39.9403,-82.0132],[40.0317,-81.5887]],
     in_service: "2013 (BTOP-funded backbone lit)",
@@ -230,7 +230,7 @@ window.FIBER_LINES = [
     economic_impact_source: "OARnet — 'Horizon Telcom $66.5M to fund extensive network in 34 counties'" },
 
   { name: "Horizon (Shentel) Ohio–Chicago backhaul corridor",
-    operator: "Horizon Telcom (Shentel) — Glo Fiber", type: "interstate-endpoint",
+    operator: "Horizon Telcom (Shentel) — Glo Fiber", type: "interstate-endpoint", purpose: "mixed",
     endpoints_ohio: ["Columbus","Toledo"], endpoint_other_state: "Chicago, IL",
     path: [[39.9612,-82.9988],[40.7425,-84.1052],[41.6528,-83.5379],[41.8781,-87.6298]],
     in_service: "in service",
@@ -242,7 +242,7 @@ window.FIBER_LINES = [
 
   // === OneCommunity (now Everstream) — BTOP NE Ohio ===
   { name: "OneCommunity (now Everstream) NE Ohio middle-mile extension",
-    operator: "OneCommunity (BTOP-funded; now part of Everstream)", type: "intrastate",
+    operator: "OneCommunity (BTOP-funded; now part of Everstream)", type: "intrastate", purpose: "rural-middle-mile",
     endpoints_ohio: ["Cleveland","Akron","Youngstown"], endpoint_other_state: null,
     path: [[41.4993,-81.6944],[41.0814,-81.5190],[41.0998,-80.6495]],
     in_service: "2013",
@@ -255,7 +255,7 @@ window.FIBER_LINES = [
 
   // === Altafiber (Cincinnati Bell) ===
   { name: "Altafiber tri-state long-haul network (OH–KY–IN)",
-    operator: "Altafiber (Cincinnati Bell)", type: "interstate-endpoint",
+    operator: "Altafiber (Cincinnati Bell)", type: "interstate-endpoint", purpose: "broadband-last-mile",
     endpoints_ohio: ["Cincinnati","Greene County (Dayton-area)"], endpoint_other_state: "Greendale, IN / Northern KY",
     path: [[39.1031,-84.5120],[39.0840,-84.5086],[39.0473,-84.6655],[39.0517,-85.0269],[39.7423,-84.0641]],
     in_service: "in service (legacy Cincinnati Bell ILEC footprint)",
@@ -269,7 +269,7 @@ window.FIBER_LINES = [
 
   // === Lightpath ===
   { name: "Lightpath Columbus–Chicago long-haul (392 mi, multi-conduit)",
-    operator: "Lightpath", type: "interstate-endpoint",
+    operator: "Lightpath", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["Columbus"], endpoint_other_state: "Chicago, IL (via South Bend, IN)",
     path: [[39.9612,-82.9988],[40.7686,-86.1580],[41.6764,-86.2520],[41.8781,-87.6298]],
     in_service: "phased build under way (327 mi of 392 in new underground conduit)",
@@ -283,7 +283,7 @@ window.FIBER_LINES = [
 
   // === Altafiber — gap-fill: separate Dayton / SW / NE Ohio sub-projects ===
   { name: "Altafiber Dayton region XGS-PON build ($200M, 2,300 mi)",
-    operator: "Altafiber", type: "intrastate",
+    operator: "Altafiber", type: "intrastate", purpose: "broadband-last-mile",
     endpoints_ohio: ["Dayton","Montgomery County","Greene County","Franklin Twp","Springboro Twp","Clearcreek Twp"], endpoint_other_state: null,
     path: [[39.7589,-84.1916],[39.7473,-84.0633],[39.6362,-84.2272],[39.5928,-84.0524]],
     in_service: "70,000 Dayton-region addresses passed as of Feb 2026",
@@ -297,7 +297,7 @@ window.FIBER_LINES = [
     economic_impact_source: "Altafiber — 'Total Investment Will Reach $200M When Build Is Complete'" },
 
   { name: "Altafiber SW Ohio rural last-mile (Adams / Brown / Clermont, $110M)",
-    operator: "Altafiber + BroadbandOhio", type: "intrastate",
+    operator: "Altafiber + BroadbandOhio", type: "intrastate", purpose: "broadband-last-mile",
     endpoints_ohio: ["Adams County","Brown County","Clermont County"], endpoint_other_state: null,
     path: [[38.8451,-83.4838],[38.9312,-83.8607],[39.0598,-84.1466]],
     in_service: "phased rollout 2025 onward",
@@ -311,7 +311,7 @@ window.FIBER_LINES = [
     economic_impact_source: "Telecompetitor — '$50M state + altafiber $60M = $110M total project cost'" },
 
   { name: "Altafiber NE Ohio expansion — Akron + Cleveland suburbs (~100k addresses)",
-    operator: "Altafiber", type: "intrastate",
+    operator: "Altafiber", type: "intrastate", purpose: "broadband-last-mile",
     endpoints_ohio: ["Tallmadge","Kent","Hudson","Twinsburg","Solon","Streetsboro","Stow","Aurora","Summit County","Portage County","Geauga County","Cuyahoga County"], endpoint_other_state: null,
     path: [[41.1011,-81.4412],[41.1537,-81.3579],[41.2406,-81.4412],[41.3126,-81.5790],[41.3898,-81.4412],[41.2390,-81.3454],[41.1597,-81.4412],[41.3170,-81.3454]],
     in_service: "construction begins early 2025",
@@ -326,7 +326,7 @@ window.FIBER_LINES = [
 
   // === Uniti Fiber ===
   { name: "Uniti Midwest long-haul (Indianapolis–Chicago–Detroit–Pittsburgh–Ashburn, with Toledo + Cleveland drops)",
-    operator: "Uniti Fiber", type: "interstate-endpoint",
+    operator: "Uniti Fiber", type: "interstate-endpoint", purpose: "datacenter",
     endpoints_ohio: ["Toledo","Cleveland"], endpoint_other_state: "Indianapolis, IN / Chicago, IL / Detroit, MI / Pittsburgh, PA / Ashburn, VA",
     path: [[39.7684,-86.1581],[41.8781,-87.6298],[41.6639,-83.5552],[42.3314,-83.0458],[41.4993,-81.6944],[40.4406,-79.9959],[39.0438,-77.4874]],
     in_service: "Jul 2023 (announced; route lit shortly thereafter)",
@@ -341,7 +341,7 @@ window.FIBER_LINES = [
 
   // === Crown Castle Fiber (acquired by Zayo) ===
   { name: "Crown Castle Fiber Ohio metro (Cleveland/Columbus/Cincinnati) — now Zayo",
-    operator: "Zayo (acquired from Crown Castle, 2026)", type: "intrastate",
+    operator: "Zayo (acquired from Crown Castle, 2026)", type: "intrastate", purpose: "mixed",
     endpoints_ohio: ["Cleveland","Columbus","Cincinnati"], endpoint_other_state: null,
     path: [[41.4993,-81.6944],[40.4173,-82.9071],[39.9612,-82.9988],[39.1031,-84.5120]],
     in_service: "Crown Castle pre-existing metro fiber (multi-year ILEC era)",
@@ -356,7 +356,7 @@ window.FIBER_LINES = [
 
   // === Omni Fiber ===
   { name: "Omni Fiber Ohio buildout (Tallmadge / Stow / Kent / Wooster / Toledo / Massillon / etc.)",
-    operator: "Omni Fiber", type: "intrastate",
+    operator: "Omni Fiber", type: "intrastate", purpose: "broadband-last-mile",
     endpoints_ohio: ["Tallmadge","Stow","Kent","Wooster","Toledo","Massillon","North Canton","Louisville","Leetonia","Painesville","Reminderville","Strasburg","Niles","Masury"],
     endpoint_other_state: null,
     path: [[41.1011,-81.4412],[41.1597,-81.4412],[41.1537,-81.3579],[40.8051,-81.9351],[41.6639,-83.5552],[40.7967,-81.5215],[40.8678,-81.4023]],
@@ -372,7 +372,7 @@ window.FIBER_LINES = [
 
   // === Segra ===
   { name: "Segra Charleston–Ohio–Pittsburgh long-haul trunk (Ohio segment)",
-    operator: "Segra", type: "interstate-endpoint",
+    operator: "Segra", type: "interstate-endpoint", purpose: "mixed",
     endpoints_ohio: ["Marietta","Cambridge"], endpoint_other_state: "Charleston, WV / Pittsburgh, PA",
     path: [[38.3498,-81.6326],[39.4143,-81.4548],[40.0317,-81.5887],[40.4406,-79.9959]],
     in_service: "in service",
