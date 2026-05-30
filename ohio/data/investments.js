@@ -1286,6 +1286,39 @@ window.INVESTMENTS = [
     indirect_employment_types: ["tracker / module suppliers","EPC contractors","battery storage integrators","transmission interconnect"],
     indirect_employment_source: "Standard utility-solar + BESS supplier mix" },
 
+  // =====================================================================
+  // Pass 5 gap-fill — 2026-05-30
+  // =====================================================================
+
+  { company: "Cincinnati Children's Hospital Medical Center",
+    project: "Critical Care Building",
+    category: "other", sector: "Healthcare / pediatric hospital",
+    lat: 39.1397, lng: -84.5023,
+    in_service: "November 2021 (opened)",
+    in_service_source: "Cincinnati Children's press release + Cincinnati Business Courier",
+    dollar_value_usd: 600_000_000,
+    dollar_value_source: "Cincinnati Children's + Cincinnati Business Courier — $600M Critical Care Building",
+    direct_employment: null, direct_employment_is_estimate: false,
+    direct_employment_source: "Not published — net-new headcount for this building not separately disclosed",
+    permanent: null, temporary: null,
+    perm_temp_source: "Not published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
+  { company: "Pratt Industries", project: "Wapakoneta paper mill",
+    category: "manufacturing", manufacture: "100% recycled containerboard (Pratt Paper #6 paper mill)",
+    lat: 40.5673, lng: -84.1936,
+    in_service: "2019 (operational)",
+    in_service_source: "Pratt Industries — mill opened 2019",
+    dollar_value_usd: 260_000_000,
+    dollar_value_source: "Pratt Industries 2017 announcement — ~$260M Wapakoneta mill (pre-2020 cutoff noted)",
+    direct_employment: 137, direct_employment_is_estimate: false,
+    direct_employment_source: "Pratt 2017 announcement — 137 jobs at Wapakoneta mill",
+    permanent: 137, temporary: null,
+    perm_temp_source: "Pratt — construction headcount not separately published",
+    indirect_employment: null, indirect_employment_types: [],
+    indirect_employment_source: "Not published" },
+
 ];
 
 // =====================================================================
