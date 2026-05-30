@@ -1020,53 +1020,78 @@
         "but not publicly disclosed, (b) under planning or construction " +
         "ahead of an announcement, or (c) being staged as overbuild " +
         "capacity ahead of a forthcoming announcement.";
-      // Translate a gap in MW into approximate equivalent-data-center sizing.
-      // Size class thresholds match the live-site sizeClass() function:
-      //   hyperscale ≥ 500 MW · large ≥ 200 · mid ≥ 80 · small < 80.
+      // Per-route implied compute scale — how much DC load a single DC-oriented
+      // long-haul fiber route needs to anchor at break-even. Industry rough
+      // order of magnitude is ~100–250 MW per route (one large DC), NOT the
+      // full opposing-market capacity. A route to Ashburn (3,300 MW market)
+      // doesn't imply 3,300 MW at the other end — it implies enough compute
+      // to justify the lit cost of that one route.
+      const PER_ROUTE_CAP = 250;   // MW — one large DC's anchor load
+      const GREENFIELD_PER_ROUTE = 150; // MW — assumption when both ends 0
+      function impliedGapForRoutes(dcSegs, useGreenfield) {
+        let total = 0;
+        dcSegs.forEach(s => {
+          if (useGreenfield) { total += GREENFIELD_PER_ROUTE; return; }
+          const oppMW = s.realPresence.mw + (s.marketKnown ? s.marketKnown.mw : 0);
+          // 10% of opposing market, capped at one large DC per route.
+          total += oppMW > 0 ? Math.min(oppMW * 0.1, PER_ROUTE_CAP) : GREENFIELD_PER_ROUTE;
+        });
+        return Math.round(total);
+      }
+      // Translate an implied gap (MW) into approximate equivalent-DC sizing.
+      // Uses ranges and qualitative anchor-load language to avoid false precision.
       function quantifyGapMW(mw) {
         if (mw <= 0) return null;
-        const gw = mw / 1000;
-        const hyper = Math.round(mw / 500);
-        const large = Math.round(mw / 300);
-        const mid   = Math.round(mw / 120);
-        const gwStr = gw >= 1 ? `~${gw.toFixed(2)} GW` : `~${Math.round(mw)} MW`;
-        if (mw < 80)  return `${gwStr} — equivalent to ~1 small data center`;
-        if (mw < 200) return `${gwStr} — equivalent to ~1 mid-size data center`;
-        if (mw < 500) return `${gwStr} — equivalent to ~${large} large data center${large>1?'s':''} or ~${mid} mid-size`;
-        return `${gwStr} — equivalent to ~${hyper} hyperscale data center${hyper>1?'s':''} (or ~${large} large or ~${mid} mid-size facilities)`;
+        const range = mw >= 1000 ? `~${(mw/1000).toFixed(1)} GW` : `~${Math.round(mw/10)*10} MW`;
+        if (mw < 80)   return `${range} — roughly one small data center's anchor load`;
+        if (mw < 200)  return `${range} — roughly one mid-size data center's anchor load`;
+        if (mw < 500)  return `${range} — roughly one large or two mid-size data centers' anchor load`;
+        if (mw < 1000) return `${range} — roughly one hyperscale or two large data centers' anchor load`;
+        return `${range} — multiple hyperscale-scale anchor loads`;
       }
+      const CAVEAT =
+        "<b>Estimate caveat:</b> implied gap is per-route anchor load " +
+        "(~100–250 MW per DC-oriented route), not the full opposing-market " +
+        "size. Actual undisclosed compute could be lower (operator overbuilt " +
+        "ahead of demand) or higher (multi-campus stealth build).";
       if (hasDCRoutes && here0 && opp0) {
-        // Greenfield: no anchor at either end. Use a routes-based heuristic:
-        // typical hyperscale long-haul DC-oriented operator pairs ≥ 500 MW of
-        // load per major endpoint, so implied gap ≈ dcSegs.length × 500 MW.
-        const implied = dcSegs.length * 500;
+        const implied = impliedGapForRoutes(dcSegs, true);
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
           ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'}, yet zero data-center capacity is publicly disclosed at either end of any of them.
-          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (implied, based on the heuristic that DC-oriented long-haul operators do not typically build a route without anchoring ~500 MW of DC load at each endpoint).</div>
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (~${GREENFIELD_PER_ROUTE} MW per greenfield route, typical break-even anchor load).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL} This is the strongest such signal in the dataset — the fiber is in place; nothing is yet plugged in at either end.</div>
+          <div style="margin-top:6px; font-size:11px; color:#7d2727;">${CAVEAT}</div>
         </div>`;
       } else if (hasDCRoutes && here0 && !opp0) {
+        const implied = impliedGapForRoutes(dcSegs, false);
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
           ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'}. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; the local terminus shows zero.
-          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(oppTotalMW)}.</div>
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (sum of per-route implied anchor loads).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
+          <div style="margin-top:6px; font-size:11px; color:#7d2727;">${CAVEAT}</div>
         </div>`;
       } else if (hasDCRoutes && !here0 && opp0) {
+        const implied = Math.min(here.mw, dcSegs.length * PER_ROUTE_CAP);
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
           The local terminus hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating aggregate zero disclosed capacity.
-          <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(here.mw)} (mirroring the load already present locally).</div>
+          <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(implied)} (per-route anchor load, capped at one large DC per route).</div>
           <div style="margin-top:6px;">${REASONING_BASE} The asymmetry suggests that the opposing endpoints likely host data-center capacity that is either undisclosed, under planning or construction ahead of an announcement, or being staged as overbuild ahead of a forthcoming announcement.</div>
+          <div style="margin-top:6px; font-size:11px; color:#7d2727;">${CAVEAT}</div>
         </div>`;
       } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
-        const gap = oppTotalMW - here.mw;
+        // gap = how much MORE local compute would be needed to reach 25%
+        // of opposing, capped at per-route anchor scale.
+        const targetLocal = Math.min(oppTotalMW * 0.25, dcSegs.length * PER_ROUTE_CAP);
+        const implied = Math.max(0, targetLocal - here.mw);
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
           Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity vs. only ${here.mw.toLocaleString()} MW locally — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
-          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(gap)} (to mirror opposing total).</div>
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (per-route anchor scale, capped).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
+          <div style="margin-top:6px; font-size:11px; color:#7d2727;">${CAVEAT}</div>
         </div>`;
       }
       const matchedLine = hasDCRoutes
