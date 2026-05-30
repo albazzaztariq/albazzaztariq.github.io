@@ -323,7 +323,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
-<script src="data/fiber.js?v=1"></script>
+<script src="data/fiber.js?v=2"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -751,11 +751,20 @@
     const group = L.layerGroup();
     const segs = (window.FIBER_LINES || []);
     if (!segs.length) return group;
-    const maxProxy = Math.max(1, ...segs.map(s => s.thickness_proxy_value || 0));
+    // Normalize per proxy-unit so $M routes don't visually flatten route-mile or
+    // Gbps routes (which would otherwise look hairline next to a $6,000M entry).
+    const unitMaxes = {};
+    segs.forEach(s => {
+      const u = (s.thickness_proxy_units || '').split(' ')[0] || 'unknown';
+      const v = s.thickness_proxy_value || 0;
+      if (v > (unitMaxes[u] || 0)) unitMaxes[u] = v;
+    });
     segs.forEach(seg => {
-      const t = (seg.thickness_proxy_value || 0) / maxProxy;
-      const weight = 2 + 6 * t;       // 2px (thin) ... 8px (thick)
-      const opacity = 0.55 + 0.4 * t; // thicker lines = more opaque
+      const u = (seg.thickness_proxy_units || '').split(' ')[0] || 'unknown';
+      const max = unitMaxes[u] || 1;
+      const t = Math.min(1, (seg.thickness_proxy_value || 0) / max);
+      const weight = 2 + 7 * Math.pow(t, 0.6);   // mild concave taper, 2px..9px
+      const opacity = 0.55 + 0.4 * t;
       L.polyline(seg.path, {color: '#a259e6', weight, opacity})
         .bindTooltip(fiberPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
         .addTo(group);
