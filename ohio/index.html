@@ -880,7 +880,7 @@
       mw: totalMW,
       count: nearby.length,
       str: nearby.length === 0
-        ? "None publicly disclosed within ~50 km in this dataset"
+        ? "None publicly disclosed within ~30 miles in this dataset"
         : `${totalMW.toLocaleString()} MW (${nearby.length} site${nearby.length>1?'s':''}: ${
             Object.entries(sizes).map(([k,n]) => `${n} ${k}`).join(', ')})`,
     };
