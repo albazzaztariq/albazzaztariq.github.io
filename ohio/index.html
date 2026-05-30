@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ohio Real Estate & Investment Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a22; --text: #e6e9ef;
+    --muted: #8a93a6; --accent: #4ea1ff; --border: #232836;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
+  h1 { margin: 16px 24px 4px; font-size: 22px; font-weight: 600; }
+  h2.section-title { margin: 8px 24px 10px; font-size: 19px; font-weight: 600;
+    letter-spacing: 0.2px; border-top: 1px solid var(--border);
+    padding-top: 16px; }
+  .subtitle { margin: 0 24px 16px; color: var(--muted); font-size: 13px; }
+  .row { display: flex; gap: 16px; padding: 0 24px 16px; }
+  .map-card { flex: 1; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; display: flex; }
+  .controls { width: 140px; padding: 12px 8px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px; background: #12151c; }
+  .controls .label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 4px; }
+  .btn { background: #1d2230; color: var(--text); border: 1px solid var(--border);
+    padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; text-align: left; }
+  .btn:hover { background: #252b3b; }
+  .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .map { flex: 1; height: 480px; background: #0a0c11; position: relative; }
+  .map-label { position: absolute; top: 8px; right: 12px; background: rgba(0,0,0,0.6);
+    color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; z-index: 1000; }
+  .big-card { margin: 0 24px 16px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; position: relative; }
+  .big-map { height: 620px; background: #0a0c11; position: relative; }
+  .top-controls { padding: 0 24px 12px; display: flex; gap: 8px; align-items: center; }
+  .top-controls .hint { color: var(--muted); font-size: 12px; }
+  .heat-legend { padding: 10px 24px; color: var(--muted); font-size: 12px; }
+  .heat-legend span { display: inline-block; margin-right: 16px; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+    vertical-align: middle; margin-right: 4px; }
+
+  .big-legend {
+    display: grid;
+    grid-template-columns: 1fr 2.2fr 1fr;
+    gap: 16px;
+    padding: 14px 24px;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    background: #12151c;
+  }
+  .big-legend .left  { color: var(--muted); font-size: 12px; line-height: 1.7; }
+  .big-legend .right { color: var(--muted); font-size: 12px; line-height: 1.5; text-align: right; }
+  .big-legend .mid   { font-size: 13.5px; font-weight: 600; color: var(--text);
+                       line-height: 1.55; text-align: center; }
+  .big-legend .mid .pct { color: var(--muted); font-weight: 500; }
+  .big-toggle-wrap { display: flex; justify-content: center; padding: 8px 24px 0; }
+
+  /* Leaflet tooltip + popup styling — force generous fixed widths so the
+     body never collapses to a 1-word column when the anchor is near a viewport
+     edge. !important is needed because Leaflet's own .leaflet-tooltip rules
+     win specificity ties. */
+  .leaflet-tooltip.road-tip,
+  .leaflet-tooltip.hub-tip {
+    min-width: 280px !important;
+    max-width: 360px !important;
+    width: auto !important;
+    white-space: normal !important;
+    word-wrap: break-word;
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    background: #fff;
+    color: #111;
+    border: 1px solid #222;
+  }
+  /* Heat-map county popups — same fixed-width popup treatment as the big-map
+     dot popups, so they never collapse to 1–2 words per line. */
+  .leaflet-popup.county-pop .leaflet-popup-content-wrapper {
+    background: #fff; color: #111; border: 1px solid #222;
+    border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  }
+  .leaflet-popup.county-pop .leaflet-popup-content {
+    margin: 9px 13px;
+    width: 320px !important;
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  .leaflet-popup.county-pop .leaflet-popup-tip { background: #fff; }
+  .leaflet-popup.county-pop a.leaflet-popup-close-button { display: none; }
+  /* Big-map dot popups (investment / data-center / STIP) — use real L.popup
+     so Leaflet auto-pans the map to keep the popup fully inside the viewport. */
+  .leaflet-popup.dot-pop .leaflet-popup-content-wrapper {
+    background: #fff; color: #111; border: 1px solid #222;
+    border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  }
+  .leaflet-popup.dot-pop .leaflet-popup-content {
+    margin: 10px 14px;
+    width: 380px !important;       /* fixed width — no 1-word columns */
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  .leaflet-popup.dot-pop .leaflet-popup-tip { background: #fff; }
+  .leaflet-popup.dot-pop a.leaflet-popup-close-button { display: none; }
+  .pop-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .pop-row  { color: #333; }
+  .pop-row .src { color: #666; font-size: 11px; }
+  .pop-stat { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  /* Direct-employment block coloring on investment popups */
+  .emp-red       { color: #d62828; font-weight: 600; }
+  .emp-blue      { color: #2a6fdb; font-weight: 600; }
+  .emp-red-note  { color: #d62828; font-size: 11.5px; line-height: 1.45;
+                   margin-top: 2px; }
+  .emp-blue-note { color: #2a6fdb; font-size: 11.5px; line-height: 1.45; }
+
+  /* County labels on the large map */
+  .county-label {
+    color: #cbd1de; text-align: center;
+    font-size: 10px; line-height: 1.15;
+    text-shadow: 0 0 4px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.9);
+    pointer-events: none;
+    background: transparent; border: none; box-shadow: none;
+    white-space: nowrap;
+  }
+  .county-label em { font-style: italic; color: #a9d2ff; }
+</style>
+</head>
+<body>
+
+<h1>Ohio Real Estate &amp; Investment Map</h1>
+<p class="subtitle">County heat maps (Zillow ZHVI) · investment dots (company announcements, JobsOhio, US DOE OCED) · transportation overlay (OpenStreetMap, ODOT, FHWA Freight Analysis Framework, AAR / STB, Ohio Turnpike Commission)</p>
+
+<div class="top-controls">
+  <button id="toggleTransportTop" class="btn">Transportation overlay (heat maps): OFF</button>
+  <span class="hint">(applies to Map A and Map B)</span>
+</div>
+
+<div class="row">
+  <div class="map-card">
+    <div class="controls">
+      <div class="label">Map A — Rank by</div>
+      <button class="btn rank-a active" data-metric="zhvi">Value</button>
+      <button class="btn rank-a"        data-metric="pct_1y">1-Year Growth</button>
+      <button class="btn rank-a"        data-metric="pct_5y">5-Year Growth</button>
+      <button class="btn rank-a"        data-metric="pct_10y">10-Year Growth</button>
+    </div>
+    <div id="mapA" class="map"><div class="map-label" id="labelA">Value</div></div>
+  </div>
+
+  <div class="map-card">
+    <div class="controls">
+      <div class="label">Map B — Rank by</div>
+      <button class="btn rank-b"        data-metric="zhvi">Value</button>
+      <button class="btn rank-b"        data-metric="pct_1y">1-Year Growth</button>
+      <button class="btn rank-b active" data-metric="pct_5y">5-Year Growth</button>
+      <button class="btn rank-b"        data-metric="pct_10y">10-Year Growth</button>
+    </div>
+    <div id="mapB" class="map"><div class="map-label" id="labelB">5-Year Growth</div></div>
+  </div>
+</div>
+
+<div class="heat-legend">
+  <span><span class="swatch" style="background:#08306b"></span>highest</span>
+  <span><span class="swatch" style="background:#2171b5"></span></span>
+  <span><span class="swatch" style="background:#6baed6"></span></span>
+  <span><span class="swatch" style="background:#c6dbef"></span></span>
+  <span><span class="swatch" style="background:#f7fbff"></span>lowest</span>
+</div>
+
+<h2 class="section-title">Notable Future Developments</h2>
+
+<div class="big-card">
+  <div class="big-toggle-wrap">
+    <button id="toggleTransportBig" class="btn">Transportation overlay (this map): OFF</button>
+  </div>
+  <div id="mapInvest" class="big-map"></div>
+  <div class="big-legend">
+    <div class="left">
+      <div><span class="swatch" style="background:#d62828; border-radius:50%"></span>Manufacturing</div>
+      <div><span class="swatch" style="background:#2a6fdb; border-radius:50%"></span>Other (corporate / R&amp;D / logistics / finance / healthcare)</div>
+      <div><span class="swatch" style="background:#2ecc71; border-radius:50%"></span>Data center</div>
+    </div>
+    <div class="mid" id="totalsStrip">Loading totals…</div>
+    <div class="right">
+      Investment dot size =<br>50% investment $ + 50% direct employment<br>
+      <span style="font-size:11px;">Data-center green dots sized vs. each other (MW basis)</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="data/investments.js"></script>
+<script src="data/transport.js"></script>
+<script>
+(async function() {
+  const geo = await fetch('ohio_counties.geojson').then(r => r.json());
+
+  const METRIC_LABEL = {
+    zhvi: 'Value', pct_1y: '1-Year Growth',
+    pct_5y: '5-Year Growth', pct_10y: '10-Year Growth',
+  };
+  const RAMP = ['#f7fbff', '#c6dbef', '#6baed6', '#2171b5', '#08306b'];
+
+  function quantileBreaks(values) {
+    const v = values.filter(x => x != null && !Number.isNaN(x)).slice().sort((a,b)=>a-b);
+    if (!v.length) return [0,0,0,0];
+    const q = p => v[Math.min(v.length - 1, Math.floor(p * v.length))];
+    return [q(0.2), q(0.4), q(0.6), q(0.8)];
+  }
+  function colorFor(value, breaks) {
+    if (value == null || Number.isNaN(value)) return '#333';
+    for (let i = 0; i < breaks.length; i++) if (value <= breaks[i]) return RAMP[i];
+    return RAMP[4];
+  }
+  const fmtMoney = v => v == null ? '—' : '$' + Math.round(v).toLocaleString();
+  const fmtPct   = v => v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+  const fmtPop   = v => v == null ? '—' : v.toLocaleString();
+  const fmtBillions = n => n >= 1e9
+    ? '$' + (n/1e9).toFixed(2).replace(/\.?0+$/,'') + 'B'
+    : '$' + (n/1e6).toFixed(0) + 'M';
+  function fmtMetroPop(n) {
+    if (n >= 1e6) return (n/1e6).toFixed(2).replace(/\.?0+$/,'') + ' Million';
+    return Math.round(n/1000) + 'K';
+  }
+
+  // --- County popup (heat maps) ---
+  function countyPopupHTML(p) {
+    const emp = p.top_employers || [];
+    const empLines = emp.length
+      ? emp.slice(0,3).map((e,i)=>
+          `<div class="pop-row">Top employer #${i+1}: ${e.name} (${e.pct}% of employment)</div>`).join('')
+      : `<div class="pop-row" style="color:#888;font-style:italic;">Top employers: pending</div>`;
+    return `
+      <div class="pop-name">${p.name} County</div>
+      <div class="pop-row">Population: <span class="pop-stat">${fmtPop(p.population)}</span></div>
+      ${empLines}
+      <div class="pop-row">Current value: <span class="pop-stat">${fmtMoney(p.zhvi)}</span></div>
+      <div class="pop-row">1-year growth: <span class="pop-stat">${fmtPct(p.pct_1y)}</span></div>
+      <div class="pop-row">5-year growth: <span class="pop-stat">${fmtPct(p.pct_5y)}</span></div>
+      <div class="pop-row">10-year growth: <span class="pop-stat">${fmtPct(p.pct_10y)}</span></div>
+    `;
+  }
+
+  // --- Heat map builder ---
+  function buildHeatMap(divId, initialMetric) {
+    const map = L.map(divId, {
+      zoomControl: true, attributionControl: false,
+      center: [40.4, -82.7], zoom: 7, minZoom: 6, maxZoom: 10,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+      {subdomains:'abcd', maxZoom: 19}).addTo(map);
+
+    // single shared popup for the county hovers on this map — autoPan keeps
+    // it inside the viewport and width is locked by .county-pop CSS.
+    const popup = L.popup({
+      autoPan: true, autoPanPadding: [30, 30],
+      maxWidth: 380, minWidth: 320,
+      closeButton: false, keepInView: true,
+      offset: [0, -4], className: 'county-pop',
+    });
+    let openTimer = null, closeTimer = null;
+
+    let layer = null;
+    function render(metric) {
+      if (layer) map.removeLayer(layer);
+      const vals = geo.features.map(f => f.properties[metric]);
+      const breaks = quantileBreaks(vals);
+      layer = L.geoJSON(geo, {
+        style: f => ({
+          color: '#1a1d24', weight: 0.6,
+          fillColor: colorFor(f.properties[metric], breaks),
+          fillOpacity: 0.88,
+        }),
+        onEachFeature: (f, lyr) => {
+          lyr.on('mouseover', e => {
+            e.target.setStyle({weight: 2, color: '#fff'});
+            if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+            openTimer = setTimeout(() => {
+              popup.setContent(countyPopupHTML(f.properties))
+                   .setLatLng(e.latlng)
+                   .openOn(map);
+            }, 40);
+          });
+          lyr.on('mousemove', e => {
+            if (map.hasLayer(popup)) popup.setLatLng(e.latlng);
+          });
+          lyr.on('mouseout',  e => {
+            layer.resetStyle(e.target);
+            if (openTimer) { clearTimeout(openTimer); openTimer = null; }
+            closeTimer = setTimeout(() => map.closePopup(popup), 100);
+          });
+        },
+      }).addTo(map);
+    }
+    render(initialMetric);
+    return { map, render: m => render(m) };
+  }
+
+  const mapA = buildHeatMap('mapA', 'zhvi');
+  const mapB = buildHeatMap('mapB', 'pct_5y');
+
+  // --- Investment / data-center / county-label big map ---
+  const mapI = L.map('mapInvest', {
+    zoomControl: true, attributionControl: false,
+    center: [40.4, -82.7], zoom: 7, minZoom: 6, maxZoom: 11,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+    {subdomains:'abcd', maxZoom: 19}).addTo(mapI);
+  // Precompute county centroids (bbox midpoints) for hover-label placement.
+  const countyCentroids = {};
+  geo.features.forEach(f => {
+    const coords = (function flatten(g){
+      const all = [];
+      function walk(arr){
+        if (typeof arr[0] === 'number') { all.push(arr); return; }
+        for (const x of arr) walk(x);
+      }
+      walk(g.coordinates); return all;
+    })(f.geometry);
+    let minLat=999, maxLat=-999, minLng=999, maxLng=-999;
+    for (const c of coords) {
+      if (c[1] < minLat) minLat = c[1]; if (c[1] > maxLat) maxLat = c[1];
+      if (c[0] < minLng) minLng = c[0]; if (c[0] > maxLng) maxLng = c[0];
+    }
+    countyCentroids[f.properties.fips] = [(minLat+maxLat)/2, (minLng+maxLng)/2];
+  });
+
+  // County outlines on the big map: interactive, so a hover places the
+  // county's name + population + (optional) italic metro line *inside* the
+  // outline — and only that one. Mouseout removes it.
+  let activeCountyLabel = null;
+  function bigCountyLabelHTML(p) {
+    const metroLine = (p.metro && p.metro_pop && p.metro_pop > 400000)
+      ? `<div><em>(${p.metro} metro area)</em></div>` : '';
+    return `
+      <div>${p.name} County</div>
+      <div>County Population: ${p.population != null ? p.population.toLocaleString() : '—'}</div>
+      ${metroLine}`;
+  }
+  const bigCountyLayer = L.geoJSON(geo, {
+    style: () => ({color:'#2a3142', weight:0.5,
+                   fillColor:'#1a1d24', fillOpacity:0.45}),
+    onEachFeature: (f, lyr) => {
+      lyr.on('mouseover', () => {
+        if (activeCountyLabel) { mapI.removeLayer(activeCountyLabel); activeCountyLabel = null; }
+        const c = countyCentroids[f.properties.fips];
+        if (!c) return;
+        activeCountyLabel = L.marker(c, {
+          icon: L.divIcon({
+            className: 'county-label',
+            html: bigCountyLabelHTML(f.properties),
+            iconSize: [160, 50], iconAnchor: [80, 25],
+          }),
+          interactive: false, keyboard: false,
+        }).addTo(mapI);
+        lyr.setStyle({weight: 1.5, color: '#fff'});
+      });
+      lyr.on('mouseout', () => {
+        if (activeCountyLabel) { mapI.removeLayer(activeCountyLabel); activeCountyLabel = null; }
+        bigCountyLayer.resetStyle(lyr);
+      });
+    },
+  }).addTo(mapI);
+
+  // --- Investment dots (red/blue) — linear sizing, no sqrt compression ---
+  function investmentPopup(p) {
+    const cat = p.category === 'manufacturing'
+      ? `<div class="pop-row">Manufacture: ${p.manufacture}</div>`
+      : `<div class="pop-row">Sector: ${p.sector}</div>`;
+    const empEst = p.direct_employment_is_estimate ? ' est.' : '';
+    const ptLine = (p.permanent != null && p.temporary != null)
+      ? `<div class="pop-row emp-blue">${p.permanent.toLocaleString()} permanent, ${p.temporary.toLocaleString()} temporary</div>`
+      : '';
+    const empSrcLine = p.direct_employment_source
+      ? `<div class="pop-row emp-red-note">${p.direct_employment_source}</div>` : '';
+    const ptSrcLine  = p.perm_temp_source
+      ? `<div class="pop-row emp-blue-note">${p.perm_temp_source}</div>` : '';
+    const indTypes = p.indirect_employment_types && p.indirect_employment_types.length
+      ? ` <span class="src">(${p.indirect_employment_types.join(', ')})</span>` : '';
+    const indSrc = p.indirect_employment_source
+      ? ` <span class="src">— ${p.indirect_employment_source}</span>` : '';
+    return `
+      <div class="pop-name">${p.company}</div>
+      <div class="pop-row">Project: ${p.project}</div>
+      ${cat}
+      <div class="pop-row">Dollar value: <span class="pop-stat">${fmtBillions(p.dollar_value_usd)}</span>
+        <span class="src">(${p.dollar_value_source})</span></div>
+      <div class="pop-row">Direct Employment:
+        <span class="emp-red pop-stat">${p.direct_employment.toLocaleString()}${empEst}</span></div>
+      ${ptLine}
+      ${empSrcLine}
+      ${ptSrcLine}
+      <div class="pop-row">Indirect employment:
+        <span class="pop-stat">${p.indirect_employment != null ? p.indirect_employment.toLocaleString() : '—'}</span>${indTypes}${indSrc}</div>
+    `;
+  }
+
+  const invList = window.INVESTMENTS || [];
+  const maxDollar = Math.max(1, ...invList.map(p => p.dollar_value_usd || 0));
+  const maxDirect = Math.max(1, ...invList.map(p => p.direct_employment || 0));
+  function dotRadius(p) {
+    const a = (p.dollar_value_usd  || 0) / maxDollar;
+    const b = (p.direct_employment || 0) / maxDirect;
+    const score = 0.5 * a + 0.5 * b;
+    return 5 + 30 * score;  // linear — preserves the gap between $28B and $4B
+  }
+  // Helper: open a 380px-wide popup that Leaflet will auto-pan into view.
+  function attachHoverPopup(marker, html) {
+    const popup = L.popup({
+      autoPan: true,
+      autoPanPadding: [40, 40],
+      maxWidth: 420,
+      minWidth: 380,
+      closeButton: false,
+      keepInView: true,
+      offset: [0, -4],
+      className: 'dot-pop',
+    }).setContent(html);
+    let openTimer = null, closeTimer = null;
+    marker.on('mouseover', () => {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      openTimer = setTimeout(() => {
+        popup.setLatLng(marker.getLatLng()).openOn(mapI);
+      }, 50);
+    });
+    marker.on('mouseout', () => {
+      if (openTimer) { clearTimeout(openTimer); openTimer = null; }
+      closeTimer = setTimeout(() => mapI.closePopup(popup), 120);
+    });
+  }
+
+  invList.forEach(p => {
+    const color = p.category === 'manufacturing' ? '#d62828' : '#2a6fdb';
+    const m = L.circleMarker([p.lat, p.lng], {
+      radius: dotRadius(p), color: '#fff', weight: 1.2,
+      fillColor: color, fillOpacity: 0.82,
+    }).addTo(mapI);
+    attachHoverPopup(m, investmentPopup(p));
+  });
+
+  // --- Data center dots (green), sized vs each other on MW basis ---
+  function dcPopup(d) {
+    return `
+      <div class="pop-name">${d.project}</div>
+      <div class="pop-row">Operator: ${d.operator}</div>
+      <div class="pop-row">Power consumption: <span class="pop-stat">${d.power_mw} MW</span>
+        <span class="src">(${d.power_mw_source})</span></div>
+    `;
+  }
+  const dcList = window.DATA_CENTERS || [];
+  const maxMW = Math.max(1, ...dcList.map(d => d.power_mw || 0));
+  dcList.forEach(d => {
+    const r = 5 + 22 * ((d.power_mw || 0) / maxMW);
+    const m = L.circleMarker([d.lat, d.lng], {
+      radius: r, color: '#0d3b1f', weight: 1.2,
+      fillColor: '#2ecc71', fillOpacity: 0.85,
+    }).addTo(mapI);
+    attachHoverPopup(m, dcPopup(d));
+  });
+
+  // --- Totals strip ---
+  (function buildTotals() {
+    const manuf = invList.filter(p => p.category === 'manufacturing');
+    const other = invList.filter(p => p.category !== 'manufacturing');
+    const totalInv  = invList.reduce((s,p) => s + (p.dollar_value_usd || 0), 0);
+    const totalEmp  = invList.reduce((s,p) => s + (p.direct_employment || 0), 0);
+    const manufInv  = manuf.reduce((s,p) => s + (p.dollar_value_usd || 0), 0);
+    const manufEmp  = manuf.reduce((s,p) => s + (p.direct_employment || 0), 0);
+    const otherInv  = other.reduce((s,p) => s + (p.dollar_value_usd || 0), 0);
+    const otherEmp  = other.reduce((s,p) => s + (p.direct_employment || 0), 0);
+    const pct = (n,d) => d > 0 ? Math.round(n/d*100) + '%' : '—';
+    document.getElementById('totalsStrip').innerHTML = `
+      <div>Total manufacturing investment: ${fmtBillions(manufInv)}
+        <span class="pct">(${pct(manufInv, totalInv)} of total invested)</span></div>
+      <div>Total manufacturing direct employment: ${manufEmp.toLocaleString()}
+        <span class="pct">(${pct(manufEmp, totalEmp)} of total direct hires)</span></div>
+      <div>Total other-sector investment: ${fmtBillions(otherInv)}
+        <span class="pct">(${pct(otherInv, totalInv)} of total invested)</span></div>
+      <div>Total other-sector direct employment: ${otherEmp.toLocaleString()}
+        <span class="pct">(${pct(otherEmp, totalEmp)} of total direct hires)</span></div>`;
+  })();
+
+  // --- Transportation overlay ---
+  function roadPopup(seg) {
+    const goods = seg.goods_value_str
+      ? `<div class="pop-row">Goods moved: ${seg.goods_value_str}
+          <span class="src">(${seg.goods_value_src || '—'})</span></div>` : '';
+    const com = (seg.commodities && seg.commodities.length)
+      ? `<div class="pop-row">Top goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
+          <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
+    return `
+      <div class="pop-name">${seg.name}</div>
+      <div class="pop-row">Type: road</div>
+      <div class="pop-row">Average Annual Daily Traffic: ${seg.traffic_str}
+        <span class="src">(${seg.traffic_src || '—'})</span></div>
+      ${goods}${com}`;
+  }
+  function railPopup(seg) {
+    const goods = seg.goods_value_str
+      ? `<div class="pop-row">Goods moved: ${seg.goods_value_str}
+          <span class="src">(${seg.goods_value_src || '—'})</span></div>` : '';
+    const com = (seg.commodities && seg.commodities.length)
+      ? `<div class="pop-row">Top goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
+          <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
+    return `
+      <div class="pop-name">${seg.name}</div>
+      <div class="pop-row">Type: rail</div>
+      <div class="pop-row">Rail traffic: ${seg.traffic_str}
+        <span class="src">(${seg.traffic_src || '—'})</span></div>
+      ${goods}${com}`;
+  }
+  function hubPopup(h) {
+    const nameLine = h.name ? `<div class="pop-name">${h.name}</div>` : '';
+    return `
+      ${nameLine}
+      <div class="pop-row">City / town: ${h.city}</div>
+      <div class="pop-row">Nearest large metro: ${h.metro} (~${fmtMetroPop(h.metro_pop)})</div>`;
+  }
+  function stipPopup(p) {
+    return `
+      <div class="pop-name">${p.name}</div>
+      <div class="pop-row">In-service: ${p.in_service || '—'}</div>
+      <div class="pop-row">Work: ${p.work || '—'}</div>
+      <div class="pop-row">Capacity increase: ${p.capacity_pct != null ? '+' + p.capacity_pct + '%' : '—'}</div>`;
+  }
+
+  function buildTransport() {
+    const group = L.layerGroup();
+    // Interstates (widest red)
+    (window.TRANSPORT?.interstates || []).forEach(seg => {
+      seg.paths.forEach(path => {
+        L.polyline(path, {color:'#d62828', weight:4, opacity:0.9})
+          .bindTooltip(roadPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
+          .addTo(group);
+      });
+    });
+    // US + state routes (thinner blue)
+    (window.TRANSPORT?.us_state_routes || []).forEach(seg => {
+      seg.paths.forEach(path => {
+        L.polyline(path, {color:'#2a6fdb', weight:2.5, opacity:0.85})
+          .bindTooltip(roadPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
+          .addTo(group);
+      });
+    });
+    // Rail — two-line look (light wide + dark thin centerline)
+    (window.TRANSPORT?.rail || []).forEach(seg => {
+      L.polyline(seg.path, {color:'#aaa', weight:5, opacity:0.55, dashArray:'2,6'})
+        .bindTooltip(railPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
+        .addTo(group);
+      L.polyline(seg.path, {color:'#1a1a1a', weight:1.5, opacity:0.9})
+        .addTo(group);
+    });
+    // Intermodal terminals
+    (window.TRANSPORT?.intermodal || []).forEach(pt => {
+      L.circleMarker([pt.lat, pt.lng],
+        {radius:6, color:'#aaa', weight:1.5, fillColor:'#444', fillOpacity:0.9})
+        .bindTooltip(railPopup(pt), {sticky:true, direction:'auto', className:'road-tip'})
+        .addTo(group);
+    });
+    // Hubs (black dots)
+    (window.TRANSPORT?.hubs || []).forEach(h => {
+      L.circleMarker([h.lat, h.lng],
+        {radius:4, color:'#000', weight:1, fillColor:'#000', fillOpacity:1})
+        .bindTooltip(hubPopup(h), {sticky:true, direction:'auto', className:'hub-tip'})
+        .addTo(group);
+    });
+    // STIP (yellow-outlined sized circles — yellow so they're distinguishable
+    // from the red interstate lines.)
+    (window.TRANSPORT?.stip || []).forEach(pt => {
+      L.circleMarker([pt.lat, pt.lng], {
+        radius: 8 + 18 * (pt.size_score || 0.3),
+        color: '#f1c40f', weight: 3, fillColor: 'transparent', fillOpacity: 0,
+      }).bindTooltip(stipPopup(pt), {sticky:true, direction:'auto', className:'stip-tip'})
+        .addTo(group);
+    });
+    return group;
+  }
+
+  // Each map has its own transport layer instance (a layer can only belong to one map)
+  const overlayHeatA = buildTransport();
+  const overlayHeatB = buildTransport();
+  const overlayBig   = buildTransport();
+
+  // Z-order fix: every time a heat map re-renders, if the overlay is on,
+  // remove + re-add it so it stays on top of the choropleth.
+  function reassertOverlay(mapInstance, layer, isOn) {
+    if (!isOn) return;
+    if (mapInstance.hasLayer(layer)) mapInstance.removeLayer(layer);
+    layer.addTo(mapInstance);
+    layer.eachLayer(l => l.bringToFront && l.bringToFront());
+  }
+
+  let heatOn = false, bigOn = false;
+  function setHeatOverlay(on) {
+    heatOn = on;
+    document.getElementById('toggleTransportTop').textContent =
+      'Transportation overlay (heat maps): ' + (on ? 'ON' : 'OFF');
+    document.getElementById('toggleTransportTop').classList.toggle('active', on);
+    [[mapA.map, overlayHeatA], [mapB.map, overlayHeatB]].forEach(([m,l]) => {
+      if (on) { l.addTo(m); l.eachLayer(x=>x.bringToFront && x.bringToFront()); }
+      else    { m.removeLayer(l); }
+    });
+  }
+  function setBigOverlay(on) {
+    bigOn = on;
+    document.getElementById('toggleTransportBig').textContent =
+      'Transportation overlay (this map): ' + (on ? 'ON' : 'OFF');
+    document.getElementById('toggleTransportBig').classList.toggle('active', on);
+    if (on) { overlayBig.addTo(mapI); overlayBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
+    else    { mapI.removeLayer(overlayBig); }
+  }
+
+  document.getElementById('toggleTransportTop').addEventListener('click',
+    () => setHeatOverlay(!heatOn));
+  document.getElementById('toggleTransportBig').addEventListener('click',
+    () => setBigOverlay(!bigOn));
+
+  // Ranking buttons — re-render then reassert overlay z-order
+  document.querySelectorAll('.rank-a').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.rank-a').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const m = b.dataset.metric;
+    mapA.render(m);
+    document.getElementById('labelA').textContent = METRIC_LABEL[m];
+    reassertOverlay(mapA.map, overlayHeatA, heatOn);
+  }));
+  document.querySelectorAll('.rank-b').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.rank-b').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const m = b.dataset.metric;
+    mapB.render(m);
+    document.getElementById('labelB').textContent = METRIC_LABEL[m];
+    reassertOverlay(mapB.map, overlayHeatB, heatOn);
+  }));
+
+})();
+</script>
+</body>
+</html>
