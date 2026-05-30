@@ -85,12 +85,12 @@
     display: inline-block;
   }
   .transport-legend .sw-fiber-dot { vertical-align: middle; }
-  /* Fiber endpoint tooltip — main pane + gap-flag pane stacked vertically
-     so the popup uses height, not width. */
+  /* Fiber endpoint tooltip — two parallel panes (side-by-side) on desktop,
+     stacked vertically on mobile so they fit. */
   .leaflet-tooltip.fiber-endpoint-tip {
-    max-width: 400px !important;
+    max-width: 700px !important;
     min-width: 320px !important;
-    width: 380px !important;
+    width: auto !important;
     background: transparent !important;
     border: none !important;
     padding: 0 !important;
@@ -98,8 +98,8 @@
   }
   .leaflet-tooltip.fiber-endpoint-tip::before { display: none; }
   .fep-wrap {
-    display: flex; flex-direction: column; gap: 8px;
-    width: 380px;
+    display: flex; flex-direction: row; gap: 10px;
+    align-items: flex-start;
     white-space: normal !important;
   }
   .fep-main, .fep-gap {
@@ -111,12 +111,13 @@
     font-size: 12px;
     line-height: 1.5;
     box-sizing: border-box;
-    width: 100%;
     white-space: normal !important;
     overflow-wrap: break-word;
     word-break: break-word;
   }
+  .fep-main { flex: 0 0 340px; width: 340px; }
   .fep-gap {
+    flex: 0 0 280px; width: 280px;
     border: 2px solid #c0392b;
     background: #fff5f5;
     color: #c0392b;
@@ -125,10 +126,11 @@
     font-size: 11.5px;
   }
   .fep-main *, .fep-gap * { white-space: normal !important; }
-  /* Mobile: shrink further */
+  /* Mobile / narrow viewports: stack panes vertically */
   @media (max-width: 820px) {
     .leaflet-tooltip.fiber-endpoint-tip { width: 280px !important; max-width: 280px !important; }
-    .fep-wrap { width: 280px; }
+    .fep-wrap { flex-direction: column; }
+    .fep-main, .fep-gap { flex: 1 1 auto; width: 100%; }
   }
   .fep-gap-title {
     color: #c0392b;
@@ -1018,28 +1020,52 @@
         "but not publicly disclosed, (b) under planning or construction " +
         "ahead of an announcement, or (c) being staged as overbuild " +
         "capacity ahead of a forthcoming announcement.";
+      // Translate a gap in MW into approximate equivalent-data-center sizing.
+      // Size class thresholds match the live-site sizeClass() function:
+      //   hyperscale ≥ 500 MW · large ≥ 200 · mid ≥ 80 · small < 80.
+      function quantifyGapMW(mw) {
+        if (mw <= 0) return null;
+        const gw = mw / 1000;
+        const hyper = Math.round(mw / 500);
+        const large = Math.round(mw / 300);
+        const mid   = Math.round(mw / 120);
+        const gwStr = gw >= 1 ? `~${gw.toFixed(2)} GW` : `~${Math.round(mw)} MW`;
+        if (mw < 80)  return `${gwStr} — equivalent to ~1 small data center`;
+        if (mw < 200) return `${gwStr} — equivalent to ~1 mid-size data center`;
+        if (mw < 500) return `${gwStr} — equivalent to ~${large} large data center${large>1?'s':''} or ~${mid} mid-size`;
+        return `${gwStr} — equivalent to ~${hyper} hyperscale data center${hyper>1?'s':''} (or ~${large} large or ~${mid} mid-size facilities)`;
+      }
       if (hasDCRoutes && here0 && opp0) {
+        // Greenfield: no anchor at either end. Use a routes-based heuristic:
+        // typical hyperscale long-haul DC-oriented operator pairs ≥ 500 MW of
+        // load per major endpoint, so implied gap ≈ dcSegs.length × 500 MW.
+        const implied = dcSegs.length * 500;
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
           ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint, yet zero data-center capacity is publicly disclosed at this endpoint or at any of the opposing endpoints.
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (implied, based on the heuristic that DC-oriented long-haul operators do not typically build a route without anchoring ~500 MW of DC load at each endpoint).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL} This is the strongest such signal in the dataset — the fiber is in place; nothing is yet plugged in at either end.</div>
         </div>`;
       } else if (hasDCRoutes && here0 && !opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
           ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint shows zero.
+          <div style="margin-top:6px;"><b>Estimated gap at this endpoint:</b> ${quantifyGapMW(oppTotalMW)}.</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       } else if (hasDCRoutes && !here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
           This endpoint hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating at this endpoint aggregate zero disclosed capacity.
+          <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(here.mw)} (mirroring the load already present at this endpoint).</div>
           <div style="margin-top:6px;">${REASONING_BASE} The asymmetry suggests that the opposing endpoints likely host data-center capacity that is either undisclosed, under planning or construction ahead of an announcement, or being staged as overbuild ahead of a forthcoming announcement.</div>
         </div>`;
       } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
+        const gap = oppTotalMW - here.mw;
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
           Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint only ${here.mw.toLocaleString()} MW — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
+          <div style="margin-top:6px;"><b>Estimated gap at this endpoint:</b> ${quantifyGapMW(gap)} (to mirror opposing total).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       }
