@@ -32,6 +32,35 @@
   .map { flex: 1; height: 480px; background: #0a0c11; position: relative; }
   .map-label { position: absolute; top: 8px; right: 12px; background: rgba(0,0,0,0.6);
     color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; z-index: 1000; }
+
+  /* Transportation overlay legend — only visible when overlay is ON.
+     Pinned to the bottom-left of each map. */
+  .transport-legend {
+    position: absolute; bottom: 10px; left: 10px;
+    background: rgba(10,12,17,0.85);
+    color: #e6e9ef; padding: 7px 9px;
+    border: 1px solid #2a3142;
+    border-radius: 5px;
+    font-size: 10.5px; line-height: 1.55;
+    z-index: 1000;
+    pointer-events: none;
+    display: none;
+  }
+  .transport-legend.on { display: block; }
+  .transport-legend .tl-row { display: flex; align-items: center; gap: 6px; padding: 0; }
+  .transport-legend .sw-line {
+    display: inline-block; width: 18px; height: 3px; border-radius: 1px;
+  }
+  .transport-legend .sw-rail-w { width: 18px; height: 4px;
+    background: repeating-linear-gradient(90deg, #aaa 0 3px, transparent 3px 6px);
+  }
+  .transport-legend .sw-dot { width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; }
+  .transport-legend .sw-circle {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid #f1c40f; background: transparent;
+    display: inline-block;
+  }
   .big-card { margin: 0 24px 16px; background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; overflow: hidden; position: relative; }
   .big-map { height: 620px; background: #0a0c11; position: relative; }
@@ -221,7 +250,10 @@
       <button class="btn rank-a"        data-metric="pct_5y">5-Year Growth</button>
       <button class="btn rank-a"        data-metric="pct_10y">10-Year Growth</button>
     </div>
-    <div id="mapA" class="map"><div class="map-label" id="labelA">Value</div></div>
+    <div id="mapA" class="map">
+      <div class="map-label" id="labelA">Value</div>
+      <div class="transport-legend" id="legendA"></div>
+    </div>
   </div>
 
   <div class="map-card">
@@ -232,7 +264,10 @@
       <button class="btn rank-b active" data-metric="pct_5y">5-Year Growth</button>
       <button class="btn rank-b"        data-metric="pct_10y">10-Year Growth</button>
     </div>
-    <div id="mapB" class="map"><div class="map-label" id="labelB">5-Year Growth</div></div>
+    <div id="mapB" class="map">
+      <div class="map-label" id="labelB">5-Year Growth</div>
+      <div class="transport-legend" id="legendB"></div>
+    </div>
   </div>
 </div>
 
@@ -250,7 +285,9 @@
   <div class="big-toggle-wrap">
     <button id="toggleTransportBig" class="btn">Transportation overlay (this map): OFF — Click or Tap to Turn On</button>
   </div>
-  <div id="mapInvest" class="big-map"></div>
+  <div id="mapInvest" class="big-map">
+    <div class="transport-legend" id="legendBig"></div>
+  </div>
   <div class="big-legend">
     <div class="left">
       <div><span class="swatch" style="background:#d62828; border-radius:50%"></span>Manufacturing</div>
@@ -606,7 +643,7 @@
     // Interstates (widest red)
     (window.TRANSPORT?.interstates || []).forEach(seg => {
       seg.paths.forEach(path => {
-        L.polyline(path, {color:'#d62828', weight:4, opacity:0.9})
+        L.polyline(path, {color:'#ffffff', weight:4, opacity:0.95})
           .bindTooltip(roadPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
           .addTo(group);
       });
@@ -614,7 +651,7 @@
     // US + state routes (thinner blue)
     (window.TRANSPORT?.us_state_routes || []).forEach(seg => {
       seg.paths.forEach(path => {
-        L.polyline(path, {color:'#2a6fdb', weight:2.5, opacity:0.85})
+        L.polyline(path, {color:'#16a34a', weight:2.5, opacity:0.9})
           .bindTooltip(roadPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
           .addTo(group);
       });
@@ -667,6 +704,21 @@
     layer.eachLayer(l => l.bringToFront && l.bringToFront());
   }
 
+  // Transportation legend — inject the same HTML into all three legend slots
+  // and add/remove the 'on' class to show/hide it with the overlay.
+  const transportLegendHTML = `
+    <div class="tl-row"><span class="sw-line" style="background:#fff"></span>Interstate</div>
+    <div class="tl-row"><span class="sw-line" style="background:#16a34a"></span>U.S. / State route</div>
+    <div class="tl-row"><span class="sw-rail-w"></span>Freight rail</div>
+    <div class="tl-row"><span class="sw-dot" style="background:#000;border:1px solid #fff"></span>Major hub</div>
+    <div class="tl-row"><span class="sw-dot" style="background:#444;border:1px solid #aaa"></span>Intermodal terminal</div>
+    <div class="tl-row"><span class="sw-circle"></span>STIP project (sized by scale)</div>
+  `;
+  ['legendA','legendB','legendBig'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = transportLegendHTML;
+  });
+
   let heatOn = false, bigOn = false;
   function setHeatOverlay(on) {
     heatOn = on;
@@ -674,6 +726,8 @@
       'Transportation overlay (heat maps): ' + (on ? 'ON' : 'OFF')
       + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
     document.getElementById('toggleTransportTop').classList.toggle('active', on);
+    document.getElementById('legendA').classList.toggle('on', on);
+    document.getElementById('legendB').classList.toggle('on', on);
     [[mapA.map, overlayHeatA], [mapB.map, overlayHeatB]].forEach(([m,l]) => {
       if (on) { l.addTo(m); l.eachLayer(x=>x.bringToFront && x.bringToFront()); }
       else    { m.removeLayer(l); }
@@ -685,6 +739,7 @@
       'Transportation overlay (this map): ' + (on ? 'ON' : 'OFF')
       + ' — Click or Tap to Turn ' + (on ? 'Off' : 'On');
     document.getElementById('toggleTransportBig').classList.toggle('active', on);
+    document.getElementById('legendBig').classList.toggle('on', on);
     if (on) { overlayBig.addTo(mapI); overlayBig.eachLayer(x=>x.bringToFront && x.bringToFront()); }
     else    { mapI.removeLayer(overlayBig); }
   }
