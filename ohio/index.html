@@ -1114,7 +1114,7 @@
       } else if (hasDCRoutes && here0 && !opp0) {
         const implied = impliedGapForRoutes(dcSegs, false);
         gapPane = `<div class="fep-gap">
-          <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
+          <div class="fep-gap-title">⚠ Scale-Asymmetry Flag</div>
           ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'}. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; the local terminus shows zero.
           <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (sum of per-route implied anchor loads).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
@@ -1124,7 +1124,7 @@
       } else if (hasDCRoutes && !here0 && opp0) {
         const implied = Math.min(here.mw, dcSegs.length * PER_ROUTE_CAP);
         gapPane = `<div class="fep-gap">
-          <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
+          <div class="fep-gap-title">⚠ Inverted Scale-Asymmetry Flag</div>
           The local terminus hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating aggregate zero disclosed capacity.
           <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(implied)} (per-route anchor load, capped at one large DC per route).</div>
           <div style="margin-top:6px;">${REASONING_BASE} The asymmetry suggests that the opposing endpoints likely host data-center capacity that is either undisclosed, under planning or construction ahead of an announcement, or being staged as overbuild ahead of a forthcoming announcement.</div>
@@ -1137,7 +1137,7 @@
         const targetLocal = Math.min(oppTotalMW * 0.25, dcSegs.length * PER_ROUTE_CAP);
         const implied = Math.max(0, targetLocal - here.mw);
         gapPane = `<div class="fep-gap">
-          <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
+          <div class="fep-gap-title">⚠ Scale-Asymmetry Flag</div>
           Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity vs. only ${here.mw.toLocaleString()} MW locally — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
           <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (per-route anchor scale, capped).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
@@ -1251,8 +1251,8 @@
     </div>
     <div class="tl-row" style="align-items:flex-start;">
       <span class="sw-fiber-gap" style="flex:none;"></span>
-      <span style="line-height:1.4;">Flashing Endpoint — Capacity Gap
-        <span style="opacity:0.75;">(exclusively for Long-Haul DC Backbone and Long-Haul Carrier Backbone — i.e. "mixed" — endpoints, where both ends would normally anchor data-center clusters to justify the build; flashes faster = larger gap in disclosed DC capacity; endpoints with zero disclosed DC on both sides flash fastest — strongest signal of announced or unannounced data-center cluster establishment)</span>
+      <span style="line-height:1.4;">Flashing Endpoint — Scale Asymmetry (or Greenfield Capacity Gap)
+        <span style="opacity:0.75;">(exclusively for Long-Haul DC Backbone and Long-Haul Carrier Backbone — i.e. "mixed" — endpoints, where both ends would normally anchor data-center clusters to justify the build; flashes faster = larger asymmetry; endpoints with zero disclosed DC on BOTH sides are the strongest tier — labelled Greenfield Capacity Gap, signalling probable announced-or-unannounced data-center cluster establishment; lesser flashes indicate the local terminus has real DC capacity but is much smaller than the opposing hyperscale cluster it connects to)</span>
       </span>
     </div>
   `;
