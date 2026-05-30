@@ -75,6 +75,20 @@
     display: inline-block; width: 18px; height: 3px;
     background: #a259e6;
   }
+  /* Pulsating fiber endpoint marker */
+  .fiber-endpoint, .transport-legend .sw-fiber-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #a259e6; border: 2px solid #fff;
+    box-shadow: 0 0 0 0 rgba(162, 89, 230, 0.75);
+    animation: fiber-pulse 1.5s ease-out infinite;
+    display: inline-block;
+  }
+  .transport-legend .sw-fiber-dot { vertical-align: middle; }
+  @keyframes fiber-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(162,89,230,0.75); }
+    70%  { box-shadow: 0 0 0 12px rgba(162,89,230,0);    }
+    100% { box-shadow: 0 0 0 0   rgba(162,89,230,0);    }
+  }
   .big-card { margin: 0 24px 16px; background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; overflow: hidden; position: relative; }
   .big-map { height: 620px; background: #0a0c11; position: relative; }
@@ -323,7 +337,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data/investments.js?v=11"></script>
 <script src="data/transport.js?v=1"></script>
-<script src="data/fiber.js?v=3"></script>
+<script src="data/fiber.js?v=4"></script>
 <script>
 (async function() {
   const geo = await fetch('ohio_counties.geojson').then(r => r.json());
@@ -769,6 +783,50 @@
         .bindTooltip(fiberPopup(seg), {sticky:true, direction:'auto', className:'road-tip'})
         .addTo(group);
     });
+
+    // Pulsating endpoint markers — dedupe by ~5km bucket so Columbus / Ashburn /
+    // Cleveland / Chicago show as one hub each, with a tooltip listing every
+    // route terminating or originating there.
+    const bucket = (lat, lng) => Math.round(lat * 20) + ',' + Math.round(lng * 20);
+    const endpoints = {};
+    segs.forEach(seg => {
+      if (!seg.path || seg.path.length < 2) return;
+      const ends = [seg.path[0], seg.path[seg.path.length - 1]];
+      // best-effort name: pick the Ohio terminus for the closer end, the other-
+      // state terminus for the farther end. If only intrastate, use endpoints_ohio.
+      const ohioNames  = seg.endpoints_ohio || [];
+      const otherName  = seg.endpoint_other_state || null;
+      ends.forEach((coord, i) => {
+        const k = bucket(coord[0], coord[1]);
+        if (!endpoints[k]) endpoints[k] = { coord, routes: [], names: new Set() };
+        endpoints[k].routes.push(seg.name);
+        const nm = (i === 0 ? ohioNames[0] : (otherName || ohioNames[ohioNames.length - 1]))
+                  || ohioNames[0] || otherName;
+        if (nm) endpoints[k].names.add(nm);
+      });
+    });
+    Object.values(endpoints).forEach(ep => {
+      const names = Array.from(ep.names).slice(0, 3).join(' / ');
+      const routeList = ep.routes
+        .map(n => `<div class="pop-row">• ${n}</div>`).join('');
+      const html = `
+        <div class="pop-name">${names || 'Fiber endpoint'}</div>
+        <div class="pop-row" style="color:#666;font-size:11px;">${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:</div>
+        ${routeList}
+        <div class="pop-row" style="color:#a259e6;font-style:italic;font-size:11px;margin-top:6px;">
+          Endpoint clusters may indicate announced or unannounced data center cluster establishment.
+        </div>
+      `;
+      L.marker(ep.coord, {
+        icon: L.divIcon({
+          className: '',
+          html: '<div class="fiber-endpoint"></div>',
+          iconSize: [14, 14], iconAnchor: [7, 7],
+        }),
+        keyboard: false,
+      }).bindTooltip(html, {sticky:true, direction:'auto', className:'road-tip'})
+        .addTo(group);
+    });
     return group;
   }
   const fiberHeatA = buildFiber();
@@ -796,6 +854,12 @@
   `;
   const fiberLegendHTML = `
     <div class="tl-row"><span class="sw-fiber"></span>Long-haul fiber (thickness ∝ capacity)</div>
+    <div class="tl-row" style="align-items:flex-start;">
+      <span class="sw-fiber-dot" style="flex:none;"></span>
+      <span style="line-height:1.4;">Pulsating endpoint
+        <span style="opacity:0.75;">(data transmission endpoints may indicate announced or unannounced data center cluster establishment)</span>
+      </span>
+    </div>
   `;
   // Initial legend = transport only. Fiber legend gets appended/removed via the fiber toggles.
   ['legendA','legendB','legendBig'].forEach(id => {
