@@ -1010,12 +1010,12 @@
       if (hasDCRoutes && here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
-          Zero disclosed DC capacity at this endpoint OR at any DC-relevant opposing endpoint, despite ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminating here. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
+          Zero disclosed DC capacity at this endpoint OR at any DC-relevant opposing endpoint, despite ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminating. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
         </div>`;
       } else if (hasDCRoutes && here0 && !opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity (from ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}); this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout here.
+          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity (from ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}); this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout.
         </div>`;
       } else if (hasDCRoutes && !here0 && opp0) {
         gapPane = `<div class="fep-gap">
@@ -1025,7 +1025,7 @@
       } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW; this endpoint only ${here.mw.toLocaleString()} MW (under 25%). Endpoint cluster may signal additional data-center buildout here.
+          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW; this endpoint only ${here.mw.toLocaleString()} MW (under 25%). Endpoint cluster may signal additional data-center buildout.
         </div>`;
       }
       const matchedLine = hasDCRoutes
@@ -1033,14 +1033,14 @@
             Opposing DC Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (capacity broadly matched).
           </div>`)
         : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
-            No DC-oriented routes terminate here (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
+            No DC-oriented routes terminate at this endpoint (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
           </div>`;
 
       const mainPane = `<div class="fep-main">
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
-        <div class="pop-row"><b>Data Center Presence Here:</b> ${here.str}</div>
+        <div class="pop-row"><b>Data Center Presence:</b> ${here.str}</div>
         <div class="pop-row" style="color:#888;font-size:11px;margin-top:4px;">
-          ${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:
+          ${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating:
         </div>
         ${routeRows}
         ${ep.segs.length > 8 ? `<div class="pop-row" style="color:#888;font-size:11px;">…and ${ep.segs.length - 8} more.</div>` : ''}
