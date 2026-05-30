@@ -75,19 +75,19 @@
     display: inline-block; width: 18px; height: 3px;
     background: #a259e6;
   }
-  /* Pulsating fiber endpoint marker */
+  /* Pulsating fiber endpoint marker — the DOT itself grows and shrinks
+     so it's visually distinct from the static project dots. */
   .fiber-endpoint, .transport-legend .sw-fiber-dot {
     width: 12px; height: 12px; border-radius: 50%;
     background: #a259e6; border: 2px solid #fff;
-    box-shadow: 0 0 0 0 rgba(162, 89, 230, 0.75);
-    animation: fiber-pulse 1.5s ease-out infinite;
+    transform-origin: center center;
+    animation: fiber-pulse 1.3s ease-in-out infinite;
     display: inline-block;
   }
   .transport-legend .sw-fiber-dot { vertical-align: middle; }
   @keyframes fiber-pulse {
-    0%   { box-shadow: 0 0 0 0   rgba(162,89,230,0.75); }
-    70%  { box-shadow: 0 0 0 12px rgba(162,89,230,0);    }
-    100% { box-shadow: 0 0 0 0   rgba(162,89,230,0);    }
+    0%, 100% { transform: scale(0.75); opacity: 0.85; }
+    50%      { transform: scale(1.45); opacity: 1;    }
   }
   .big-card { margin: 0 24px 16px; background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; overflow: hidden; position: relative; }
