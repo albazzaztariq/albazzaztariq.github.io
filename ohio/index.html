@@ -85,6 +85,45 @@
     display: inline-block;
   }
   .transport-legend .sw-fiber-dot { vertical-align: middle; }
+  /* Fiber endpoint tooltip — two parallel panes (main + gap-flag) */
+  .leaflet-tooltip.fiber-endpoint-tip {
+    max-width: 640px !important;
+    min-width: 320px !important;
+    width: auto !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .leaflet-tooltip.fiber-endpoint-tip::before { display: none; }
+  .fep-wrap { display: flex; gap: 10px; align-items: flex-start; }
+  .fep-main, .fep-gap {
+    background: #fff;
+    color: #111;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .fep-main { flex: 1 1 auto; max-width: 360px; }
+  .fep-gap {
+    flex: 0 0 250px;
+    border: 2px solid #c0392b;
+    background: #fff5f5;
+    color: #c0392b;
+    font-weight: 600;
+    line-height: 1.45;
+    font-size: 11.5px;
+  }
+  .fep-gap-title {
+    color: #c0392b;
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
   @keyframes fiber-pulse {
     0%, 100% { transform: scale(0.75); opacity: 0.85; }
     50%      { transform: scale(1.45); opacity: 1;    }
@@ -375,16 +414,16 @@
     const emp = p.top_employers || [];
     const empLines = emp.length
       ? emp.slice(0,3).map((e,i)=>
-          `<div class="pop-row">Top employer #${i+1}: ${e.name} (${e.pct}% of employment)</div>`).join('')
+          `<div class="pop-row">Top Employer #${i+1}: ${e.name} (${e.pct}% of employment)</div>`).join('')
       : `<div class="pop-row" style="color:#888;font-style:italic;">Top employers: pending</div>`;
     return `
       <div class="pop-name">${p.name} County</div>
       <div class="pop-row">Population: <span class="pop-stat">${fmtPop(p.population)}</span></div>
       ${empLines}
-      <div class="pop-row">Current value: <span class="pop-stat">${fmtMoney(p.zhvi)}</span></div>
-      <div class="pop-row">1-year growth: <span class="pop-stat">${fmtPct(p.pct_1y)}</span></div>
-      <div class="pop-row">5-year growth: <span class="pop-stat">${fmtPct(p.pct_5y)}</span></div>
-      <div class="pop-row">10-year growth: <span class="pop-stat">${fmtPct(p.pct_10y)}</span></div>
+      <div class="pop-row">Current Value: <span class="pop-stat">${fmtMoney(p.zhvi)}</span></div>
+      <div class="pop-row">1-Year Growth: <span class="pop-stat">${fmtPct(p.pct_1y)}</span></div>
+      <div class="pop-row">5-Year Growth: <span class="pop-stat">${fmtPct(p.pct_5y)}</span></div>
+      <div class="pop-row">10-Year Growth: <span class="pop-stat">${fmtPct(p.pct_10y)}</span></div>
     `;
   }
 
@@ -527,22 +566,22 @@
     const indSrc = p.indirect_employment_source
       ? ` <span class="src">— ${p.indirect_employment_source}</span>` : '';
     const inSvc = p.in_service
-      ? `<div class="pop-row">In-service / online: <span class="pop-stat">${p.in_service}</span>
+      ? `<div class="pop-row">In-Service / Online: <span class="pop-stat">${p.in_service}</span>
            <span class="src">(${p.in_service_source || '—'})</span></div>`
-      : `<div class="pop-row" style="color:#888;font-style:italic;">In-service / online: not published</div>`;
+      : `<div class="pop-row" style="color:#888;font-style:italic;">In-Service / Online: not published</div>`;
     return `
       <div class="pop-name">${p.company}</div>
       <div class="pop-row">Project: ${p.project}</div>
       ${cat}
       ${inSvc}
-      <div class="pop-row">Dollar value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : '—'}</span>
+      <div class="pop-row">Dollar Value: <span class="pop-stat">${p.dollar_value_usd != null ? fmtBillions(p.dollar_value_usd) : '—'}</span>
         <span class="src">(${p.dollar_value_source})</span></div>
       <div class="pop-row">Direct Employment:
         <span class="emp-red pop-stat">${p.direct_employment != null ? p.direct_employment.toLocaleString() : 'Not published'}${empEst}</span></div>
       ${ptLine}
       ${empSrcLine}
       ${ptSrcLine}
-      <div class="pop-row">Indirect employment:
+      <div class="pop-row">Indirect Employment:
         <span class="pop-stat">${p.indirect_employment != null ? p.indirect_employment.toLocaleString() : '—'}</span>${indTypes}${indSrc}</div>
     `;
   }
@@ -596,14 +635,14 @@
   // --- Data center dots (green), sized vs each other on MW basis ---
   function dcPopup(d) {
     const inSvc = d.in_service
-      ? `<div class="pop-row">In-service / online: <span class="pop-stat">${d.in_service}</span>
+      ? `<div class="pop-row">In-Service / Online: <span class="pop-stat">${d.in_service}</span>
            <span class="src">(${d.in_service_source || '—'})</span></div>`
-      : `<div class="pop-row" style="color:#888;font-style:italic;">In-service / online: not published</div>`;
+      : `<div class="pop-row" style="color:#888;font-style:italic;">In-Service / Online: not published</div>`;
     return `
       <div class="pop-name">${d.project}</div>
       <div class="pop-row">Operator: ${d.operator}</div>
       ${inSvc}
-      <div class="pop-row">Power consumption: <span class="pop-stat">${d.power_mw} MW</span>
+      <div class="pop-row">Power Consumption: <span class="pop-stat">${d.power_mw} MW</span>
         <span class="src">(${d.power_mw_source})</span></div>
     `;
   }
@@ -643,10 +682,10 @@
   // --- Transportation overlay ---
   function roadPopup(seg) {
     const goods = seg.goods_value_str
-      ? `<div class="pop-row">Goods moved: ${seg.goods_value_str}
+      ? `<div class="pop-row">Goods Moved: ${seg.goods_value_str}
           <span class="src">(${seg.goods_value_src || '—'})</span></div>` : '';
     const com = (seg.commodities && seg.commodities.length)
-      ? `<div class="pop-row">Top goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
+      ? `<div class="pop-row">Top Goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
           <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
     return `
       <div class="pop-name">${seg.name}</div>
@@ -657,15 +696,15 @@
   }
   function railPopup(seg) {
     const goods = seg.goods_value_str
-      ? `<div class="pop-row">Goods moved: ${seg.goods_value_str}
+      ? `<div class="pop-row">Goods Moved: ${seg.goods_value_str}
           <span class="src">(${seg.goods_value_src || '—'})</span></div>` : '';
     const com = (seg.commodities && seg.commodities.length)
-      ? `<div class="pop-row">Top goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
+      ? `<div class="pop-row">Top Goods: ${seg.commodities.map(c=>`${c[0]} (${c[1]}%)`).join(', ')}
           <span class="src">(${seg.commodities_src || '—'})</span></div>` : '';
     return `
       <div class="pop-name">${seg.name}</div>
       <div class="pop-row">Type: Rail</div>
-      <div class="pop-row">Rail traffic: ${seg.traffic_str}
+      <div class="pop-row">Rail Traffic: ${seg.traffic_str}
         <span class="src">(${seg.traffic_src || '—'})</span></div>
       ${goods}${com}`;
   }
@@ -673,15 +712,15 @@
     const nameLine = h.name ? `<div class="pop-name">${h.name}</div>` : '';
     return `
       ${nameLine}
-      <div class="pop-row">City / town: ${h.city}</div>
-      <div class="pop-row">Nearest large metro: ${h.metro} (~${fmtMetroPop(h.metro_pop)})</div>`;
+      <div class="pop-row">City / Town: ${h.city}</div>
+      <div class="pop-row">Nearest Large Metro: ${h.metro} (~${fmtMetroPop(h.metro_pop)})</div>`;
   }
   function stipPopup(p) {
     return `
       <div class="pop-name">${p.name}</div>
       <div class="pop-row">In-service: ${p.in_service || '—'}</div>
       <div class="pop-row">Work: ${p.work || '—'}</div>
-      <div class="pop-row">Capacity increase: ${p.capacity_pct != null ? '+' + p.capacity_pct + '%' : '—'}</div>`;
+      <div class="pop-row">Capacity Increase: ${p.capacity_pct != null ? '+' + p.capacity_pct + '%' : '—'}</div>`;
   }
 
   function buildTransport() {
@@ -756,9 +795,9 @@
       <div class="pop-row">Operator: ${seg.operator || '—'}</div>
       <div class="pop-row">Type: ${seg.type === 'intrastate' ? 'Intrastate (both endpoints in Ohio)' : 'Interstate (one endpoint in Ohio)'}</div>
       <div class="pop-row">Endpoints: ${endpoints}${other}</div>
-      <div class="pop-row">Initial in-service: ${seg.in_service || '—'}
+      <div class="pop-row">Initial In-Service: ${seg.in_service || '—'}
         <span class="src">(${seg.in_service_source || '—'})</span></div>
-      ${seg.in_service_full ? `<div class="pop-row">Fully operational: ${seg.in_service_full}
+      ${seg.in_service_full ? `<div class="pop-row">Fully Operational: ${seg.in_service_full}
         <span class="src">(${seg.in_service_full_source || '—'})</span></div>` : ''}
       ${cap}${econ}
     `;
@@ -900,30 +939,50 @@
               : 'None publicly disclosed in this dataset');
         return `<div class="pop-row" style="margin-top:4px;">
           • ${s.seg.name}<br>
-          <span style="color:#888;font-size:11px;">↳ Opposing endpoint (${s.oppName}): ${oppStr}</span>
+          <span style="color:#888;font-size:11px;">↳ Opposing Endpoint (${s.oppName}): ${oppStr}</span>
         </div>`;
       }).join('');
 
-      // simple fulfillment-gap flag
-      const gap = oppTotalMW > 0 && here.mw < oppTotalMW * 0.25;
-      const gapLine = gap
-        ? `<div class="pop-row" style="color:#e67e22; margin-top:6px; font-style:italic; font-size:11.5px;">
-            Capacity-gap flag: opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity; this endpoint has only ${here.mw.toLocaleString()} MW disclosed — endpoint clusters may signal announced or unannounced data-center buildout here.
-          </div>`
-        : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
-            Opposing endpoints aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (no major gap).
-          </div>`;
+      // Gap flag in a SEPARATE pane, in red. Both-zero is the strongest signal.
+      let gapPane = null;
+      const here0 = here.mw === 0, opp0 = oppTotalMW === 0;
+      if (here0 && opp0) {
+        gapPane = `<div class="fep-gap">
+          <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
+          Zero disclosed DC capacity at this endpoint OR at any opposing endpoint, despite ${ep.routes.length} long-haul fiber route${ep.routes.length>1?'s':''} terminating here. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
+        </div>`;
+      } else if (here0 && !opp0) {
+        gapPane = `<div class="fep-gap">
+          <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
+          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity; this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout here.
+        </div>`;
+      } else if (!here0 && opp0) {
+        gapPane = `<div class="fep-gap">
+          <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
+          This endpoint has ${here.mw.toLocaleString()} MW disclosed; Opposing Endpoints Aggregate zero. The opposing endpoints may signal announced or unannounced data-center buildout.
+        </div>`;
+      } else if (here.mw < oppTotalMW * 0.25) {
+        gapPane = `<div class="fep-gap">
+          <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
+          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW; this endpoint only ${here.mw.toLocaleString()} MW (under 25%). Endpoint cluster may signal additional data-center buildout here.
+        </div>`;
+      }
+      const matchedLine = gapPane ? '' : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
+        Opposing Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (capacity broadly matched).
+      </div>`;
 
-      const html = `
+      const mainPane = `<div class="fep-main">
         <div class="pop-name">${names || 'Fiber endpoint'}</div>
-        <div class="pop-row"><b>Data Center Presence here:</b> ${here.str}</div>
+        <div class="pop-row"><b>Data Center Presence Here:</b> ${here.str}</div>
         <div class="pop-row" style="color:#888;font-size:11px;margin-top:4px;">
           ${ep.routes.length} long-haul route${ep.routes.length>1?'s':''} terminating / originating here:
         </div>
         ${routeRows}
         ${ep.segs.length > 8 ? `<div class="pop-row" style="color:#888;font-size:11px;">…and ${ep.segs.length - 8} more.</div>` : ''}
-        ${gapLine}
-      `;
+        ${matchedLine}
+      </div>`;
+
+      const html = `<div class="fep-wrap">${mainPane}${gapPane || ''}</div>`;
       L.marker(ep.coord, {
         icon: L.divIcon({
           className: '',
@@ -931,7 +990,7 @@
           iconSize: [14, 14], iconAnchor: [7, 7],
         }),
         keyboard: false,
-      }).bindTooltip(html, {sticky:true, direction:'auto', className:'road-tip'})
+      }).bindTooltip(html, {sticky:true, direction:'auto', className:'fiber-endpoint-tip'})
         .addTo(group);
     });
     return group;
