@@ -1007,25 +1007,40 @@
       let gapPane = null;
       const here0 = here.mw === 0, opp0 = oppTotalMW === 0;
       const hasDCRoutes = dcSegs.length > 0;
+      const REASONING_BASE =
+        "Long-haul fiber routes oriented toward data-center traffic are " +
+        "typically built between endpoints that already host substantial " +
+        "compute load, because the operating economics depend on revenue " +
+        "from heavy data-center-to-data-center bandwidth at each end.";
+      const REASONING_TAIL =
+        "The asymmetry between fiber-route count and disclosed data-center " +
+        "capacity suggests that compute load is either (a) already present " +
+        "but not publicly disclosed, (b) under planning or construction " +
+        "ahead of an announcement, or (c) being staged as overbuild " +
+        "capacity ahead of a forthcoming announcement.";
       if (hasDCRoutes && here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
-          Zero disclosed DC capacity at this endpoint OR at any DC-relevant opposing endpoint, despite ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminating. Largest signal of an announced-or-unannounced data-center buildout opportunity — the fiber is in place; nothing is yet plugged in at either end.
+          ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint, yet zero data-center capacity is publicly disclosed at this endpoint or at any of the opposing endpoints.
+          <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL} This is the strongest such signal in the dataset — the fiber is in place; nothing is yet plugged in at either end.</div>
         </div>`;
       } else if (hasDCRoutes && here0 && !opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed DC capacity (from ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}); this endpoint shows zero. Endpoint cluster may signal announced or unannounced data-center buildout.
+          ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint shows zero.
+          <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       } else if (hasDCRoutes && !here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
-          This endpoint has ${here.mw.toLocaleString()} MW disclosed; Opposing Endpoints Aggregate zero across ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''}. The opposing endpoints may signal announced or unannounced data-center buildout.
+          This endpoint hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating at this endpoint aggregate zero disclosed capacity.
+          <div style="margin-top:6px;">${REASONING_BASE} The asymmetry suggests that the opposing endpoints likely host data-center capacity that is either undisclosed, under planning or construction ahead of an announcement, or being staged as overbuild ahead of a forthcoming announcement.</div>
         </div>`;
       } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing Endpoints Aggregate ~${oppTotalMW.toLocaleString()} MW; this endpoint only ${here.mw.toLocaleString()} MW (under 25%). Endpoint cluster may signal additional data-center buildout.
+          Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint only ${here.mw.toLocaleString()} MW — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
+          <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       }
       const matchedLine = hasDCRoutes
