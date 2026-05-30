@@ -1042,39 +1042,39 @@
         const implied = dcSegs.length * 500;
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Greenfield Capacity-Gap Flag</div>
-          ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint, yet zero data-center capacity is publicly disclosed at this endpoint or at any of the opposing endpoints.
+          ${dcSegs.length} DC-oriented long-haul fiber route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'}, yet zero data-center capacity is publicly disclosed at either end of any of them.
           <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(implied)} (implied, based on the heuristic that DC-oriented long-haul operators do not typically build a route without anchoring ~500 MW of DC load at each endpoint).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL} This is the strongest such signal in the dataset — the fiber is in place; nothing is yet plugged in at either end.</div>
         </div>`;
       } else if (hasDCRoutes && here0 && !opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'} at this endpoint. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint shows zero.
-          <div style="margin-top:6px;"><b>Estimated gap at this endpoint:</b> ${quantifyGapMW(oppTotalMW)}.</div>
+          ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''} terminate${dcSegs.length>1?'':'s'}. The opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; the local terminus shows zero.
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(oppTotalMW)}.</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       } else if (hasDCRoutes && !here0 && opp0) {
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Inverted Capacity-Gap Flag</div>
-          This endpoint hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating at this endpoint aggregate zero disclosed capacity.
-          <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(here.mw)} (mirroring the load already present at this endpoint).</div>
+          The local terminus hosts ${here.mw.toLocaleString()} MW of disclosed data-center capacity; the opposing endpoints of the ${dcSegs.length} DC-oriented route${dcSegs.length>1?'s':''} terminating aggregate zero disclosed capacity.
+          <div style="margin-top:6px;"><b>Estimated gap at the opposing endpoints:</b> ${quantifyGapMW(here.mw)} (mirroring the load already present locally).</div>
           <div style="margin-top:6px;">${REASONING_BASE} The asymmetry suggests that the opposing endpoints likely host data-center capacity that is either undisclosed, under planning or construction ahead of an announcement, or being staged as overbuild ahead of a forthcoming announcement.</div>
         </div>`;
       } else if (hasDCRoutes && here.mw < oppTotalMW * 0.25) {
         const gap = oppTotalMW - here.mw;
         gapPane = `<div class="fep-gap">
           <div class="fep-gap-title">⚠ Capacity-Gap Flag</div>
-          Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity; this endpoint only ${here.mw.toLocaleString()} MW — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
-          <div style="margin-top:6px;"><b>Estimated gap at this endpoint:</b> ${quantifyGapMW(gap)} (to mirror opposing total).</div>
+          Opposing endpoints aggregate ~${oppTotalMW.toLocaleString()} MW of disclosed data-center capacity vs. only ${here.mw.toLocaleString()} MW locally — less than one quarter the opposing total, despite serving as a terminus for ${dcSegs.length} DC-oriented long-haul route${dcSegs.length>1?'s':''}.
+          <div style="margin-top:6px;"><b>Estimated gap:</b> ${quantifyGapMW(gap)} (to mirror opposing total).</div>
           <div style="margin-top:6px;">${REASONING_BASE} ${REASONING_TAIL}</div>
         </div>`;
       }
       const matchedLine = hasDCRoutes
         ? (gapPane ? '' : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
-            Opposing DC Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; this endpoint ${here.mw.toLocaleString()} MW (capacity broadly matched).
+            Opposing DC Endpoints Aggregate ${oppTotalMW.toLocaleString()} MW; local terminus ${here.mw.toLocaleString()} MW (capacity broadly matched).
           </div>`)
         : `<div class="pop-row" style="color:#666; margin-top:6px; font-size:11px;">
-            No DC-oriented routes terminate at this endpoint (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
+            No DC-oriented routes terminate (only ${ep.segs.length} non-DC route${ep.segs.length>1?'s':''}: research, last-mile broadband, metro backhaul, or rural middle-mile). DC capacity-gap analysis not applicable.
           </div>`;
 
       const mainPane = `<div class="fep-main">
