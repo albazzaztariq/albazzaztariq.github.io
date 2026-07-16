@@ -174,91 +174,122 @@ button { font-family: inherit; }
 <main id="page-content">
 <h1 id="pathways-residency-investment-options">Pathways — Residency &amp; Investment Options</h1>
 <p><a href="#criteria">Criteria</a></p>
-<h1 id="quick-jump">⚡ Quick Jump</h1>
+<h1 id="final-list">🏆 Final List</h1>
 <table>
-<thead>
-<tr>
-<th>⚡ Instant (5)</th>
-<th>✅ Easy (12)</th>
-<th>🟡 Moderate (7)</th>
-<th>🔴 Hard (2)</th>
-</tr>
-</thead>
+<thead><tr><th>Country</th><th>Cost</th><th>Why it survived</th></tr></thead>
 <tbody>
-<tr>
-<td><a href="#armenia-instant-6k-donation-passive">Armenia</a></td>
-<td><a href="#albania-easy-no-minimum-passive">Albania</a></td>
-<td><a href="#czechia-moderate-10k-active">Czechia</a></td>
-<td><a href="#taiwan-hard-200k-active">Taiwan</a></td>
-</tr>
-<tr>
-<td><a href="#cyprus-instant-300k-passive">Cyprus</a></td>
-<td><a href="#azerbaijan-easy-118k-passive">Azerbaijan</a></td>
-<td><a href="#japan-moderate-185k-active">Japan</a></td>
-<td><a href="#indonesia-hard-620k-active">Indonesia</a></td>
-</tr>
-<tr>
-<td><a href="#malta-instant-150k-all-in-passive">Malta</a></td>
-<td><a href="#bosnia-herzegovina-easy-no-minimum-passive">Bosnia</a></td>
-<td><a href="#kyrgyzstan-moderate-114k-active">Kyrgyzstan</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="#saudi-arabia-instant-213k-passive">Saudi Arabia</a></td>
-<td><a href="#georgia-easy-300k-passive">Georgia</a></td>
-<td><a href="#north-macedonia-moderate-5k-active">N. Macedonia</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="#uzbekistan-instant-100k-passive">Uzbekistan</a></td>
-<td><a href="#greece-fip-easy-2kmo-income-passive">Greece</a></td>
-<td><a href="#poland-moderate-business-capital-active">Poland</a></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#hungary-easy-250k-passive">Hungary</a></td>
-<td><a href="#romania-moderate-59k-active">Romania</a></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#italy-easy-32kyr-income-passive">Italy</a></td>
-<td><a href="#south-korea-moderate-75k-active">South Korea</a></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#jordan-easy-282k-passive">Jordan</a></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#latvia-easy-280k-passive">Latvia</a></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#montenegro-easy-no-minimum-passive">Montenegro</a></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#serbia-easy-no-minimum-passive">Serbia</a></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td><a href="#turkey-easy-200k-passive">Turkey</a></td>
-<td></td>
-<td></td>
-</tr>
+<tr><td><strong><a href="#latvia-easy-280k-passive">Latvia</a></strong></td><td>$300k / $40k friction</td><td>Baltic/Northern European. Highest reliability of the set. LPI 3.5, WGI 0.74. Property recoverable, 5yr → real EU LTR PR.</td></tr>
+<tr><td><strong><a href="#hungary-easy-250k-passive">Hungary</a></strong></td><td>$270k / $15k friction</td><td>Central European. Reliable like Czechia/Austria. Budapest work culture is Vienna-tier. Guest investor 3yr → PR.</td></tr>
+<tr><td><strong><a href="#romania-moderate-59k-active">Romania</a></strong></td><td>$59k / $12k friction</td><td>EU member since 2007, WGI 0.42. Cluj/Bucharest tech corridor has serious German influence. Administrator route with rental real estate = passive. 5yr → PR.</td></tr>
+<tr><td><strong><a href="#serbia-easy-no-minimum-passive">Serbia</a></strong></td><td>~$5k / $5k friction</td><td>Balkan but modernized Belgrade. Post-Yugoslav technical tradition, IT nearshoring hub. Cheapest formal option. 3yr → PR.</td></tr>
+<tr><td><strong><a href="#saudi-arabia-instant-213k-passive">Saudi Arabia</a></strong></td><td>$213k / $213k sunk fee</td><td>Top-down enforced. Contractors licensed and regulated. Fee-only route → zero contractor exposure if you rent. Immediate unconditional PR.</td></tr>
 </tbody>
 </table>
+<hr />
+
+
+<h1 id="quick-jump">⚡ Quick Jump</h1>
+<div id="pr-filter-wrap">
+<div id="pr-filter-btns">
+<button data-f="all" class="pr-active">All (26)</button>
+<button data-f="passive">Passive (16)</button>
+<button data-f="active">Active (8)</button>
+</div>
+<div id="pr-quick-table"></div>
+</div>
+<style>
+#pr-filter-btns{display:flex;gap:.4em;margin-bottom:.8em;flex-wrap:wrap}
+#pr-filter-btns button{padding:.4em 1em;cursor:pointer;border:1px solid var(--background-modifier-border,#ccc);background:var(--background-secondary,#f4f4f4);border-radius:6px;font-size:.9em}
+#pr-filter-btns button.pr-active{background:var(--interactive-accent,#5b8def);color:#fff;border-color:transparent}
+#pr-quick-table table{width:100%;border-collapse:collapse}
+#pr-quick-table th,#pr-quick-table td{border:1px solid var(--background-modifier-border,#ccc);padding:6px 10px;text-align:left;vertical-align:top}
+#pr-quick-table th{background:var(--background-secondary,#f4f4f4)}
+#pr-quick-table td:empty{padding:0}
+</style>
+<script>
+(function(){
+const QD=[
+// Passive countries — ranked by capital deployed (cap = purchase price in $k, loss = 5yr net loss in $k)
+// Jordan and Cyprus Cat 6.2 excluded (fake PR — must hold forever; see shitlist below)
+{n:"Italy",t:"Easy",p:"Passive",h:"#italy-easy-32k-yr-income-passive",tp:"Trivial",cap:0,loss:0,disp:"$0 / $0 (income-only)"},
+{n:"Greece",t:"Easy",p:"Passive",h:"#greece-fip-easy-2k-mo-income-passive",tp:"Trivial",cap:0,loss:0,disp:"$0 / $0 (FIP income-only)"},
+{n:"Serbia",t:"Easy",p:"Passive",h:"#serbia-easy-no-minimum-passive",tp:"Trivial",cap:5,loss:5,disp:"$5k / $5k friction"},
+{n:"Montenegro",t:"Easy",p:"Passive",h:"#montenegro-easy-no-minimum-passive",tp:"Trivial",cap:5,loss:5,disp:"$5k / $5k friction"},
+{n:"Albania",t:"Easy",p:"Passive",h:"#albania-easy-no-minimum-passive",tp:"Trivial",cap:5,loss:5,disp:"$5k / $5k friction"},
+{n:"Armenia",t:"Instant",p:"Passive",h:"#armenia-instant-6k-donation-passive",tp:"Trivial",cap:6,loss:6,disp:"$6k / $6k sunk donation"},
+{n:"Romania",t:"Moderate",p:"Passive",h:"#romania-moderate-59k-active",tp:"Low",cap:59,loss:12,disp:"$59k / $12k (€50k rental real estate)"},
+{n:"Bosnia",t:"Easy",p:"Passive",h:"#bosnia-herzegovina-easy-no-minimum-passive",tp:"Low",cap:65,loss:8,disp:"$65k / $8k (property from €60k)"},
+{n:"Uzbekistan",t:"Instant",p:"Passive",h:"#uzbekistan-instant-100k-passive",tp:"Low",cap:100,loss:40,disp:"$100k / $40k (regional — immediate PR)"},
+{n:"Azerbaijan",t:"Easy",p:"Passive",h:"#azerbaijan-easy-118k-passive",tp:"Low",cap:118,loss:18,disp:"$118k / $18k (2yr TRP → PR)"},
+{n:"Saudi Arabia",t:"Instant",p:"Passive",h:"#saudi-arabia-instant-213k-passive",tp:"Substantial",cap:213,loss:213,disp:"$213k / $213k pure sunk fee"},
+{n:"Hungary",t:"Easy",p:"Passive",h:"#hungary-easy-250k-passive",tp:"Substantial",cap:270,loss:15,disp:"$270k / $15k fund fees, 3yr PR"},
+{n:"Georgia",t:"Easy",p:"Passive",h:"#georgia-easy-300k-passive",tp:"Substantial",cap:300,loss:30,disp:"$300k / $30k friction"},
+{n:"Latvia",t:"Easy",p:"Passive",h:"#latvia-easy-280k-passive",tp:"Substantial",cap:300,loss:40,disp:"$300k / $40k friction"},
+{n:"Turkey",t:"Easy",p:"Passive",h:"#turkey-easy-200k-passive",tp:"Heavy",cap:400,loss:-60,disp:"$400k / −$60k GAIN (CBI = citizenship)"},
+{n:"Malta",t:"Instant",p:"Passive",h:"#malta-instant-150k-all-in-passive",tp:"Heavy",cap:490,loss:170,disp:"$490k all-in / $170k sunk (€150k contribution)"},
+{n:"Czechia",t:"Moderate",p:"Active",h:"#czechia-moderate-10k-active"},
+{n:"Japan",t:"Moderate",p:"Active",h:"#japan-moderate-185k-active"},
+{n:"Kyrgyzstan",t:"Moderate",p:"Active",h:"#kyrgyzstan-moderate-114k-active"},
+{n:"N. Macedonia",t:"Moderate",p:"Active",h:"#north-macedonia-moderate-5k-active"},
+{n:"Poland",t:"Moderate",p:"Active",h:"#poland-moderate-business-capital-active"},
+{n:"South Korea",t:"Moderate",p:"Active",h:"#south-korea-moderate-75k-active"},
+{n:"Taiwan",t:"Hard",p:"Active",h:"#taiwan-hard-200k-active"},
+{n:"Indonesia",t:"Hard",p:"Active",h:"#indonesia-hard-620k-active"}
+];
+const TIERS=["Instant","Easy","Moderate","Hard"];
+const TIERS_P=["Trivial","Low","Substantial","Heavy"];
+const TIER_P_LABEL={"Trivial":"🟢 Trivial (<$10k)","Low":"✅ Low ($50-150k)","Substantial":"🟡 Substantial ($200-300k)","Heavy":"🔴 Heavy ($400k+)"};
+const ICONS={"Instant":"⚡","Easy":"✅","Moderate":"🟡","Hard":"🔴"};
+function render(filter){
+  let data, tiers, useRank = false;
+  if (filter === "all")      { data = QD; tiers = TIERS; }
+  else if (filter === "passive") { data = QD.filter(d => d.p === "Passive"); tiers = TIERS_P; useRank = true; }
+  else                     { data = QD.filter(d => d.p === "Active"); tiers = TIERS; }
+  const passiveSorted = QD.filter(d=>d.p==="Passive").sort((a,b)=>a.cap-b.cap);
+  const groups = {};
+  tiers.forEach(t => {
+    let g = data.filter(d => useRank ? d.tp === t : d.t === t);
+    if (useRank) g.sort((a,b) => a.cap - b.cap);
+    groups[t] = g;
+  });
+  const maxLen = Math.max(...tiers.map(t => groups[t].length), 1);
+  let html = "<table><thead><tr>";
+  tiers.forEach(t => {
+    const label = useRank ? TIER_P_LABEL[t] : `${ICONS[t]} ${t}`;
+    html += `<th>${label} (${groups[t].length})</th>`;
+  });
+  html += "</tr></thead><tbody>";
+  for (let i = 0; i < maxLen; i++) {
+    html += "<tr>";
+    tiers.forEach(t => {
+      const item = groups[t][i];
+      if (item) {
+        const tt = item.disp ? ` title="${item.disp.replace(/"/g,'&quot;')}"` : "";
+        const rank = useRank ? `<span style="opacity:.55;font-size:.85em">#${passiveSorted.findIndex(d=>d.n===item.n)+1}</span> ` : "";
+        const subline = (useRank && item.disp) ? `<div style="font-size:.72em;opacity:.7;line-height:1.2;margin-top:.15em">${item.disp}</div>` : "";
+        html += `<td${tt}>${rank}<a href="${item.h}">${item.n}</a>${subline}</td>`;
+      } else {
+        html += "<td></td>";
+      }
+    });
+    html += "</tr>";
+  }
+  html += "</tbody></table>";
+  document.getElementById("pr-quick-table").innerHTML = html;
+}
+document.querySelectorAll("#pr-filter-btns button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#pr-filter-btns button").forEach(b => b.classList.remove("pr-active"));
+    btn.classList.add("pr-active");
+    render(btn.dataset.f);
+  };
+});
+render("all");
+})();
+</script>
+
+
+
 <hr />
 <h1 id="tables-click-a-title-to-open-then-filter-by-region">📊 Tables (click a title to open, then filter by region)</h1>
 <div class="widget" id="widget-0"></div>
@@ -415,8 +446,20 @@ button { font-family: inherit; }
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>Mongolia</td>
+<tr><td>Italy</td><td>Sloppiness — Mediterranean flexible-time culture, contractors unreliable</td></tr>
+<tr><td>Greece</td><td>Sloppiness — same Mediterranean pattern as Italy</td></tr>
+<tr><td>Malta</td><td>Sloppiness — Mediterranean island, same pattern as Italy/Greece</td></tr>
+<tr><td>Montenegro</td><td>Sloppiness — small tourist-focused Balkan, contractors flaky</td></tr>
+<tr><td>Albania</td><td>Sloppiness — poorest country in Europe, contractor quality poor</td></tr>
+<tr><td>Bosnia</td><td>Sloppiness — war-legacy thin economy, quality issues, half-finished buildings the norm</td></tr>
+<tr><td>Georgia</td><td>Sloppiness — Caucasus culture, "1am appointment for a 2pm repair" pattern documented across expat forums</td></tr>
+<tr><td>Armenia</td><td>Sloppiness — same Caucasus pattern as Georgia</td></tr>
+<tr><td>Azerbaijan</td><td>Sloppiness — Baku oil-money veneer over Caucasus fluidity + CPI 22 (bribes for basic services); worse than Serbia/Romania</td></tr>
+<tr><td>Turkey</td><td>Sloppiness — "yavaş yavaş" Mediterranean-Middle Eastern culture; 2023 earthquakes exposed construction corner-cutting</td></tr>
+<tr><td>Uzbekistan</td><td>Sloppiness — Tashkent formal sector OK but daily contractor culture is Soviet-jury-rig informal</td></tr>
+<tr><td>Jordan</td><td>Fake PR — "Selling terminates PR" per Jordan MOI. $282k locked forever or lose status. Not real PR.</td></tr>
+<tr><td>Cyprus (Cat 6.2)</td><td>Fake PR — "Selling terminates PR." €300k property must be held indefinitely. Not real PR.</td></tr>
+<tr><td>Mongolia</td>
 <td>No PR — renewable visas only</td>
 </tr>
 <tr>
