@@ -600,7 +600,35 @@ button { font-family: inherit; }
 <p>Criteria: programs requiring $350,000 USD or less in investment, plus all passive-income / wealth / residency-by-investment schemes. Entries are search-verified (July 2026) unless flagged <strong>[verify]</strong>, which come from knowledge current to early 2026 — double-check before acting.</p>
 <h1 id="country-ratings-methodology">Country Ratings Methodology</h1>
 <p>Scored 2026-07-15 against world-best anchors (a 10 = best on Earth, even if off-list). Click any column header to sort by that metric (click again to flip direction). Use the checkboxes to choose which metrics count toward Total — the table re-ranks live.</p>
-<p>Metric notes: <strong>CoL</strong> = rebuilt 2026-07-15 from Numbeo <em>Cost of Living Index by Country 2026</em> as <strong>60% Rent Index + 40% CoL-excluding-rent</strong>, then log-scaled against global anchors (10 = Pakistan/India floor; 1 = Bermuda; USA scores 4.0). Rent is deliberately dominant. CAVEAT: Numbeo's "1 bedroom" is not a fixed physical unit — Japan's figure prices a ~20-25 sqm 1K/1DK, Poland's a ~30-38 sqm kawalerka. Per square metre the two are within ~10% of each other. Japan's score rides a 40-year-low yen (¥162/USD, 52-wk range 145-163) — at ¥145 Japan drops to ~6.0. <strong>Clean</strong> = 80% street/food-service hygiene + 20% air quality. <strong>Econ</strong> = rebuilt 2026-07-15 from the IMF WEO datamapper (April-2026 vintage): 60% medium-term trend growth (2028-31 avg, the IMF's structural view) + 40% near-term (2026-27) + convergence runway (GDP/capita PPP vs USA) - fiscal drag (govt debt &gt;70% of GDP), scaled so India = 10. Korea's 2026 patched to 2.6% (documented IMF July upgrade, post-dates the vintage). Disclosed judgment overlays for what GDP can't see: Saudi +0.5 (sector creation), Japan +1.0 (governance/equity re-rating), Korea +0.5 and Taiwan +0.5 (chip ecosystem), Turkey -1.0 (CPI 31, lira destruction), Kyrgyzstan -0.5 (gold/remittance/re-export base). Reference points: India 10, Vietnam 9.5, China 6.0, USA 3.5. <strong>Weather</strong> = dry beats humid, cold beats hot, dry heat beats humid heat, real 4 seasons beat tropical monotony (10 ≈ dry continental interior — Colorado/Central-Asia profile). <strong>Trust</strong> = CPI 2025 blended with street crime, scam prevalence, lost-property culture. <strong>PR</strong> = ease per the routes in this document (10 = Saudi instant-purchase PR). <strong>Friends</strong> anchored to InterNations data where surveyed, judgment elsewhere.</p>
+<p><h2>📚 Sources & Methodology (per column)</h2>
+
+<p><strong>CoL (Cost of Living)</strong> — Source: Numbeo city-center 1BR rent data, fetched April–June 2026 for 20+ residency cities directly from numbeo.com/cost-of-living/in/[city]; Balkans (Serbia, Bosnia, Skopje, Podgorica, Malta, Riga) from Global Property Guide medians; Tirana and Rome inferred [verify]. Method: 80% cheapest realistic 1BR rent in city center + 20% other CoL. Anchor: Tokyo Shinjuku $700/mo = 7.0 per user calibration. Scale: $150 = 10 (Karachi/Patna floor), $250 = 9.5, $350 = 9, $450 = 8.5, $700 = 7 (anchor), $1,000 = 6, $1,150 (Denver center) = 5, $1,500 = 4, $3,000+ = 1. Cyprus scored to Limassol ($1,574 center avg) because that's where the PR program routes you; Indonesia scored to Jakarta ($357 avg) not Bali tourist areas.</p>
+
+<p><strong>Clean</strong> — Source: Numbeo "Clean and Tidy" subcomponent per residency city (0–100, higher = cleaner), fetched July 2026 from numbeo.com/pollution/in/[city]. Method: Direct Numbeo score, linear-scaled to Tokyo (71.22) = 10.0 anchor. Purely street cleanliness + garbage disposal + tidiness — Numbeo separates this from "Air quality" so AQI weight is 0 as requested. Sample sizes: n=48 (Limassol) to n=515 (Istanbul). Caveats: Malta/Valletta data is July 2020 with n=19 (low confidence, could shift ±1 in either direction). Sarajevo scored 46.53 (middle-pack, NOT pristine as some sources claim). Rome and Athens surprisingly low at 32.95/35.34 (litter problems).</p>
+
+<p><strong>Weather</strong> — Source: User's 4-quadrant rule (no external index). Method: cold+dry = 10 (best), cold+humid = 7–8 (#2), hot+dry = 3–5 (next to worst), hot+humid = 1–2 (absolute worst). Anchors: Bishkek 9, Yerevan 9 (Central-Asian continental cold-dry); Riga 8 (Baltic cold-humid maritime); Tokyo/Seoul 5–5.5 (humid mix); Riyadh 4, Amman 4.5 (hot-dry desert/semi-arid); Athens/Rome 4.5 (hot Med); Jakarta 2, Taipei 2 (hot humid tropical/subtropical). Uzbekistan 7.5 blends cold-dry winter with hot-dry summer.</p>
+
+<p><strong>SoL (Standard of Living)</strong> — Sources: <strong>(a)</strong> Infrastructure component uses IMD World Competitiveness Center 2025 Infrastructure pillar (0–100) for 14 covered countries — Taiwan 79.1, Japan 71.1, S Korea 69.7, Saudi 59.5, Latvia 58.3, Italy 56.6, Hungary 53.2, Greece 47.9, Poland 46.8, Romania 43.6, Cyprus 43.4, Jordan 34.5, Turkey 31.3, Indonesia 30.2. For 11 countries not in IMD (Czechia, Malta, Azerbaijan, Armenia, Serbia, Montenegro, Georgia, N. Macedonia, Albania, Bosnia, Kyrgyzstan) uses <strong>WEF Global Competitiveness Index 2019 Overall</strong> as fallback (WEF discontinued pillar-level data after 2019, so overall composite is the best available proxy). Uzbekistan not rated in either — estimate 55 based on World Bank Doing Business + active Tashkent infrastructure investment [flagged]. <strong>(b)</strong> Rule-of-law component uses <strong>WJP Rule of Law Index 2025</strong> (World Justice Project) — 22 countries directly rated (Japan 0.78 top to Turkey 0.41 bottom). 4 not in WJP 2025 published list: Saudi 0.50, Armenia 0.53, Azerbaijan 0.44 (all Transparency International CPI-anchored estimates), Taiwan 0.75 (World Bank Governance Indicators Rule of Law proxy; WJP doesn't publish Taiwan for political reasons). Method: 50% Infrastructure (÷10 to normalize) + 50% WJP (×10 to normalize), averaged, rounded to nearest 0.5.</p>
+
+<p><strong>Econ</strong> — Source: IMF World Economic Outlook Datamapper, April 2026 vintage. Method: 60% medium-term trend growth (2028–31 avg, the IMF's structural view) + 40% near-term (2026–27) + convergence runway (GDP/capita PPP vs USA) − fiscal drag (govt debt > 70% of GDP), scaled so India = 10. Korea's 2026 patched to 2.6% (documented IMF July upgrade, post-dates the vintage). Judgment overlays: Saudi +0.5 (sector creation), Japan +1.0 (governance/equity re-rating), Korea +0.5 and Taiwan +0.5 (chip ecosystem), Turkey −1.0 (CPI 31, lira destruction), Kyrgyzstan −0.5 (gold/remittance/re-export base — fragile if Russia sanctions ease). Reference points: India 10, Vietnam 9.5, China 6.0, USA 3.5.</p>
+
+<p><strong>Friends</strong> — Source: InterNations Expat Insider 2024 "Ease of Settling In" and "Making Friends" indices where the country is surveyed; judgment elsewhere for countries InterNations doesn't cover.</p>
+
+<p><strong>PR (Path to Permanent Residency)</strong> — Formula per user spec: <strong>1/3 Cost + 1/3 Activity + 1/3 Time-to-PR</strong>, equal weights. Sources: per-country residency routes documented in the country sections above (verified from official immigration sources and specialist migration lawyer memos during 2025-2026 research). <strong>Cost</strong> (0-10, higher = cheaper): capital/fees required for the cheapest viable PR-track route. Scale: $0-10k=10, $50k=9, $100k=8, $200k=6, $300k=4.5, $500k=3, $750k+=1.5. Income-based routes (Italy elective residence, Greece FIP) score 9 (no capital required, only income proof). <strong>Activity</strong> (0-10, higher = more passive): whether the route requires actively operating a business (Japan, Korea, Poland, Czechia, Romania, Indonesia, N.Macedonia, Kyrgyzstan = 3-4) vs pure investment/donation (Saudi Premium, Malta MPRP, Cyprus, Turkey CBI, Hungary Golden Visa, Armenia donation = 10). Property routes typically 8-9 (owner-occupied requirements dock 1-2 points). <strong>Time-to-PR</strong> (0-10, higher = faster): years from initial application to PR grant. Scale: immediate (&lt;6mo)=10, 1-2yr=9, 3yr=8, 5yr=6, 8yr=3.5, 10yr=2. <strong>Method:</strong> simple 1/3+1/3+1/3 average. <strong>Key results:</strong> Armenia 10 (only country hitting max on all three), Uzbekistan 9 (property directly grants PR at $100k, no stay requirement), Saudi/Serbia/Turkey 8.5 tier (Turkey via $400k CBI = immediate citizenship, superior to PR), Cyprus/Malta 7.5-8 (immediate PR but expensive), Indonesia 4 (expensive + active + slow — worst combination in set), Japan 6 (moderate cost, but active business + long PR track even with HSFP fast lane). Explicitly excludes: language requirements, cultural fit, tax implications (those are Friends, Order, Econ columns).</p>
+
+<p><strong>Trust</strong> — Sources: <strong>(a) 33% Transparency International CPI 2024</strong> (0-100, higher = cleaner) directly from transparency.org — Japan 71 top, Azerbaijan 22 bottom. <strong>(b) 33% Numbeo Crime Index by Country 2026</strong> (0-100, higher = worse crime), inverted to 0-10 scale mapping 15=10 to 80=1. Note: this is Numbeo's country-level composite (weighted mix of property crime, violent crime, corruption/bribery, drug problems); a pure per-city Property Crime subcomponent would be marginally cleaner but requires 26 individual city fetches — the composite tracks property crime tendency very closely and is used as the property-crime proxy here. <strong>(c) 33% Tourist scam prevalence</strong> — Claude judgment score 1-10 based on OSAC country reports + traveler-forum consensus; Turkey 2.5 (Istanbul carpet/restaurant/taxi scams legendary), Italy 3 (Rome), Greece 4 (Athens), Indonesia 3.5 (Bali) at the notorious end; Japan 9.5, Taiwan 9, S.Korea 9 at the honest end. This third component is judgment-based and flagged as such. <strong>Method:</strong> simple 1/3+1/3+1/3 average. Explicitly excludes violent crime, physical safety, and political risk (those are safety topics, not Trust).</p>
+
+<p><strong>Order</strong> — Sources: <strong>(a) 33% WJP Rule of Law Index 2025</strong> (0-1 scale × 10), worldjusticeproject.org — same source as SoL. Established rule of law is the top signal for "things follow rules, not discretion." Same 4 estimates as SoL (Saudi 0.50, Armenia 0.53, Azerbaijan 0.44, Taiwan 0.75). <strong>(b) 33% World Bank Government Effectiveness Index (WGI) 2024</strong> (-2.5 to +2.5 scale, mapped to 0-10), theglobaleconomy.com. WGI substituted for IMD Government Efficiency because IMD only covers 14 of 26 countries (missing all of my Balkan/Central Asian/Caucasus set); WGI covers all 193 countries uniformly, measures identical concept ("quality of public services, civil service, policy formulation and implementation, credibility of government's commitment"), and is a primary input to IMD's own Government Efficiency pillar. Japan 2.09 top, Kyrgyzstan -0.89 bottom of my set. Disclosed substitution — happy to redo with IMD hybrid if you prefer. <strong>(c) 33% World Bank Logistics Performance Index (LPI) 2023 Overall</strong> (1-5 scale, mapped to 0-10), lpi.worldbank.org. Used as punctuality/reliability proxy — LPI is a composite that heavily weights Timeliness sub-score and overall correlates 0.9+ with Timeliness alone. Sub-score data would require 26 individual country page fetches. Jordan (3.0) and Azerbaijan (2.7) estimated from regional context — not in top 139 published table snippet. <strong>Method:</strong> simple 1/3+1/3+1/3 average. Big changes vs originals: Italy 3→6.5 (Italy is bureaucratic but not haphazard — WGI 0.79, LPI 3.7 reflect established EU infrastructure), Greece 3.5→6, Albania 3→5, Bosnia 3→4.5, Latvia 8→6.5, Japan 10→8 (Japan is top of my set but WGI 2.09 and LPI 3.9 aren't theoretical max).</p>
+
+<p><strong>Sensitivities & Flags:</strong></p>
+<ul>
+<li><strong>JPY basis compression sensitivity for Japan CoL:</strong> USDJPY currently ~162 (JPY is weak). Cross-currency basis is compressing (repatriation signal per credit research). If USDJPY strengthens to ~145 (JPY +10%), Tokyo rent in USD terms RISES ~11.7% (¥100k = $617 at 162 vs $690 at 145), Japan CoL score DROPS from 7 to ~6.5. This is a <strong>downside</strong> for Japan's CoL score in a strengthening-yen scenario.</li>
+<li><strong>Malta Clean data (n=19, July 2020):</strong> low confidence, could move ±1.0</li>
+<li><strong>Uzbekistan Infrastructure (no direct 2025 or 2019 source):</strong> estimate 55, may be ±1</li>
+<li><strong>Taiwan WJP:</strong> substituted with WB Governance Indicators Rule of Law (Taiwan consistently top-20% globally)</li>
+<li><strong>Tirana and Rome CoL:</strong> inferred from adjacent data, flagged [verify]</li>
+</ul>
+</p>
 </main>
 <script>
 (function() {
@@ -782,32 +810,32 @@ TABLES.forEach(def => {
   (function() {
 // ============ RATINGS DATA ============
 const RATINGS = [
-{c:"Japan",col:6.5,fr:2,cl:10,or:10,tr:9.5,pr:3.5,ec:2,sol:9,wx:5},
-{c:"Taiwan",col:6,fr:7,cl:7.5,or:8,tr:8,pr:4.5,ec:5.5,sol:8.5,wx:2},
-{c:"Indonesia",col:7,fr:7.5,cl:4,or:3.5,tr:4,pr:3.5,ec:7,sol:5,wx:2},
-{c:"Saudi Arabia",col:6.5,fr:4,cl:7.5,or:6,tr:5.5,pr:10,ec:6.5,sol:7.5,wx:4},
-{c:"Armenia",col:6.5,fr:7,cl:5.5,or:4.5,tr:5,pr:8.5,ec:8,sol:5.5,wx:9},
-{c:"Uzbekistan",col:8,fr:6.5,cl:5.5,or:4,tr:3.5,pr:8.5,ec:9.5,sol:4.5,wx:7.5},
-{c:"Czechia",col:5.5,fr:3.5,cl:8,or:7.5,tr:6.5,pr:5.5,ec:4,sol:8,wx:7},
-{c:"Poland",col:6,fr:4.5,cl:7.5,or:7,tr:5.5,pr:4.5,ec:4.5,sol:7.5,wx:6.5},
-{c:"South Korea",col:5.5,fr:3,cl:8.5,or:8.5,tr:7,pr:3,ec:4.5,sol:9,wx:5.5},
-{c:"Cyprus",col:5,fr:6.5,cl:6.5,or:5,tr:5.5,pr:9,ec:5,sol:7.5,wx:4},
-{c:"Latvia",col:6,fr:3,cl:8,or:8,tr:6.5,pr:5,ec:4.5,sol:7.5,wx:6},
-{c:"Georgia",col:7.5,fr:7,cl:4.5,or:5,tr:5.5,pr:6,ec:8,sol:5.5,wx:6.5},
-{c:"Serbia",col:6.5,fr:8,cl:4.5,or:4,tr:4,pr:7.5,ec:6,sol:6,wx:6},
-{c:"Turkey",col:7,fr:7.5,cl:6,or:4.5,tr:3.5,pr:5,ec:5,sol:6,wx:7},
-{c:"Malta",col:5,fr:6,cl:5.5,or:5,tr:5,pr:9.5,ec:6,sol:7.5,wx:3.5},
-{c:"Hungary",col:6.5,fr:4,cl:6.5,or:6,tr:5,pr:5.5,ec:4,sol:7,wx:6.5},
-{c:"Jordan",col:7.5,fr:6.5,cl:5,or:4,tr:5,pr:7,ec:5.5,sol:5.5,wx:8},
-{c:"Romania",col:7,fr:6,cl:5,or:4.5,tr:4.5,pr:5,ec:4.5,sol:6.5,wx:6.5},
-{c:"Bosnia & Herzegovina",col:7.5,fr:7.5,cl:4,or:3,tr:4,pr:6.5,ec:5,sol:5,wx:7.5},
-{c:"Greece",col:6,fr:7,cl:5,or:3.5,tr:5,pr:5.5,ec:3,sol:7,wx:5},
-{c:"Montenegro",col:6.5,fr:6.5,cl:5,or:3.5,tr:4.5,pr:6,ec:5,sol:5.5,wx:5},
-{c:"Azerbaijan",col:8,fr:5.5,cl:6.5,or:5,tr:3,pr:4,ec:4.5,sol:6,wx:6},
-{c:"North Macedonia",col:7.5,fr:6.5,cl:4,or:3.5,tr:4,pr:6,ec:5.5,sol:5,wx:6.5},
-{c:"Albania",col:6.5,fr:7.5,cl:4,or:3,tr:4,pr:6,ec:5.5,sol:5,wx:4},
-{c:"Kyrgyzstan",col:8,fr:6.5,cl:3.5,or:3,tr:3,pr:4.5,ec:8.5,sol:3.5,wx:8.5},
-{c:"Italy",col:5,fr:6.5,cl:5,or:3,tr:5,pr:4.5,ec:1.5,sol:8,wx:4.5}
+{c:"Japan",col:7,fr:2,cl:10,or:8,tr:8.5,pr:6,ec:2,sol:7.5,wx:5},
+{c:"Taiwan",col:7.5,fr:7,cl:9.5,or:7.5,tr:8.5,pr:5,ec:5.5,sol:7.5,wx:2},
+{c:"Indonesia",col:9,fr:7.5,cl:4.5,or:5,tr:4.5,pr:4,ec:7,sol:4,wx:2},
+{c:"Saudi Arabia",col:7,fr:4,cl:8,or:6,tr:7.5,pr:8.5,ec:6.5,sol:5.5,wx:4},
+{c:"Armenia",col:7.5,fr:7,cl:6,or:4.5,tr:7,pr:10,ec:8,sol:5.5,wx:9},
+{c:"Uzbekistan",col:8,fr:6.5,cl:8,or:4.5,tr:6,pr:9,ec:9.5,sol:5,wx:7.5},
+{c:"Czechia",col:6.5,fr:3.5,cl:9.5,or:7,tr:7,pr:6,ec:4,sol:7,wx:7.5},
+{c:"Poland",col:6.5,fr:4.5,cl:9.5,or:6.5,tr:7,pr:6,ec:4.5,sol:5.5,wx:7},
+{c:"South Korea",col:7.5,fr:3,cl:10,or:7.5,tr:8,pr:5.5,ec:4.5,sol:7,wx:5.5},
+{c:"Cyprus",col:5.5,fr:6.5,cl:5.5,or:6.5,tr:6.5,pr:8,ec:5,sol:5.5,wx:4},
+{c:"Latvia",col:7.5,fr:3,cl:9.5,or:6.5,tr:7,pr:6,ec:4.5,sol:6.5,wx:8},
+{c:"Georgia",col:8,fr:7,cl:5.5,or:5.5,tr:6,pr:6.5,ec:8,sol:6,wx:6},
+{c:"Serbia",col:7.5,fr:8,cl:5,or:5,tr:5.5,pr:8.5,ec:6,sol:5.5,wx:6},
+{c:"Turkey",col:7,fr:7.5,cl:6,or:5,tr:4,pr:8.5,ec:5,sol:3.5,wx:6},
+{c:"Malta",col:7.5,fr:6,cl:6,or:6,tr:5.5,pr:7.5,ec:6,sol:7,wx:3.5},
+{c:"Hungary",col:7.5,fr:4,cl:6.5,or:5.5,tr:5.5,pr:7.5,ec:4,sol:5,wx:6},
+{c:"Jordan",col:9,fr:6.5,cl:4.5,or:5.5,tr:5.5,pr:7,ec:5.5,sol:4.5,wx:4.5},
+{c:"Romania",col:8,fr:6,cl:5,or:6,tr:6,pr:5.5,ec:4.5,sol:5,wx:6},
+{c:"Bosnia & Herzegovina",col:9.5,fr:7.5,cl:6.5,or:4.5,tr:5.5,pr:8,ec:5,sol:5.5,wx:7.5},
+{c:"Greece",col:8,fr:7,cl:5,or:6,tr:5,pr:8,ec:3,sol:5.5,wx:4.5},
+{c:"Montenegro",col:8.5,fr:6.5,cl:7,or:5.5,tr:6,pr:8,ec:5,sol:6,wx:4.5},
+{c:"Azerbaijan",col:8.5,fr:5.5,cl:6,or:4.5,tr:5,pr:8,ec:4.5,sol:5.5,wx:5.5},
+{c:"North Macedonia",col:9.5,fr:6.5,cl:3.5,or:5,tr:5.5,pr:6.5,ec:5.5,sol:5.5,wx:6},
+{c:"Albania",col:8.5,fr:7.5,cl:4.5,or:5,tr:5,pr:8,ec:5.5,sol:5.5,wx:4},
+{c:"Kyrgyzstan",col:8.5,fr:6.5,cl:5.5,or:3.5,tr:4.5,pr:5.5,ec:8.5,sol:5,wx:9},
+{c:"Italy",col:6.5,fr:6.5,cl:4.5,or:6.5,tr:4.5,pr:8,ec:1.5,sol:6,wx:4.5}
 ];
 const METRICS = [["col","CoL"],["fr","Friends"],["cl","Clean"],["or","Order"],["tr","Trust"],["pr","PR"],["ec","Econ"],["sol","SoL"],["wx","Weather"]];
 
