@@ -66,9 +66,112 @@ button { font-family: inherit; }
   body { padding: 14px 10px 60px 10px; }
   table { font-size: .8em; }
 }
+
+/* ---- Sidebar outline nav ---- */
+#toc {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--background-secondary);
+  border-right: 1px solid var(--background-modifier-border);
+  padding: 16px 10px 40px 14px;
+  font-size: .82em;
+  box-sizing: border-box;
+  z-index: 10;
+}
+#toc a { color: var(--text-normal); display: block; padding: 3px 6px; border-radius: 4px; }
+#toc a:hover { background: var(--background-primary); text-decoration: none; color: var(--link); }
+#toc a.active { color: var(--interactive-accent); font-weight: 600; }
+#toc details { margin: 0; }
+#toc summary { cursor: pointer; list-style: none; padding: 3px 6px; border-radius: 4px; font-weight: 600; }
+#toc summary::-webkit-details-marker { display: none; }
+#toc summary:hover { background: var(--background-primary); }
+#toc summary::before { content: "▸"; display: inline-block; width: 1em; color: var(--text-muted); transition: transform .1s; }
+#toc details[open] > summary::before { transform: rotate(90deg); }
+#toc .toc-h2 { margin-left: 1.1em; }
+#toc-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--text-normal);
+  font-size: 1.1em;
+}
+#page-content { margin-left: 260px; }
+@media (max-width: 900px) {
+  #toc { transform: translateX(-100%); transition: transform .2s; box-shadow: 4px 0 12px rgba(0,0,0,.25); }
+  #toc.open { transform: translateX(0); }
+  #page-content { margin-left: 0; }
+  #toc-toggle { display: block; }
+}
 </style>
 </head>
 <body>
+<button id="toc-toggle" aria-label="Toggle outline">☰</button>
+<nav id="toc">
+<a href="#pathways-residency-investment-options">Pathways — Residency &amp; Investment Options</a>
+<a href="#quick-jump">⚡ Quick Jump</a>
+<a href="#tables-click-a-title-to-open-then-filter-by-region">📊 Tables</a>
+<a href="#country-ratings-sortable-custom-metric-weighting">📊 Country Ratings</a>
+<details open><summary>ASIA — EAST ASIA</summary>
+<a class="toc-h2" href="#japan-moderate-185k-active">Japan</a>
+<a class="toc-h2" href="#south-korea-moderate-75k-active">South Korea</a>
+<a class="toc-h2" href="#taiwan-hard-200k-active">Taiwan</a>
+</details>
+<details open><summary>ASIA — SOUTHEAST ASIA</summary>
+<a class="toc-h2" href="#indonesia-hard-620k-active">Indonesia</a>
+</details>
+<a href="#europe-western">EUROPE — WESTERN</a>
+<details open><summary>EUROPE — NORTHERN</summary>
+<a class="toc-h2" href="#latvia-easy-280k-passive">Latvia</a>
+</details>
+<details open><summary>EUROPE — EASTERN</summary>
+<a class="toc-h2" href="#hungary-easy-250k-passive">Hungary</a>
+<a class="toc-h2" href="#romania-moderate-59k-active">Romania</a>
+<a class="toc-h2" href="#poland-moderate-business-capital-active">Poland</a>
+<a class="toc-h2" href="#czechia-moderate-10k-active">Czechia</a>
+</details>
+<details open><summary>EUROPE — SOUTHERN &amp; BALKANS</summary>
+<a class="toc-h2" href="#italy-easy-32kyr-income-passive">Italy</a>
+<a class="toc-h2" href="#greece-fip-easy-2kmo-income-passive">Greece (FIP)</a>
+<a class="toc-h2" href="#greece-golden-visa-easy-250k-passive">Greece (Golden Visa)</a>
+<a class="toc-h2" href="#malta-instant-150k-all-in-passive">Malta</a>
+<a class="toc-h2" href="#cyprus-instant-300k-passive">Cyprus</a>
+<a class="toc-h2" href="#serbia-easy-no-minimum-passive">Serbia</a>
+<a class="toc-h2" href="#montenegro-easy-no-minimum-passive">Montenegro</a>
+<a class="toc-h2" href="#albania-easy-no-minimum-passive">Albania</a>
+<a class="toc-h2" href="#north-macedonia-moderate-5k-active">N. Macedonia</a>
+<a class="toc-h2" href="#bosnia-herzegovina-easy-no-minimum-passive">Bosnia &amp; Herzegovina</a>
+<a class="toc-h2" href="#turkey-easy-200k-passive">Turkey</a>
+</details>
+<details open><summary>CAUCASUS</summary>
+<a class="toc-h2" href="#georgia-easy-300k-passive">Georgia</a>
+<a class="toc-h2" href="#armenia-instant-6k-donation-passive">Armenia</a>
+<a class="toc-h2" href="#azerbaijan-easy-118k-passive">Azerbaijan</a>
+</details>
+<details open><summary>CENTRAL ASIA</summary>
+<a class="toc-h2" href="#uzbekistan-instant-100k-passive">Uzbekistan</a>
+<a class="toc-h2" href="#kyrgyzstan-moderate-114k-active">Kyrgyzstan</a>
+</details>
+<details open><summary>MIDDLE EAST</summary>
+<a class="toc-h2" href="#jordan-easy-282k-passive">Jordan</a>
+<a class="toc-h2" href="#saudi-arabia-instant-213k-passive">Saudi Arabia</a>
+</details>
+<a href="#africa">AFRICA</a>
+<a href="#excluded-countries-with-reasons">❌ Excluded Countries</a>
+<a href="#criteria">Criteria</a>
+<a href="#country-ratings-methodology">Ratings Methodology</a>
+</nav>
+<main id="page-content">
 <h1 id="pathways-residency-investment-options">Pathways — Residency &amp; Investment Options</h1>
 <p><a href="#criteria">Criteria</a></p>
 <h1 id="quick-jump">⚡ Quick Jump</h1>
@@ -78,7 +181,7 @@ button { font-family: inherit; }
 <th>⚡ Instant (5)</th>
 <th>✅ Easy (12)</th>
 <th>🟡 Moderate (7)</th>
-<th>🔴 Hard (1)</th>
+<th>🔴 Hard (2)</th>
 </tr>
 </thead>
 <tbody>
@@ -92,7 +195,7 @@ button { font-family: inherit; }
 <td><a href="#cyprus-instant-300k-passive">Cyprus</a></td>
 <td><a href="#azerbaijan-easy-118k-passive">Azerbaijan</a></td>
 <td><a href="#japan-moderate-185k-active">Japan</a></td>
-<td></td>
+<td><a href="#indonesia-hard-620k-active">Indonesia</a></td>
 </tr>
 <tr>
 <td><a href="#malta-instant-150k-all-in-passive">Malta</a></td>
@@ -178,6 +281,9 @@ button { font-family: inherit; }
 <p>Investor Resident Visa: NT$6,000,000 (~$200,000) into a Taiwanese company, approved by the MOEA Investment Commission → resident visa + ARC for you and dependents. Entrepreneur Visa alternative: NT$500,000 (~$16,000) to start, renewal needs ~NT$3M turnover by year two or funding/incubator/patent qualification. No passive-income visa. Foreign-source income largely untaxed below high thresholds.</p>
 <p><strong>PR: Available — APRC (permanent residency) after 5 years of residence at 183+ days/year while maintaining the investment.</strong> <strong>Citizenship: Available after 5 years; naturalization requires renouncing prior citizenship (the goal); language and residency proofs are the real gates.</strong></p>
 <h1 id="asia-southeast-asia">ASIA — SOUTHEAST ASIA</h1>
+<h2 id="indonesia-hard-620k-active">INDONESIA — Hard, ~$620k, Active</h2>
+<p>Investor KITAS (E28A, Index 313/314) requires IDR 10 billion (~$620k at current FX) in personal paid-up shareholding in an active PT PMA (Indonesian foreign investment company), plus a strategic management role (Director or Commissioner) filed with Menkumham. The two-year Investor KITAS is renewable; after 3–5 consecutive years of unbroken KITAS residence the holder can convert to Investor KITAP inside Indonesia (status conversion, not offshore). Best-practice guidance for 2026 is to budget 4–5 years on KITAS before conversion is granted. IMTA work-permit fee waived for Investor KITAS holders. Passive alternatives exist but are dead-ends for PR: E28C Golden Visa (from $350k in government bonds / listed equities / deposits) and the Second Home Visa (~$130k / IDR 2B proof-of-funds) both grant 5- or 10-year renewable permits that <strong>do not lead to KITAP</strong>. New in 2025: Global Citizenship of Indonesia (GCI) is diaspora-only, not applicable.</p>
+<p><strong>PR: Available via KITAP after 3–5 years on Investor KITAS. KITAP is a 5-year renewable permit — renewable indefinitely as long as the underlying PT PMA remains compliant and the shareholding is maintained. Not unconditional PR in the Western sense: rules can change at each renewal, and residency is tied to PMA standing (if the company loses standing, KITAP is at risk). Grants e-KTP Orang Asing (5-yr foreign national ID), no MERP required for re-entry, own property under Hak Pakai, broader banking/financial credibility.</strong> <strong>Citizenship: Eligible after two KITAP renewal cycles (~10+ years total residence post-KITAP grant, or roughly 13–15 years from first KITAS). Indonesia generally requires renunciation of prior citizenship — the desired outcome. Bahasa Indonesia proficiency, clean tax record, and cultural integration proofs are the real gates.</strong></p>
 <h1 id="europe-western">EUROPE — WESTERN</h1>
 <h1 id="europe-northern">EUROPE — NORTHERN</h1>
 <h2 id="latvia-easy-280k-passive">LATVIA — Easy, €280k, Passive</h2>
@@ -205,13 +311,26 @@ button { font-family: inherit; }
 <p><strong>PR: Available after 5 years of residence (long-term resident status).</strong> <strong>Citizenship: Available after 7 years of genuine residence with B1 Greek and a culture test; dual citizenship allowed.</strong></p>
 <h2 id="greece-golden-visa-easy-250k-passive">GREECE (Golden Visa) — Easy, €250k+, Passive</h2>
 <p>Current tiers (Law 5100/2024, transition windows closed): €800,000 in Attica (all Athens), Thessaloniki, Mykonos, Santorini, and islands &gt;3,100 population; €400,000 everywhere else; €250,000 ONLY for commercial-to-residential conversions or listed-building restorations — anywhere. Also a €250,000 startup route via Elevate Greece companies (Law 5162/2024). Airbnb-style rental banned (€50,000 fine + revocation). 5-year renewable permit, no stay requirement.</p>
+<p><strong>Quantified hold outcomes (see Flip-Hold-Analysis.md for full math):</strong></p>
+<ul>
+<li><strong>5-year GV cycle (€250k conversion route):</strong> +€75k net all-in ($88k USD) — €41k from 5.5% CAGR appreciation on €250k, plus €34k net long-term rental income (Airbnb banned but long-term letting yields 4-5% gross).</li>
+<li><strong>7-year hold to actual PR (requires physical residence + B1 Greek):</strong> +€100k net all-in ($118k USD).</li>
+</ul>
+<p>Math anchors: Athens center €2,439/m² (BoG Q3 2025), 2024/2025/Q1 2026 appreciation 8.8%/7.8%/5.6% (slowing to ~5-6% forecast), 7-8% total in-costs, 5% exit costs. Conversion tier requires legal change-of-use documentation.</p>
+<p><strong>Greece is the strongest positive-EV path on this document.</strong> You gain financially AND get EU residence. Not a loss vehicle.</p>
 <p><strong>PR: NOT via the golden visa — it's a 5-year renewable residence permit tied to holding the qualifying asset, not permanent residence. Formal long-term/EU-permanent-resident status still requires 5 years of actual physical residence.</strong> <strong>Citizenship: Available after 7 years of GENUINE residence (tax residency, presence) + B1 Greek — holding the visa without living there earns you nothing toward citizenship.</strong></p>
 <h2 id="malta-instant-150k-all-in-passive">MALTA — Instant, €150k+ all-in, Passive</h2>
 <p>MPRP: property purchase or rental + government contribution + donation (all-in realistically ~€150,000–€180,000+ via the rental option) — requires proof of ~€500k in assets (€150k liquid).</p>
 <p><strong>PR: Available and IMMEDIATE — the MPRP grants permanent residency outright.</strong> <strong>Citizenship: Not realistically available — Malta's paid citizenship scheme was struck down by the EU Court of Justice in April 2025, and ordinary naturalization is discretionary with no fixed entitlement timeline.</strong></p>
 <h2 id="cyprus-instant-300k-passive">CYPRUS — Instant, €300k, Passive</h2>
 <p>€300,000 (+VAT) in NEW real estate (funds/shares options too), plus ~€50k secure annual foreign income, grants expedited status within months. Visit once every 2 years. EU but not yet Schengen.</p>
-<p><strong>Liquidity caveat (property version):</strong> the qualifying purchase must be NEW property, and future PR-seeking foreigners must also buy NEW — so they cannot buy your resale. You exit into the ordinary Cypriot secondary market, where the new-build visa premium doesn't hold. Expect meaningful value erosion on exit. The funds/shares alternatives avoid this trap entirely — prefer them if eligible.</p>
+<p><strong>Quantified 5-year hold outcome (see Flip-Hold-Analysis.md for full math):</strong></p>
+<ul>
+<li><strong>Investor (19% VAT):</strong> –€25k to +€3k net all-in. VAT hit is €57k on €300k, dominates the loss. Rental income of €40k (long-term letting at 4.5% gross, 60% net) closes most of the gap.</li>
+<li><strong>Primary resident (5% VAT):</strong> +€6k to +€30k net all-in. VAT savings of €42k make this modestly positive; assumes you actually live there and forgo rental income.</li>
+</ul>
+<p>Math anchors: New-build premium ~20% over resale in Limassol (Investropa/Landbank Analytics Jan 2026); 5.5% CAGR base case (62% nominal appreciation over 10 years); 5% exit costs; long-term rental 4-5% gross. Selling terminates PR — no immediate flip strategy possible.</p>
+<p><strong>Liquidity caveat (property version):</strong> the qualifying purchase must be NEW property, and future PR-seeking foreigners must also buy NEW — so they cannot buy your resale. You exit into the ordinary Cypriot secondary market at ~20% below new-build (about €60-80k gap on €300k), but appreciation over 5 years typically closes most of that. The funds/shares alternatives avoid the VAT hit entirely — prefer them if eligible.</p>
 <p><strong>PR: Available and IMMEDIATE — this program grants permanent residency itself within a few months.</strong> <strong>Citizenship: Available after ~7 of the last 10 years of actual residence (recent reforms allow as little as 4–5 years with Greek language for qualifying applicants); dual citizenship allowed.</strong></p>
 <h2 id="serbia-easy-no-minimum-passive">SERBIA — Easy, no minimum, Passive</h2>
 <p>Property of ANY value → temporary residence (up to 1–3 years under the 2024 unified rules; renewable while you own it; expect a ~183-day/year presence expectation for property-based renewals). Or register a company — no minimum capital, no employees, no trading requirement (renewals want ~€5,000 into share capital or taxes). Flat 10–20% personal tax. Cheapest formal property-residency in Europe.</p>
@@ -230,7 +349,10 @@ button { font-family: inherit; }
 <p><strong>PR: Available after 5 years of continuous lawful temporary residence (with allowances for total absences up to 10 months, or single absence up to 6 months).</strong> <strong>Citizenship: Available after 8 years of continuous residence; Bosnia does not recognize dual citizenship except by bilateral treaty (US has none) — so renunciation required (the goal). Language competency and integration expectations apply.</strong></p>
 <h2 id="turkey-easy-200k-passive">TURKEY — Easy, $200k, Passive</h2>
 <p>Citizenship: property worth $400,000 held 3 years → citizenship for you and family. For plain residency: since 2023 a property-based short-term residence permit generally requires a $200,000+ property, and many 'closed' districts (&gt;20–25% foreigner ratio) refuse new registrations — check the district first.</p>
-<p><strong>PR: Available after 8 years of uninterrupted residence on the standard track (the $200k property permit is renewable in the meantime).</strong> <strong>Citizenship: Available IMMEDIATELY via the $400,000 property purchase (3-year hold) — Turkey is the region's flagship citizenship-by-investment and allows dual citizenship; otherwise 5 years of residence with heavy presence requirements.</strong></p>
+<p><strong>Quantified 3-year hold outcome on the $400k CBI route (see Flip-Hold-Analysis.md for full math):</strong> Base case (7% USD annual appreciation, 6% gross yield): +$59k net all-in over 3 years, plus the passport. Optimistic (10% appreciation, 7% yield): +$112k. Pessimistic (3% appreciation, 5% yield): ~break-even. <strong>Positive-EV in most scenarios.</strong> Math anchors: central Istanbul ~$2,000/m² (TCMB HPI), 4% transfer tax + 7-12% overhead ($28-48k), 25% YoY USD appreciation Q1 2026 with sustainable 5-10% base case (istanbulrealestate.net, binaainvestment.com).</p>
+<p><strong>MANDATORY 3-YEAR HOLD</strong> is annotated on the title deed since the 2025 update — cannot flip within window without government pre-approval. Citizenship survives after 3 years even if you then sell.</p>
+<p><strong>Currency risk caveat:</strong> structure exit through hard-currency-denominated resale (branded residences, premium new-builds are effectively USD-pegged). Ordinary secondary market transacts in lira and exposes you to lira depreciation on exit.</p>
+<p><strong>PR: Available after 8 years of uninterrupted residence on the standard track (the $200k property permit is renewable in the meantime).</strong> <strong>Citizenship: Available IMMEDIATELY via the $400,000 property purchase (3-year hold, then free to sell while retaining citizenship forever) — Turkey is the region's flagship citizenship-by-investment and allows dual citizenship; otherwise 5 years of residence with heavy presence requirements.</strong></p>
 <h1 id="caucasus">CAUCASUS</h1>
 <h2 id="georgia-easy-300k-passive">GEORGIA — Easy, $300k, Passive</h2>
 <p><strong>$300k investment route.</strong> Property or business above $300,000 → 5-year Investment Residence Permit. Business version requires turnover of $50k/$100k/$120k in years 1/2/3–5.</p>
@@ -245,9 +367,23 @@ button { font-family: inherit; }
 <p><strong>PR: Available — permanent residence requires holding the qualifying asset at the higher AZN 200,000 (~$118,000) level plus 2 years of temporary residence first.</strong> <strong>Citizenship: Available after 5 years of permanent residence with an Azerbaijani language test; Azerbaijan bans dual citizenship (fine — that forces the renunciation, which is the goal).</strong></p>
 <h1 id="central-asia">CENTRAL ASIA</h1>
 <h2 id="uzbekistan-instant-100k-passive">UZBEKISTAN — Instant, $100k, Passive</h2>
-<p><strong>Real estate route (the only PR route).</strong> Property → PERMANENT residence card: $300,000 Tashkent/region; $200,000 Samarkand, Bukhara, Namangan, Andijan, Fergana, Khorezm; $100,000 Karakalpakstan and other regions. Restricted to a register of ~85 nationalities — confirm the US is listed.</p>
-<p><strong>Severe liquidity caveat:</strong> these thresholds are far above local market prices. Regional-city apartments run ~$300–600/m², so a normal 60–70m² apartment is $20–40k — the $100k minimum forces you into premium/new-build stock at roughly 3–5x the typical local transaction. Tashkent has the same problem at its $300k tier (typical Tashkent apartment: $50–100k). Your realistic resale buyer pool is other PR-seeking foreigners, which is a thin market. Expect a long, discounted exit — treat a large slice of the purchase as potentially unrecoverable.</p>
-<p><strong>PR: Available — the real-estate route grants an indefinite permanent residence card directly (from $100k in the regions).</strong> <strong>Citizenship: Nominally available after 5 years of residence; Uzbekistan bans dual citizenship (fine), but adult naturalization grants are rare in practice — treat as a PR play, not a passport play.</strong></p>
+<p><strong>Real estate route (the only PR route).</strong> Property → PERMANENT residence card: $300,000 Tashkent/region; $200,000 Samarkand, Bukhara, Namangan, Andijan, Fergana, Khorezm; $100,000 Karakalpakstan and other regions. Restricted to a register of ~111 nationalities (US confirmed on the list per multiple 2025-2026 sources). Must be NEW construction (&lt; 3 years since commissioning), single unit only per notary practice.</p>
+<p><strong>Quantified loss estimates (see Flip-Hold-Analysis.md for full math + sources):</strong></p>
+<ul>
+<li><strong>$100k regional immediate flip (if legal):</strong> –$60–72k loss. Sell to local at ~$30–42k. Still $141–153k better than Saudi's $213k sunk fee.</li>
+<li><strong>$100k regional 5-yr hold:</strong> –$19k gross, +$10k net with rental income (roughly break-even).</li>
+<li><strong>$300k Tashkent immediate flip (if legal):</strong> –$115k loss (sell as secondary at ~$195k). Still $98k better than Saudi.</li>
+<li><strong>$300k Tashkent 5-yr hold:</strong> –$21k gross, +$22k net with rental income (modestly positive).</li>
+</ul>
+<p>Math anchors: Tashkent premium new-build $2,100–2,350/m² vs secondary $1,300–1,600/m² in same districts (CERR data via kun.uz Apr 2026, internationalinvestment.biz May 2026). New-build premium ~30–45%. Regional Navoi at $636/m² is proxy for Karakalpakstan-tier pricing.</p>
+<p><strong>CRITICAL LEGAL OPEN QUESTIONS — verify with an Uzbek immigration lawyer before relying on this route:</strong></p>
+<ol>
+<li><strong>Does PR survive sale of the qualifying property?</strong> Article 11 of the Uzbek Law on Legal Status of Foreign Citizens lists ID-card cancellation grounds — the accessible ones focus on absence from Uzbekistan, NOT on selling qualifying property. But the permit "is done up to 5 times to the period established, after which its change is done" — periodic reissuance is a review point.</li>
+<li><strong>Tashkent alienation restriction:</strong> Per Azizov &amp; Partners memo (Jun 2026), sale of Tashkent property by a foreign PR holder is permitted only if the buyer has permanent registration in Tashkent AND 3+ years residence there — a massive buyer-pool restriction. The Oct 2025 propiska abolition MAY have lifted this, but no confirmation surfaced. Regional cities do not have this restriction (Karakalpakstan/other tier is safer on this dimension).</li>
+<li><strong>Rental of qualifying property:</strong> Azerbaijan explicitly voids the visa basis if the property is rented out; Uzbek rules on this not clearly surfaced in searches. Verify before assuming rental income is available during the hold period.</li>
+</ol>
+<p>Budget $200–400 for a Tashkent immigration lawyer consultation covering all three questions before committing. Answers determine whether Uzbekistan is the best PR-per-dollar on this document (flip works, PR survives, rent OK) or worse than expected (holding required, thin resale, no rent).</p>
+<p><strong>PR: Available — the real-estate route grants an indefinite permanent residence card directly (from $100k in the regions), subject to the caveats above about periodic reissuance and open legal questions.</strong> <strong>Citizenship: Nominally available after 5 years of residence; Uzbekistan bans dual citizenship (fine), but adult naturalization grants are rare in practice — treat as a PR play, not a passport play.</strong></p>
 <h2 id="kyrgyzstan-moderate-114k-active">KYRGYZSTAN — Moderate, $114k, Active</h2>
 <p>Formal investment route: <strong>Investment Visa Category "I"</strong> requires 10 million KGS (~USD 114,000) for a 5-year visa or 20 million KGS (~USD 229,000) for a 10-year visa, deployed into ICT, industry, agriculture, banking, energy, education, medicine, or construction/engineering per the current Kyrgyz e-Visa page. <strong>Slightly over your ~$60k cap</strong> — verify current thresholds directly with the State Migration Service since the older Law on External Migration also referenced $20k/1yr, $200k/3yr, and $500k/5yr tiers that may still exist in parallel. Also available: 60-day visa-free entry for US citizens (extendable to 120 days at OVIR in Bishkek); business/self-employment residence via company registration under the general framework (KG LLC minimum capital is nominal ~1 som). Business environment concerns: Freedom House flagged the 2024 Russian-style "foreign representatives" NGO law and the August 2025 media law requiring registration and 35% foreign-ownership cap; World Bank notes growing state-owned enterprise presence and weak business environment. Personal income tax 10% flat; foreign-source income taxed only if remitted (verify).</p>
 <p><strong>PR: Available after 5 years of continuous legal temporary residence.</strong> <strong>Citizenship: Available after 5 more years as a permanent resident (10 years total from initial residence), Kyrgyz-language competency required. Dual citizenship banned, so naturalization forces renunciation (the goal). Language and grant discretion are the real barriers.</strong></p>
@@ -255,10 +391,14 @@ button { font-family: inherit; }
 <h2 id="jordan-easy-282k-passive">JORDAN — Easy, $282k, Passive</h2>
 <p><strong>Real Estate PR.</strong> Buy property valued at JOD 200,000 (~$282,000 USD), provided it is held without being sold or mortgaged; gets you permanent or long-term 5-year residency.</p>
 <p><strong>Wealth PR.</strong> Local bank deposit of JOD 300,000 (~$423,000 USD) for 3 years, investing JOD 150,000 (~$211,000 USD) into a local company, or buying JOD 350,000 (~$493,000 USD) in Treasury bonds.</p>
-<p><strong>Material caveats on the property route:</strong>
-- Property must be <strong>NEW</strong> — the visa program does not accept resale/secondary-market properties.
-- Properties in the qualifying tier are <strong>high-end and depreciate roughly 10–20% over a 10-year hold</strong>, so on a $282k entry you should expect $30–55k of value erosion before you exit.
-- <strong>Resale liquidity is genuinely poor.</strong> The natural buyer pool is other foreigners seeking the same visa — but they must buy NEW property to qualify, so they cannot buy yours. You're selling into the ordinary Jordanian resale market, which is thin at that price point.</p>
+<p><strong>Quantified 5-year hold-then-sell outcome (see Flip-Hold-Analysis.md for full math):</strong> Base case (flat prices, 7% gross yield): break-even ~-$500. Optimistic (2% appreciation, 9% yield): +$64k. Pessimistic (5% depreciation, 6% yield): -$46k. <strong>The entire trade lives on rental yield</strong> — without rent, you lose $35-95k. With normal rent, roughly break-even. Note: Amman pricing data is 2018-vintage (Global Property Guide) — verify current per-m² pricing with an Amman broker before committing.</p>
+<p><strong>Material caveats on the property route:</strong></p>
+<ul>
+<li>Property must be <strong>NEW</strong> — the visa program does not accept resale/secondary-market properties.</li>
+<li>Properties in the qualifying tier are <strong>high-end and depreciate roughly 10–20% over a 10-year hold</strong>, so on a $282k entry you should expect $30–55k of value erosion before you exit.</li>
+<li><strong>Resale liquidity is genuinely poor.</strong> The natural buyer pool is other foreigners seeking the same visa — but they must buy NEW property to qualify, so they cannot buy yours. You're selling into the ordinary Jordanian resale market, which is thin at that price point.</li>
+<li><strong>Selling terminates PR.</strong> So the loss math is only relevant if you're using Jordan as a stepping stone (to $750k+ citizenship) or as an option-value hold you'll abandon. If Jordan is home, this doesn't apply.</li>
+</ul>
 <p><strong>PR: Available — holding the qualifying asset grants residency indefinitely. Note the material caveats below on property choice, depreciation, and resale liquidity.</strong> <strong>Citizenship: Realistically available only via the direct investment track — $750,000+ USD in qualifying financial investment leads to full Jordanian citizenship for you and family; ordinary naturalization otherwise requires ~15 years and is discretionary and rare.</strong></p>
 <p>Amazing educational system, the highest inbound medical tourism in the Gulf because of its outstanding healthcare services quality, huge and rapidly growing culture around riding dirt bikes offroad, and mountains everywhere with moderate and even cold climate. Ad valorem tax on the truck of around 56% of value to import; they will use Hagerty, Classic.com or Hemmings to establish a fair global market value based on what others like it are selling for at auctions. The truck is valued based off its originality, structural integrity, and condition grade, not the stereo system or other modifications. Hagerty's has it valued around 10–15k.</p>
 <h2 id="saudi-arabia-instant-213k-passive">SAUDI ARABIA — Instant, $213k, Passive</h2>
@@ -435,13 +575,24 @@ button { font-family: inherit; }
 <td>Russia</td>
 <td>As a US national ('unfriendly state' person), real-estate and corporate transactions require approval from a Russian government commission. Getting money in is the killer: no usable banking channel exists without touching a sanctioned bank, so the only practical method is moving funds via USDT crypto — and heavy Russia-directed financial activity risks JPMorgan Chase (or any US bank) closing my accounts if they catch wind of it, on top of OFAC exposure. State Department Level 4 (Do Not Travel) with a wrongful-detention advisory: being an American holding assets inside a jurisdiction that treats a US passport as leverage.</td>
 </tr>
+<tr>
+<td>Bulgaria</td>
+<td>Explicitly called the "Pensioner D visa" — requires a state/government pension (e.g. US Social Security). Passive investment income has no indication of counting. Not available at age 37.</td>
+</tr>
+<tr>
+<td>Northern Cyprus (TRNC)</td>
+<td>Non-EU country that's very hot and tiny (390k pop), not even recognized as a country except by Turkey. 20% of US GDP per capita. Even has legal disputes of title deeds because of territorial disputes.</td>
+</tr>
+<tr>
+<td>Kazakhstan</td>
+<td>The A6 Golden Visa is a <strong>10-year renewable permit</strong>, not permanent residency. Actual Kazakh PR is a separate document requiring years of prior temporary residence and isn't achievable via the A6 route. The AIFC $60k investor visa is also a renewable 5-year permit, not PR. Rules on the A6 can change at any renewal.</td>
+</tr>
+<tr>
+<td>Mauritius</td>
+<td>The 20-year 'Permanent Residence Permit' is time-limited and renewable — rules on renewal can change over the hold period. Not true unconditional PR.</td>
+</tr>
 </tbody>
 </table>
-<p>| Indonesia | KITAP (Indonesian PR) is a <strong>renewable 5-year permit</strong>, not unconditional PR — rules can change at every renewal. The accessible passive routes (E28C Golden Visa $350k, Second Home Visa $130k) don't lead to KITAP anyway. Reaching KITAP requires the E28A Investor KITAS (IDR 10B+ / ~$620k personal shareholding in an active PT PMA) held 3–5 years first. No real PR pathway at reasonable cost. |
-| Bulgaria | Explicitly called the "Pensioner D visa" — requires a state/government pension (e.g. US Social Security). Passive investment income has no indication of counting. Not available at age 37. |
-| Northern Cyprus (TRNC) | Non-EU country that's very hot and tiny (390k pop), not even recognized as a country except by Turkey. 20% of US GDP per capita. Even has legal disputes of title deeds because of territorial disputes. |
-| Kazakhstan | The A6 Golden Visa is a <strong>10-year renewable permit</strong>, not permanent residency. Actual Kazakh PR is a separate document requiring years of prior temporary residence and isn't achievable via the A6 route. The AIFC $60k investor visa is also a renewable 5-year permit, not PR. Rules on the A6 can change at any renewal. |
-| Mauritius | The 20-year 'Permanent Residence Permit' is time-limited and renewable — rules on renewal can change over the hold period. Not true unconditional PR. |</p>
 <div class="callout"><div class="callout-title">📝 Business-route investigation</div><div class="callout-body">BUSINESS-ROUTE INVESTIGATION (search-verified July 2026): neither remaining country explicitly disqualifies rental-property companies. POLAND — company must show income of at least 12x the average regional monthly wage (~$25k/yr) in the preceding year, OR employ 2 locals full-time for 12 months, OR present credible development plans (official MOS/voivodeship sources); a genuinely revenue-producing company can pass on income alone — no local employees required. CZECHIA — softest business route in the EU set: trade license (živno) or s.r.o., no minimum capital, no company income threshold, no employees; show ~$10k personal funds; renewals need tax-compliant declared income and continued purpose of stay; consulates informally want Czech-market clients. Estonia and Lithuania were investigated and moved to the excluded list above. Romania was investigated and REINSTATED — see its entry: the administrator route (~$59k, real estate qualifies) and the reported US-citizen exemption changed the verdict. THE STANS (Kyrgyzstan etc.) remain unverified — registration-based residence with reportedly lax activity enforcement; paper companies reportedly work in practice; verify directly with the migration service before relying on it.</div></div>
 
 <hr />
@@ -450,6 +601,15 @@ button { font-family: inherit; }
 <h1 id="country-ratings-methodology">Country Ratings Methodology</h1>
 <p>Scored 2026-07-15 against world-best anchors (a 10 = best on Earth, even if off-list). Click any column header to sort by that metric (click again to flip direction). Use the checkboxes to choose which metrics count toward Total — the table re-ranks live.</p>
 <p>Metric notes: <strong>CoL</strong> = rebuilt 2026-07-15 from Numbeo <em>Cost of Living Index by Country 2026</em> as <strong>60% Rent Index + 40% CoL-excluding-rent</strong>, then log-scaled against global anchors (10 = Pakistan/India floor; 1 = Bermuda; USA scores 4.0). Rent is deliberately dominant. CAVEAT: Numbeo's "1 bedroom" is not a fixed physical unit — Japan's figure prices a ~20-25 sqm 1K/1DK, Poland's a ~30-38 sqm kawalerka. Per square metre the two are within ~10% of each other. Japan's score rides a 40-year-low yen (¥162/USD, 52-wk range 145-163) — at ¥145 Japan drops to ~6.0. <strong>Clean</strong> = 80% street/food-service hygiene + 20% air quality. <strong>Econ</strong> = rebuilt 2026-07-15 from the IMF WEO datamapper (April-2026 vintage): 60% medium-term trend growth (2028-31 avg, the IMF's structural view) + 40% near-term (2026-27) + convergence runway (GDP/capita PPP vs USA) - fiscal drag (govt debt &gt;70% of GDP), scaled so India = 10. Korea's 2026 patched to 2.6% (documented IMF July upgrade, post-dates the vintage). Disclosed judgment overlays for what GDP can't see: Saudi +0.5 (sector creation), Japan +1.0 (governance/equity re-rating), Korea +0.5 and Taiwan +0.5 (chip ecosystem), Turkey -1.0 (CPI 31, lira destruction), Kyrgyzstan -0.5 (gold/remittance/re-export base). Reference points: India 10, Vietnam 9.5, China 6.0, USA 3.5. <strong>Weather</strong> = dry beats humid, cold beats hot, dry heat beats humid heat, real 4 seasons beat tropical monotony (10 ≈ dry continental interior — Colorado/Central-Asia profile). <strong>Trust</strong> = CPI 2025 blended with street crime, scam prevalence, lost-property culture. <strong>PR</strong> = ease per the routes in this document (10 = Saudi instant-purchase PR). <strong>Friends</strong> anchored to InterNations data where surveyed, judgment elsewhere.</p>
+</main>
+<script>
+(function() {
+  const toggle = document.getElementById('toc-toggle');
+  const toc = document.getElementById('toc');
+  toggle.addEventListener('click', () => toc.classList.toggle('open'));
+  toc.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toc.classList.remove('open')));
+})();
+</script>
 <script>
 
 // ---- Obsidian DOM API shims ----
@@ -490,6 +650,7 @@ const data = [
 {n:"Japan",r:"Asia",col:45,cl:"~45",v:"Business investment: ~$200k (¥30M, active company + employee)",rent:"$600 – $1,000",bsk:"$6.50 – $8.50",rst:"$35 – $50",inv:200000,il:"~$200k",rt:"Business Manager: ¥30M capital + full-time Japanese/PR employee (active)",ta:15000,tal:"~$15k",tbl:"~$6k",tn:"Non-permanent resident: foreign income taxed only to extent remitted; then worldwide 5–45% (first 5 yrs)"},
 {n:"South Korea",r:"Asia",col:52,cl:"~52",v:"Business investment: ~$70k (D-8)",rent:"$600 – $1,000",bsk:"$8.00 – $10.00",rst:"$40 – $55",inv:70000,il:"~$70k",rt:"D-8 corporate investment (active business)",ta:14000,tal:"~$14k",tbl:"~$5k",tn:"Foreigners resident ≤5 of last 10 yrs: foreign income taxed only if remitted; then worldwide 6–45% (first 5 yrs)"},
 {n:"Taiwan",r:"Asia",col:44,cl:"~44",v:"Business investment: ~$200k (or ~$16k entrepreneur w/ turnover conditions)",rent:"$600 – $950",bsk:"$7.00 – $9.00",rst:"$35 – $50",inv:16000,il:"~$16k",rt:"Entrepreneur visa (turnover conditions); $200k investor route",ta:9900,tal:"~$9.9k",tbl:"~$1.8k",tn:"Foreign income outside regular tax; AMT only above ~NT$7.5M (~$230k/yr)"},
+{n:"Indonesia",r:"Asia",col:37,cl:"~37",v:"Business investment (Investor KITAS → KITAP): ~$620k (IDR 10B PT PMA shareholding)",rent:"$500 – $850",bsk:"$4.50 – $6.50",rst:"$25 – $40",inv:620000,il:"~$620k",rt:"E28A Investor KITAS: IDR 10B personal shareholding in active PT PMA + Director/Commissioner role → KITAP after 3–5 yrs",ta:14000,tal:"~$14k",tbl:"~$5k",tn:"Tax-resident (>183 days) taxed on worldwide income at 5–35% progressive; territorial-lite carve-outs for new expats first 4 yrs on qualifying income"},
 
 {n:"Latvia",r:"Europe",col:44,cl:"~44",v:"Wealth (deposit): €280k",rent:"$550 – $850",bsk:"$6.50 – $8.50",rst:"$40 – $55",inv:310000,il:"~€280k + €30k fees",rt:"€280k subordinated bank deposit, 5-yr (principal returned; ~€30k fees)",ta:18000,tal:"~$18k",tbl:"~$10k",tn:"25.5% flat"},
 {n:"Hungary",r:"Europe",col:42,cl:"~42",v:"Investment (fund): €250k (~$270k) · Wealth (donation): €1M",rent:"$550 – $850",bsk:"$6.00 – $8.00",rst:"$35 – $50",inv:270000,il:"~$270k",rt:"€250k regulated real-estate fund (10+10-yr permit; recoverable after 5-yr lock)",ta:17000,tal:"~$17k",tbl:"~$8k",tn:"15% flat; Hungary–US treaty terminated 2024 (moot at ~$0 US federal)"},
@@ -623,6 +784,7 @@ TABLES.forEach(def => {
 const RATINGS = [
 {c:"Japan",col:6.5,fr:2,cl:10,or:10,tr:9.5,pr:3.5,ec:2,sol:9,wx:5},
 {c:"Taiwan",col:6,fr:7,cl:7.5,or:8,tr:8,pr:4.5,ec:5.5,sol:8.5,wx:2},
+{c:"Indonesia",col:7,fr:7.5,cl:4,or:3.5,tr:4,pr:3.5,ec:7,sol:5,wx:2},
 {c:"Saudi Arabia",col:6.5,fr:4,cl:7.5,or:6,tr:5.5,pr:10,ec:6.5,sol:7.5,wx:4},
 {c:"Armenia",col:6.5,fr:7,cl:5.5,or:4.5,tr:5,pr:8.5,ec:8,sol:5.5,wx:9},
 {c:"Uzbekistan",col:8,fr:6.5,cl:5.5,or:4,tr:3.5,pr:8.5,ec:9.5,sol:4.5,wx:7.5},
